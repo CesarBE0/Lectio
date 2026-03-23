@@ -1,0 +1,214 @@
+/* === main.css: Archivo de estilos unificado === */
+
+/* 1. Variables Globales: Cambia los colores aquí y cambiarán en toda la web */
+:root {
+    /* Color principal (actualmente azul estilo style2. Si prefieres el rojo, usa #d01110) */
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --bg-color: #f8fafc;
+    --text-color: #0f172a;
+    --text-muted: #6b7280;
+    --white: #ffffff;
+    --radius: 8px;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* 2. Reset y Estilos Base */
+body {
+    margin: 0;
+    font-family: Inter, system-ui, 'Segoe UI', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.5;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* 3. Layout y Contenedores */
+.container {
+    max-width: 1200px; /* Ajustado para que no sea excesivamente ancho */
+    margin: 0 auto;
+    padding: 1.25rem;
+}
+
+/* Hero Section */
+.hero {
+    background: linear-gradient(135deg, var(--primary), #1e293b);
+    color: var(--white);
+    padding: 4rem 2rem;
+    border-radius: var(--radius);
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.header-hero {
+    /* Versión alternativa más suave */
+    padding: 2rem;
+    border-radius: 12px;
+    background: linear-gradient(90deg, rgba(37, 99, 235, 0.1), rgba(96, 165, 250, 0.1));
+    margin-bottom: 2rem;
+}
+
+/* 4. Tarjetas (Cards) - Unificando el diseño */
+.card {
+    background: var(--white);
+    border: 1px solid #e2e8f0;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 1rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+    height: 100%; /* Para que todas tengan la misma altura en grid */
+    display: flex;
+    flex-direction: column;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-top: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.card-body {
+    padding: 1rem 0;
+}
+
+/* 5. Grid de Libros */
+.books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Responsivo automático */
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.book-img-container {
+    width: 100%;
+    aspect-ratio: 2/3;
+    overflow: hidden;
+    border-radius: calc(var(--radius) - 2px);
+    background-color: #f1f5f9;
+}
+
+.book-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.card:hover .book-img {
+    transform: scale(1.05);
+}
+
+/* 6. Botones y Navegación */
+.btn-primary {
+    background-color: var(--primary);
+    color: var(--white);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: inline-block;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+}
+
+/* Navbar unificado */
+.navbar {
+    background-color: var(--white);
+    box-shadow: var(--shadow);
+    padding: 1rem;
+}
+
+.nav-link {
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-left: 1rem;
+}
+
+.nav-link:hover, .nav-link.active {
+    color: var(--primary);
+}
+
+/* 7. Footer */
+footer {
+    text-align: center;
+    padding: 2rem 0;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-top: 3rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+/* === PERFIL DE USUARIO REDONDO === */
+
+.user-profile-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    /* Importante: Evita que el contenedor se aplaste en pantallas pequeñas */
+    flex-shrink: 0;
+}
+
+/* El botón circular */
+.btn-user-profile {
+    width: 42px;             /* Ancho fijo */
+    height: 42px;            /* Alto fijo igual al ancho */
+    border-radius: 50%;      /* ESTO LO HACE REDONDO */
+    background-color: var(--primary);
+    color: white;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0;              /* Quitamos relleno para centrar bien el icono */
+    margin: 0;
+    transition: transform 0.2s ease, background-color 0.2s;
+
+    /* Importante para mantener la forma redonda */
+    flex-shrink: 0;
+}
+
+.btn-user-profile:hover {
+    background-color: var(--primary-hover);
+    transform: scale(1.05);
+}
+
+/* Ajustes del icono dentro del círculo */
+.btn-user-profile i {
+    pointer-events: none; /* Evita problemas al hacer clic en el icono */
+}
+
+/* MENÚ DESPLEGABLE (Para asegurar que se vea bien alineado) */
+.user-dropdown-menu {
+    position: absolute;
+    top: 135%;       /* Un poco más separado del círculo */
+    right: 0;        /* Alineado a la derecha */
+    background: white;
+    min-width: 200px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    padding: 0.7rem 0.7rem;
+    display: none;
+    z-index: 2000;
+    border: 1px solid #f1f5f9;
+}
+
+.user-dropdown-menu.show {
+    display: block;
+}
