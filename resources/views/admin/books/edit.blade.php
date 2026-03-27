@@ -1,58 +1,66 @@
 <x-layouts.admin>
-    <div class="max-w-4xl mx-auto p-6">
-        <h1 class="text-3xl font-bold mb-6 text-gray-800">Editar: {{ $book->title }}</h1>
+    <div class="max-w-5xl mx-auto p-6 space-y-8">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b-2 border-[#D4AF37] pb-6 gap-4">
+            <div>
+                <h1 class="text-4xl font-serif font-bold text-black uppercase tracking-widest">{{ __('Editar y Ofertar') }}</h1>
+                <p class="text-gray-500 font-medium mt-1 italic">{{ __('Gestionando:') }} <span class="text-black font-bold">{{ $book->title }}</span></p>
+            </div>
+        </div>
 
-        <form action="{{ route('admin.books.update', $book->id) }}" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            @csrf
-            @method('PUT')
+        <form action="{{ route('admin.books.update', $book->id) }}" method="POST" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            @csrf @method('PUT')
 
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                <h2 class="text-xl font-semibold mb-4 text-orange-600 border-b pb-2">Información General</h2>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Título</label>
-                        <input type="text" name="title" value="{{ $book->title }}" class="w-full mt-1 border border-gray-300 rounded-md p-2 shadow-sm" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Autor</label>
-                        <input type="text" name="author" value="{{ $book->author }}" class="w-full mt-1 border border-gray-300 rounded-md p-2 shadow-sm" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Ruta de Imagen</label>
-                        <input type="text" name="image_url" value="{{ $book->image_url }}" class="w-full mt-1 border border-gray-300 rounded-md p-2 shadow-sm" required>
+            <div class="lg:col-span-2 space-y-6">
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-[#D4AF37]"></div>
+                    <h2 class="text-xs font-black text-gray-400 uppercase tracking-[0.3em] mb-6">🖋️ {{ __('Información de la Obra') }}</h2>
+                    <div class="space-y-6">
+                        <input type="text" name="title" value="{{ old('title', $book->title) }}" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm font-bold outline-none focus:border-[#D4AF37]" required>
+                        <input type="text" name="author" value="{{ old('author', $book->author) }}" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm font-bold outline-none focus:border-[#D4AF37]" required>
+                        <textarea name="description" rows="5" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm outline-none focus:border-[#D4AF37]">{{ old('description', $book->description) }}</textarea>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                <h2 class="text-xl font-semibold mb-4 text-orange-600 border-b pb-2">Formatos y Precios</h2>
-                <div class="space-y-4">
-                    @foreach(['Tapa dura', 'E-book', 'Audiolibro'] as $tipo)
-                        @php $f = $book->formats->where('type', $tipo)->first(); @endphp
-                        <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
-                            <span class="font-bold text-gray-700 block mb-2">{{ $tipo }}</span>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="text-xs text-gray-500 uppercase">Precio (€)</label>
-                                    <input type="number" step="0.01" name="formats[{{ $tipo }}][price]" value="{{ $f->price ?? 0.00 }}" class="w-full border rounded p-1" required>
+            <div class="space-y-6">
+                <div class="bg-black p-8 rounded-2xl shadow-xl border border-[#D4AF37]/30">
+                    <h2 class="text-xs font-black text-[#D4AF37] uppercase tracking-[0.3em] mb-6">💰 {{ __('Precios y Ofertas') }}</h2>
+
+                    <div class="mb-8 pb-6 border-b border-gray-800">
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">{{ __('Aplicar Descuento (%)') }}</label>
+                        @php
+                            // Extraemos el número del string "-20%"
+                            $currentPercent = $book->discount_percent ? abs(intval($book->discount_percent)) : 0;
+                        @endphp
+                        <input type="number" name="discount_percentage" value="{{ $currentPercent }}" min="0" max="99"
+                               class="w-full bg-zinc-900 border border-gray-700 rounded-xl p-3 text-lg font-black text-red-500 outline-none focus:border-red-500 transition-all text-center"
+                               placeholder="0">
+                        <p class="text-[9px] text-gray-500 mt-2 italic text-center">{{ __('Pon 0 para eliminar ofertas activas') }}</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        @foreach(['Tapa dura', 'E-book', 'Audiolibro'] as $tipo)
+                            @php
+                                $f = $book->formats->where('type', $tipo)->first();
+                                // MATEMÁTICAS INVERSAS: Si el precio es 16€ y el descuento 20%, mostramos 20€ (el original)
+                                $originalPrice = ($currentPercent > 0 && $f) ? ($f->price / (1 - ($currentPercent / 100))) : ($f->price ?? 0);
+                            @endphp
+                            <div class="p-4 bg-zinc-900 rounded-xl border border-gray-800">
+                                <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">{{ $tipo }}</span>
+                                <div class="flex items-center gap-2">
+                                    <input type="number" step="0.01" name="formats[{{ $tipo }}][price]"
+                                           value="{{ round($originalPrice, 2) }}"
+                                           class="w-full bg-black border border-gray-700 rounded-lg p-2 text-sm font-bold text-white focus:border-[#D4AF37] outline-none">
+                                    <span class="text-gray-600 font-bold">€</span>
                                 </div>
-                                @if($tipo === 'Tapa dura')
-                                    <div>
-                                        <label class="text-xs text-gray-500 uppercase">Stock</label>
-                                        <input type="number" name="formats[{{ $tipo }}][stock]" value="{{ $f->stock ?? 0 }}" class="w-full border rounded p-1" required>
-                                    </div>
-                                @else
-                                    <input type="hidden" name="formats[{{ $tipo }}][stock]" value="0">
-                                @endif
+                                <input type="hidden" name="formats[{{ $tipo }}][stock]" value="{{ $f->stock ?? 0 }}">
                             </div>
-                        </div>
-                    @endforeach
+                        @endforeach
+                    </div>
                 </div>
-            </div>
 
-            <div class="md:col-span-2">
-                <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition duration-200 shadow-md">
-                    Actualizar Todo
+                <button type="submit" class="w-full bg-[#D4AF37] text-black font-black py-4 rounded-2xl shadow-xl hover:bg-[#B8962E] transition-all uppercase tracking-[0.2em] text-xs">
+                    {{ __('Guardar Cambios') }}
                 </button>
             </div>
         </form>

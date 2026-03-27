@@ -14,10 +14,11 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $fillable = [
         'name',
         'email',
+        'preferred_language',
         'password',
         'address', 'city', 'postal_code', 'country', 'phone',
         'cart_data',
-        'role', // NUEVO
+        'role',
     ];
 
     protected $casts = [
@@ -39,7 +40,8 @@ class User extends Authenticatable implements MustVerifyEmail
     public function books()
     {
         return $this->belongsToMany(Book::class, 'library')
-            ->withPivot('progress', 'is_favorite', 'format') // <-- AÑADE 'format' AQUÍ
+            // Añadimos 'order_number' al final
+            ->withPivot('progress', 'is_favorite', 'format', 'address', 'city', 'price', 'discount', 'shipping', 'order_number')
             ->withTimestamps();
     }
 }

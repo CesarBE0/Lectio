@@ -2,59 +2,63 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\View\View;
+use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display the user's profile form.
-     */
-    public function edit(Request $request): View
+    // Mostrar el formulario
+    public function edit()
     {
-        return view('profile.edit', [
-            'user' => $request->user(),
-        ]);
+        $user = Auth::user();
+
+        $languages = [
+            ['code' => 'es', 'name' => 'Español',       'flag_country' => 'es'],
+            ['code' => 'en', 'name' => 'English',       'flag_country' => 'gb'],
+            ['code' => 'fr', 'name' => 'Français',      'flag_country' => 'fr'],
+            ['code' => 'it', 'name' => 'Italiano',      'flag_country' => 'it'],
+            ['code' => 'de', 'name' => 'Deutsch',       'flag_country' => 'de'],
+            ['code' => 'pt', 'name' => 'Português',     'flag_country' => 'pt'],
+            ['code' => 'ja', 'name' => '日本語 (Japonés)', 'flag_country' => 'jp'],
+            ['code' => 'zh', 'name' => '中文 (Chino)',    'flag_country' => 'cn'],
+        ];
+
+        return view('profile.edit', compact('user', 'languages'));
     }
 
-    /**
-     * Update the user's profile information.
-     */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    // Guardar los datos
+    public function update(Request $request)
     {
-        $request->user()->fill($request->validated());
+        $user = Auth::user();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        // 1. Validamos los datos que nos envía el usuario
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+            'address' => 'nullable|string|max:255',
+            'city' => 'nullable|string|max:255',
+            'postal_code' => 'nullable|string|max:20',
+            // Si escribe una contraseña, debe coincidir con la confirmación
+            'password' => 'nullable|string|min:8|confirmed',
+        ]);
+
+        // 2. Actualizamos los datos básicos
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->preferred_language = $request->preferred_language;
+        $user->address = $request->address;
+        $user->city = $request->city;
+        $user->postal_code = $request->postal_code;
+
+        // 3. Si ha rellenado la contraseña, la encriptamos y la guardamos
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
         }
 
-        $request->user()->save();
+        $user->save();
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
-    }
-
-    /**
-     * Delete the user's account.
-     */
-    public function destroy(Request $request): RedirectResponse
-    {
-        $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
-        ]);
-
-        $user = $request->user();
-
-        Auth::logout();
-
-        $user->delete();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return Redirect::to('/');
+        // 4. Volvemos atrás con un mensaje (Nuestra alerta SweetAlert2 lo atrapará)
+        return redirect()->back()->with('success', 'Tus datos se han actualizado con éxito ✨');
     }
 }

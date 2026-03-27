@@ -26,6 +26,38 @@
         .content h2 span { color: #D4AF37; font-style: italic; }
         .content p { color: #b3b3b3; font-size: 15px; line-height: 1.8; margin-bottom: 30px; }
 
+        /* --- NUEVA SECCIÓN CUPÓN --- */
+        .coupon-container {
+            background-color: #111111;
+            border: 2px dashed #D4AF37;
+            padding: 30px;
+            margin: 40px 0;
+            border-radius: 12px;
+        }
+        .coupon-label {
+            color: #ffffff;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .coupon-code {
+            color: #D4AF37;
+            font-family: 'Georgia', Times, serif;
+            font-size: 32px;
+            font-weight: bold;
+            letter-spacing: 5px;
+            margin: 15px 0;
+            display: block;
+        }
+        .coupon-footer {
+            color: #666666;
+            font-size: 11px;
+            margin-top: 10px;
+            display: block;
+        }
+
         /* Botón */
         .button-container { margin: 40px 0; }
         .button { background-color: #D4AF37; color: #000000 !important; text-decoration: none; padding: 16px 36px; font-weight: 900; font-size: 13px; text-transform: uppercase; letter-spacing: 2px; border-radius: 4px; display: inline-block; }
@@ -45,8 +77,8 @@
 
         <tr>
             <td class="header">
-                <img src="{{ $message->embed(public_path('img/opcion1.png')) }}" alt="Lectio Logo" class="logo" style="width: 80px; margin-bottom: 15px; display: inline-block;">
-
+                {{-- Nota: He mantenido tu código para incrustar el logo --}}
+                <img src="{{ $message->embed(public_path('img/logo.png')) }}" alt="Lectio Logo" class="logo" style="width: 80px; margin-bottom: 15px; display: inline-block;">
                 <h1>LECTIO</h1>
             </td>
         </tr>
@@ -57,10 +89,18 @@
 
                 <p>Nos emociona abrirte las puertas de nuestra exclusiva librería. En <strong>Lectio</strong>, creemos que cada libro es una joya y cada lector merece una experiencia de primera clase.</p>
 
-                <p>Tu cuenta ha sido creada con éxito. A partir de ahora podrás guardar tus formatos favoritos, acceder a ediciones especiales y disfrutar de nuestro envío premium para pedidos superiores a 50€.</p>
+                {{-- BLOQUE DE BIENVENIDA CON EL CÓDIGO --}}
+                <div class="coupon-container">
+                    <span class="coupon-label">Regalo de Bienvenida</span>
+                    <span class="coupon-code">BIENVENIDA10</span>
+                    <p style="color: #ffffff; font-size: 16px; margin: 10px 0;"><strong>10% DE DESCUENTO</strong></p>
+                    <span class="coupon-footer">* Válido para tu primera compra en cualquier formato</span>
+                </div>
+
+                <p>Tu cuenta ha sido creada con éxito. A partir de ahora podrás guardar tus formatos favoritos, acceder a ediciones especiales y disfrutar de nuestro envío premium para pedidos superiores a 30€.</p>
 
                 <div class="button-container">
-                    <a href="{{ route('catalogo') }}" class="button">Explorar la Colección</a>
+                    <a href="{{ route('catalogo') }}" class="button">Canjear mi regalo ahora</a>
                 </div>
 
                 <p class="quote">"Un lector vive mil vidas antes de morir. El que nunca lee, solo vive una."</p>

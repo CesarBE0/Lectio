@@ -26,16 +26,16 @@
                 <div class="flex items-center gap-2 mb-8 pb-8 border-b border-gray-100">
                     <div class="rating rating-sm rating-half">
                         @for($i=1; $i<=5; $i++)
-                            <input type="radio" class="mask mask-star-2 bg-[#D4AF37]" @if(round($book->rating) == $i) checked @endif disabled />
+                            <input type="radio" class="mask mask-star-2 bg-[#D4AF37]" @if(round($book->average_rating) == $i) checked @endif disabled />
                         @endfor
                     </div>
-                    <span class="text-gray-500 text-sm font-medium">{{ $book->rating }} ({{ $book->reviews_count }} {{__("reseñas")}})</span>
+                    <span class="text-gray-500 text-sm font-medium">{{ $book->average_rating }} ({{ $book->reviews_count }} {{__("reseñas")}})</span>
                 </div>
 
                 <div class="mb-10">
                     <h3 class="font-bold text-lg mb-3 font-serif text-black">{{__("Sinopsis")}}</h3>
                     <p class="text-gray-600 leading-relaxed text-justify text-lg">
-                        {{ $book->synopsis }}
+                        {{ $book->description ?? $book->synopsis }}
                     </p>
                 </div>
 
@@ -45,12 +45,9 @@
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                         @forelse($book->formats as $index => $format)
                             @php
-                                // Asignamos un icono chulo dependiendo del formato
                                 $icon = '📕';
                                 if(stripos($format->type, 'audio') !== false) $icon = '🎧';
                                 if(stripos($format->type, 'e-book') !== false || stripos($format->type, 'digital') !== false) $icon = '📱';
-
-                                // El primer elemento sale seleccionado por defecto
                                 $isSelected = $index === 0;
                             @endphp
 
@@ -105,30 +102,58 @@
                     </div>
                 </div>
 
-                <div class="bg-gray-50 rounded-xl p-6 mb-10 grid grid-cols-2 gap-y-4 text-sm border border-gray-100">
-                    <div><span class="block text-gray-400 uppercase font-bold text-[10px] mb-1">{{__("Editorial")}}</span><span class="font-bold text-black">{{ $book->publisher }}</span></div>
-                    <div><span class="block text-gray-400 uppercase font-bold text-[10px] mb-1">{{__("Fecha")}}</span><span class="font-bold text-black">{{ $book->published_date }}</span></div>
-                    <div><span class="block text-gray-400 uppercase font-bold text-[10px] mb-1">{{__("Idioma")}}</span><span class="font-bold text-black">{{ $book->language }}</span></div>
-                    <div><span class="block text-gray-400 uppercase font-bold text-[10px] mb-1">{{__("Páginas")}}</span><span class="font-bold text-black">{{ $book->pages }}</span></div>
-                </div>
+                <div class="mt-16 pt-8 border-t border-gray-200">
+                    <div class="flex justify-between items-end mb-8">
+                        <h3 class="font-bold text-2xl font-serif text-black border-l-4 border-[#D4AF37] pl-3">{{__("Reseñas de lectores")}}</h3>
+                    </div>
 
-                <div>
-                    <h3 class="font-bold text-2xl font-serif mb-6 text-black border-l-4 border-[#D4AF37] pl-3">{{__("Reseñas de lectores")}}</h3>
+                    @auth
+                        <div class="bg-gray-50 p-6 rounded-xl border border-gray-100 mb-8">
+                            <h4 class="font-bold text-black mb-4">{{__("Deja tu opinión sobre esta obra")}}</h4>
+                            <form action="{{ route('reviews.store', $book->id) }}" method="POST">
+                                @csrf
+                                <div class="mb-4">
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">{{__("Valoración")}}</label>
+                                    <select name="rating" class="bg-white border border-gray-200 text-black text-sm rounded-lg focus:ring-[#D4AF37] focus:border-[#D4AF37] block w-full p-2.5" required>
+                                        <option value="5">5 Estrellas - ¡Obra maestra!</option>
+                                        <option value="4">4 Estrellas - Muy recomendado</option>
+                                        <option value="3">3 Estrellas - Bueno</option>
+                                        <option value="2">2 Estrellas - Regular</option>
+                                        <option value="1">1 Estrella - No me gustó</option>
+                                    </select>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">{{__("Tu comentario")}}</label>
+                                    <textarea name="comment" rows="3" class="block p-2.5 w-full text-sm text-black bg-white rounded-lg border border-gray-200 focus:ring-[#D4AF37] focus:border-[#D4AF37]" placeholder="{{__('¿Qué te ha parecido el libro?')}}" required></textarea>
+                                </div>
+                                <button type="submit" class="bg-black text-[#D4AF37] font-bold text-xs uppercase tracking-widest py-3 px-6 rounded-lg hover:bg-gray-900 transition-colors">
+                                    {{__("Publicar Reseña")}}
+                                </button>
+                            </form>
+                        </div>
+                    @else
+                        <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 mb-8 text-center">
+                            <p class="text-gray-500 text-sm"><a href="{{ route('login') }}" class="text-[#D4AF37] font-bold hover:underline">{{__("Inicia sesión")}}</a> {{__("para dejar una reseña.")}}</p>
+                        </div>
+                    @endauth
+
                     <div class="space-y-6">
-                        @foreach($reviews as $review)
+                        @forelse($book->reviews as $review)
                             <div class="border-b border-gray-100 pb-6 last:border-0">
                                 <div class="flex justify-between items-center mb-2">
-                                    <span class="font-bold text-black">{{ $review['user'] }}</span>
-                                    <span class="text-xs font-bold text-[#D4AF37]">{{ $review['date'] }}</span>
+                                    <span class="font-bold text-black">{{ $review->user->name }}</span>
+                                    <span class="text-xs font-bold text-gray-400">{{ $review->created_at->diffForHumans() }}</span>
                                 </div>
                                 <div class="rating rating-xs mb-2">
                                     @for($i=1; $i<=5; $i++)
-                                        <input type="radio" class="mask mask-star-2 bg-[#D4AF37]" @if($review['rating'] >= $i) checked @endif disabled />
+                                        <input type="radio" class="mask mask-star-2 bg-[#D4AF37]" @if($review->rating >= $i) checked @endif disabled />
                                     @endfor
                                 </div>
-                                <p class="text-gray-600 text-sm leading-relaxed">{{ $review['text'] }}</p>
+                                <p class="text-gray-600 text-sm leading-relaxed">{{ $review->comment }}</p>
                             </div>
-                        @endforeach
+                        @empty
+                            <p class="text-gray-500 italic text-sm">{{__("Aún no hay reseñas para este libro. ¡Sé el primero en opinar!")}}</p>
+                        @endforelse
                     </div>
                 </div>
 
@@ -138,28 +163,24 @@
 
     <script>
         function selectFormat(formatId, price, element) {
-            // 1. Animamos y cambiamos el precio principal
             const priceDisplay = document.getElementById('main-price');
-            priceDisplay.style.opacity = '0'; // Desvanece
+            priceDisplay.style.opacity = '0';
 
             setTimeout(() => {
                 priceDisplay.innerText = parseFloat(price).toFixed(2) + '€';
-                priceDisplay.style.opacity = '1'; // Aparece con el nuevo precio
+                priceDisplay.style.opacity = '1';
             }, 150);
 
-            // 2. Reseteamos TODAS las tarjetas al estado "inactivo" (blanco y gris)
             document.querySelectorAll('.format-card').forEach(card => {
                 card.className = "format-card border-2 border-gray-200 bg-white hover:border-[#D4AF37]/50 rounded-lg p-3 text-center cursor-pointer transition-all duration-300 group";
                 card.querySelector('.type-text').className = "type-text font-bold text-sm text-gray-900 group-hover:text-[#D4AF37]";
                 card.querySelector('.price-text').className = "price-text font-bold text-sm mt-1 text-gray-500";
             });
 
-            // 3. Iluminamos la tarjeta seleccionada con el estilo Black & Gold
             element.className = "format-card border-2 border-[#D4AF37] bg-black rounded-lg p-3 text-center cursor-pointer transition-all duration-300 group";
             element.querySelector('.type-text').className = "type-text font-bold text-sm text-[#D4AF37]";
             element.querySelector('.price-text').className = "price-text font-bold text-sm mt-1 text-white";
 
-            // 4. Actualizamos los formularios ocultos para enviar el ID correcto al carrito
             document.getElementById('input-format-add').value = formatId;
             document.getElementById('input-format-buy').value = formatId;
         }

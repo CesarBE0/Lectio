@@ -23,7 +23,7 @@ class CartController extends Controller
 
         // 2. LÓGICA DE ENVÍO: Si supera o iguala los 50€, es 0. Si no, 4.99€
         // (Añadimos la condición $subtotal > 0 para no cobrar envío en carritos vacíos por si acaso)
-        $shippingCost = ($subtotal >= 50 || $subtotal == 0) ? 0 : 4.99;
+        $shippingCost = ($subtotal >= 30 || $subtotal == 0) ? 0 : 4.99;
 
         // 3. Calculamos el Total Final
         $total = $subtotal + $shippingCost;
@@ -69,7 +69,7 @@ class CartController extends Controller
             return redirect()->route('cart.index');
         }
 
-        return redirect()->back()->with('success', __('¡Añadido al carrito en formato ' . $format->type . '!'));
+        return redirect()->back()->with('success', 'Libro en formato ' . $format->type . ' añadido al carrito correctamente ✨');
     }
 
     public function remove(Request $request)
@@ -119,7 +119,7 @@ class CartController extends Controller
                         $price = $item['discount_price'] ?? $item['price'];
                         $subtotal += $price * $item['quantity'];
                     }
-                    $shippingCost = ($subtotal >= 50 || $subtotal == 0) ? 0 : 4.99;
+                    $shippingCost = ($subtotal >= 30 || $subtotal == 0) ? 0 : 4.99;
                     $total = $subtotal + $shippingCost;
 
                     return response()->json([

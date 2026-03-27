@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title ?? 'Lectio' }}</title>
     <link rel="icon" href="{{ asset('img/logo.webp') }}" type="image/webp">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
@@ -14,32 +15,42 @@
     {{ $slot }}
 </main>
 <x-layouts.footer />
-@if(session('success'))
-    <div id="toast-success" class="fixed top-24 right-5 z-50 bg-black text-[#D4AF37] px-6 py-4 rounded-lg shadow-2xl border border-[#D4AF37]/50 flex items-center gap-3 transform transition-all duration-500 translate-x-[150%]">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <span class="font-bold text-sm tracking-wide">{{ session('success') }}</span>
-    </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const toast = document.getElementById('toast-success');
-            if (toast) {
-                // 1. Entra a la pantalla suavemente (quitamos la clase que lo esconde a la derecha)
-                setTimeout(() => {
-                    toast.classList.remove('translate-x-[150%]');
-                    toast.classList.add('translate-x-0');
-                }, 100); // Pequeño retardo para que la animación se note al cargar la página
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-                // 2. A los 3.5 segundos, se vuelve a esconder solo
-                setTimeout(() => {
-                    toast.classList.remove('translate-x-0');
-                    toast.classList.add('translate-x-[150%]');
-                }, 3500);
-            }
-        });
-    </script>
-@endif
+<script>
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000, // Desaparece en 3 segundos
+        timerProgressBar: true,
+        background: '#ffffff', // Fondo blanco
+        color: '#000000', // Letra negra
+        iconColor: '#D4AF37', // Icono dorado Lectio
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+    });
+
+    // Si el controlador manda un mensaje de éxito
+    @if(session('success'))
+    Toast.fire({
+        icon: 'success',
+        title: '{{ session('success') }}'
+    });
+    @endif
+
+    // Si el controlador manda un mensaje de error
+    @if(session('error'))
+    Toast.fire({
+        icon: 'error',
+        title: '{{ session('error') }}',
+        iconColor: '#ef4444' // Rojo para errores
+    });
+    @endif
+</script>
+</body>
 </body>
 </html>

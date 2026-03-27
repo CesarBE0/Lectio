@@ -21,4 +21,31 @@ class Book extends Model {
 
         return $format ? $format->price : '0.00';
     }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class)->latest(); // latest() para que salgan las más nuevas primero
+    }
+
+// Calcula la media de estrellas
+    public function getAverageRatingAttribute()
+    {
+        return round($this->reviews()->avg('rating'), 1) ?? 0;
+    }
+
+// Cuenta cuántas reseñas tiene
+    public function getReviewsCountAttribute()
+    {
+        return $this->reviews()->count();
+    }
+
+    public function libraryEntries()
+    {
+        return $this->hasMany(\App\Models\Library::class, 'book_id');
+    }
+
+    public function orderItems()
+    {
+        return $this->hasMany(\App\Models\OrderItem::class, 'book_id');
+    }
 }

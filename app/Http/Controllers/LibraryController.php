@@ -15,14 +15,12 @@ class LibraryController extends Controller
 
         $filter = $request->query('filter');
 
-        // Solo mantenemos el filtro de favoritos
         if ($filter == 'favorites') {
             $query->wherePivot('is_favorite', true);
         }
 
-        $books = $query->get();
+        $books = $query->orderByPivot('created_at', 'desc')->get();
 
-        // Estadísticas limpias
         $stats = (object)[
             'total'     => $user->books()->count(),
             'favorites' => $user->books()->wherePivot('is_favorite', true)->count(),
@@ -34,11 +32,9 @@ class LibraryController extends Controller
     public function toggleFavorite($id)
     {
         $user = Auth::user();
-        // Buscamos el libro en la biblioteca del usuario
         $book = $user->books()->where('book_id', $id)->first();
 
         if ($book) {
-            // Invertimos el estado de favorito (si era 1 pasa a 0, y viceversa)
             $newStatus = !$book->pivot->is_favorite;
             $user->books()->updateExistingPivot($id, ['is_favorite' => $newStatus]);
 

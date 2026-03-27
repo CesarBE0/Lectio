@@ -8,16 +8,22 @@ class HomeController extends Controller
 {
     public function index()
     {
-        // Usamos with('formats') para traer los precios de una vez
-        $descuentos = Book::with('formats')->whereNotNull('discount_percent')->take(4)->get();
-        $populares = Book::with('formats')->where('is_bestseller', true)->take(4)->get();
+        // 1. Ofertas del mes
+        $descuentos = \App\Models\Book::whereNotNull('discount_percent')->with('formats')->get();
 
-        $opiniones = [
-            ['texto' => 'Una web familiar, encuentro todos mis libros favoritos a muy buen precio.', 'autor' => 'Luna F.'],
-            ['texto' => 'El catálogo es enorme y el servicio rápido. Recomiendo 100%.', 'autor' => 'Kevin G.'],
-            ['texto' => 'Me encanta poder recopilar clásicos y nuevas lecturas todo en el mismo sitio.', 'autor' => 'María C.']
-        ];
+        // 2. Top Ventas Definitivo (Sumando la cantidad real comprada)
+        $populares = collect();
 
-        return view('home', compact('descuentos', 'populares', 'opiniones'));
+        try {
+            $populares = \App\Models\Book::has('libraryEntries')
+                ->withSum('libraryEntries', 'quantity') // Suma las unidades vendidas
+                ->orderByDesc('library_entries_sum_quantity') // Ordena de mayor a menor
+                ->take(4)
+                ->get();
+        } catch (\Exception $e) {
+            // Protección contra errores
+        }
+
+        return view('home', compact('descuentos', 'populares'));
     }
 }

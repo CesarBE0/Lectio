@@ -1,3 +1,14 @@
+@php
+    // Calculamos los mensajes de soporte sin leer
+    $unreadSupport = 0;
+    if(Auth::check()) {
+        $unreadSupport = \App\Models\SupportMessage::where('user_id', Auth::id())
+                            ->where('is_admin_reply', true)
+                            ->where('user_read', false)
+                            ->count();
+    }
+@endphp
+
 <div class="navbar bg-white/95 backdrop-blur-sm sticky top-0 z-50 border-b border-gray-100 px-4 md:px-8 shadow-sm">
 
     <div class="navbar-start">
@@ -8,8 +19,16 @@
             <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
                 <li><a href="{{ route('home') }}">{{__("Inicio")}}</a></li>
                 <li><a href="{{ Route::has('catalogo') ? route('catalogo') : '#' }}">{{__("Catálogo")}}</a></li>
-                <li><a href="#">{{__("Ejemplares")}}</a></li>
-                <li><a href="#">{{__("Contacto")}}</a></li>
+
+                {{-- ENLACE CONTACTO MÓVIL CON ALERTA --}}
+                <li>
+                    <a href="{{ route('contacto') }}" class="justify-between">
+                        {{__("Contacto")}}
+                        @if($unreadSupport > 0)
+                            <span class="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full animate-pulse">{{ $unreadSupport }}</span>
+                        @endif
+                    </a>
+                </li>
             </ul>
         </div>
 
@@ -33,12 +52,20 @@
                     {{__("Catálogo")}}
                 </a>
             </li>
-            <li><a href="#" class="hover:text-brand-red hover:bg-transparent transition">{{__("Ejemplares")}}</a></li>
-            <li><a href="#" class="hover:text-brand-red hover:bg-transparent transition">{{__("Contacto")}}</a></li>
+
+            {{-- ENLACE CONTACTO ESCRITORIO CON ALERTA --}}
+            <li>
+                <a href="{{ route('contacto') }}" class="relative hover:text-brand-red hover:bg-transparent transition">
+                    {{__("Contacto")}}
+                    @if($unreadSupport > 0)
+                        <span class="absolute -top-2 -right-3 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full animate-bounce shadow-md">
+                            {{ $unreadSupport }}
+                        </span>
+                    @endif
+                </a>
+            </li>
         </ul>
     </div>
-
-
 
     <div class="navbar-end gap-1 sm:gap-2">
 
@@ -81,15 +108,22 @@
                         </li>
 
                         <li>
-                            <a href="{{ route('settings.index') }}" class="py-2 text-gray-700 hover:text-brand-red hover:bg-red-50">
+                            <a href="{{ route('profile.edit') }}" class="py-2 text-gray-700 hover:text-brand-red hover:bg-red-50">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                                {{__("Configuración")}}
+                                {{__("Mi cuenta")}}
                             </a>
                         </li>
                         <li>
                             <a href="{{ route('library.index') }}" class="py-2 text-gray-700 hover:text-brand-red hover:bg-red-50">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
                                 {{__("Biblioteca personal")}}
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{{ route('orders.index') }}" class="py-2 text-gray-700 hover:text-brand-red hover:bg-red-50">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                {{__("Historial de Pedidos")}}
                             </a>
                         </li>
 

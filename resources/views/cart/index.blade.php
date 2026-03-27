@@ -98,7 +98,7 @@
                             <div id="upsell-container" class="text-right mt-1">
                                 @if($shippingCost > 0 && $subtotal > 0)
                                     <p class="text-[10px] text-gray-500 italic">
-                                        Añade <span class="text-[#D4AF37] font-bold">{{ number_format(50 - $subtotal, 2) }}€</span> más para envío gratis.
+                                        Añade <span class="text-[#D4AF37] font-bold">{{ number_format(30 - $subtotal, 2) }}€</span> más para envío gratis.
                                     </p>
                                 @endif
                             </div>
