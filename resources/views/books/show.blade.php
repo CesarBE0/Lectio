@@ -5,14 +5,25 @@
         <div class="grid grid-cols-1 lg:grid-cols-[35%_auto] gap-12 items-start">
 
             <div class="flex flex-col gap-6 lg:sticky lg:top-24 lg:self-start">
-                <a href="{{ route('catalogo') }}" class="inline-flex items-center text-gray-500 hover:text-[#D4AF37] transition font-medium w-fit group text-sm">
+                <a href="{{ url()->previous() }}" class="inline-flex items-center text-gray-500 hover:text-[#D4AF37] transition font-medium w-fit group text-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 transform group-hover:-translate-x-1 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
-                    {{__("Volver al catálogo")}}
+                    {{__("Volver")}}
                 </a>
 
-                <div class="w-full bg-gray-50 p-2 rounded-lg border border-[#D4AF37]/20 flex justify-center items-center shadow-sm">
+                <div class="w-full bg-gray-50 p-2 rounded-lg border border-[#D4AF37]/20 flex justify-center items-center shadow-sm relative">
+
+                    {{-- NUEVO: BOTÓN WISHLIST SOBRE LA IMAGEN --}}
+                    @auth
+                        <form action="{{ route('wishlist.toggle', $book->id) }}" method="POST" class="absolute top-4 right-4 z-10">
+                            @csrf
+                            <button type="submit" class="bg-white/80 backdrop-blur p-2 rounded-full shadow hover:scale-110 transition">
+                                <svg class="w-6 h-6 {{ isset($inWishlist) && $inWishlist ? 'text-red-500 fill-current' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                            </button>
+                        </form>
+                    @endauth
+
                     <img src="{{ asset($book->image_url) }}"
                          alt="{{ $book->title }}"
                          class="w-[75%] h-auto object-contain rounded-sm transform hover:scale-[1.02] transition duration-500">
@@ -102,6 +113,66 @@
                     </div>
                 </div>
 
+                {{-- NUEVO: RECOMENDACIONES CRUZADAS --}}
+                @if(isset($recommended) && count($recommended) > 0)
+
+                    {{-- Obtenemos todos los IDs de la lista de deseos del usuario para pintarlos rápido --}}
+                    @php
+                        $userWishlistIds = Auth::check() ? \App\Models\Wishlist::where('user_id', Auth::id())->pluck('book_id')->toArray() : [];
+                    @endphp
+
+                    <div class="mt-12 pt-8 border-t border-gray-100">
+                        <h3 class="font-bold text-xl font-serif text-black border-l-4 border-[#D4AF37] pl-3 mb-6">{{__("Lectores que compraron este libro también se llevaron...")}}</h3>
+
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                            @foreach($recommended as $recBook)
+                                <div class="group relative flex flex-col h-full bg-white rounded-xl border border-gray-100 p-2 shadow-sm hover:shadow-md transition">
+
+                                    {{-- BOTÓN AJAX DE WISHLIST --}}
+                                    @auth
+                                        @php $isWished = in_array($recBook->id, $userWishlistIds); @endphp
+                                        <form action="{{ route('wishlist.toggle', $recBook->id) }}" method="POST" class="wishlist-form absolute top-4 right-4 z-20">
+                                            @csrf
+                                            <button type="submit" class="bg-white/90 backdrop-blur p-2 rounded-full shadow-sm hover:scale-110 transition duration-200">
+                                                <svg class="w-5 h-5 transition-colors duration-300 {{ $isWished ? 'text-red-500 fill-current' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                                            </button>
+                                        </form>
+                                    @endauth
+
+                                    {{-- Contenedor de la imagen --}}
+                                    <a href="{{ route('books.show', $recBook->id) }}" class="relative aspect-[2/3] rounded-lg overflow-hidden mb-3 shadow-sm border border-gray-100 bg-gray-50 flex items-center justify-center p-2 z-10">
+                                        <img src="{{ asset($recBook->image_url) }}" alt="{{ $recBook->title }}" class="max-w-full max-h-full object-contain group-hover:scale-105 transition duration-500">
+                                    </a>
+
+                                    {{-- Info del libro --}}
+                                    <a href="{{ route('books.show', $recBook->id) }}" class="flex flex-col flex-grow z-10">
+                                        <h4 class="text-sm font-bold text-gray-900 line-clamp-2 group-hover:text-[#D4AF37] transition leading-tight">{{ $recBook->title }}</h4>
+                                        <p class="text-[10px] text-gray-500 mt-1 mb-2">{{ $recBook->author }}</p>
+
+                                        {{-- El Precio --}}
+                                        <div class="mt-auto pt-2">
+                                            @php
+                                                $recFormat = $recBook->formats->first();
+                                                $recPrice = $recFormat ? $recFormat->price : 0;
+                                                $recDiscountPrice = $recFormat->discount_price ?? null;
+                                            @endphp
+
+                                            @if($recDiscountPrice && $recDiscountPrice < $recPrice)
+                                                <div class="flex items-center gap-2">
+                                                    <p class="text-sm font-black text-red-600">{{ number_format($recDiscountPrice, 2) }}€</p>
+                                                    <p class="text-[11px] text-gray-400 line-through font-medium">{{ number_format($recPrice, 2) }}€</p>
+                                                </div>
+                                            @else
+                                                <p class="text-sm font-black text-black">{{ number_format($recPrice, 2) }}€</p>
+                                            @endif
+                                        </div>
+                                    </a>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
                 <div class="mt-16 pt-8 border-t border-gray-200">
                     <div class="flex justify-between items-end mb-8">
                         <h3 class="font-bold text-2xl font-serif text-black border-l-4 border-[#D4AF37] pl-3">{{__("Reseñas de lectores")}}</h3>
@@ -185,4 +256,5 @@
             document.getElementById('input-format-buy').value = formatId;
         }
     </script>
+
 </x-layouts.layout>

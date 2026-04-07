@@ -51,6 +51,52 @@
     });
     @endif
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Escuchamos a TODOS los formularios que tengan la clase 'wishlist-form'
+        const wishForms = document.querySelectorAll('.wishlist-form');
+
+        wishForms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault(); // Evita que la página se recargue
+
+                const url = this.action;
+                const token = this.querySelector('input[name="_token"]').value;
+                const btn = this.querySelector('button');
+                const icon = btn.querySelector('svg');
+
+                // Animación al pulsar (opcional)
+                btn.classList.add('scale-90');
+                setTimeout(() => btn.classList.remove('scale-90'), 150);
+
+                // Enviamos los datos en segundo plano
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': token
+                    },
+                    body: JSON.stringify({})
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if(data.success) {
+                            // Cambiamos el color del corazón según la respuesta
+                            if(data.is_wished) {
+                                icon.classList.remove('text-gray-400');
+                                icon.classList.add('text-red-500', 'fill-current');
+                            } else {
+                                icon.classList.remove('text-red-500', 'fill-current');
+                                icon.classList.add('text-gray-400');
+                            }
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+        });
+    });
+</script>
 </body>
 </body>
 </html>

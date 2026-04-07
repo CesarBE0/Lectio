@@ -12,6 +12,8 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CouponController;
+use App\Http\Controllers\SearchController;
+use App\Http\Controllers\WishlistController;
 
 // RUTAS DE USUARIO AUTENTICADO
 Route::middleware(['auth'])->group(function () {
@@ -23,11 +25,18 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/mi-cuenta', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::post('/mi-cuenta', [ProfileController::class, 'update'])->name('profile.update');
 
+    // Canjeo de Puntos Lectio
+    Route::post('/canjear-puntos', [ProfileController::class, 'redeemPoints'])->name('points.redeem');
+
     Route::get('/mis-pedidos', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/mis-pedidos/factura/{id}', [OrderController::class, 'downloadInvoice'])->name('orders.invoice');
 
     Route::get('/biblioteca', [LibraryController::class, 'index'])->name('library.index');
     Route::post('/biblioteca/favorito/{id}', [LibraryController::class, 'toggleFavorite'])->name('library.favorite');
+
+    // Lista de Deseos
+    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+    Route::post('/wishlist/toggle/{book}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
 });
 
 // IDIOMAS
@@ -75,6 +84,9 @@ Route::get('/carrito', [CartController::class, 'index'])->name('cart.index');
 Route::post('/carrito/add/{id}', [CartController::class, 'add'])->name('cart.add');
 Route::post('/carrito/remove', [CartController::class, 'remove'])->name('cart.remove');
 Route::post('/carrito/actualizar', [CartController::class, 'updateQuantity'])->name('cart.update');
+
+// Buscador Live (AJAX)
+Route::get('/api/search', [SearchController::class, 'search'])->name('api.search');
 
 Route::get('/vaciar-carrito', function () {
     session()->forget('cart');

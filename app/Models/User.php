@@ -16,9 +16,15 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'preferred_language',
         'password',
-        'address', 'city', 'postal_code', 'country', 'phone',
+        'address',
+        'city',
+        'postal_code',
+        'country',
+        'phone',
         'cart_data',
         'role',
+        'welcome_coupon_used', // El seguro del cupón
+        'points',              // Los Puntos Lectio
     ];
 
     protected $casts = [
@@ -40,7 +46,6 @@ class User extends Authenticatable implements MustVerifyEmail
     public function books()
     {
         return $this->belongsToMany(Book::class, 'library')
-            // Añadimos 'order_number' al final
             ->withPivot('progress', 'is_favorite', 'format', 'address', 'city', 'price', 'discount', 'shipping', 'order_number')
             ->withTimestamps();
     }

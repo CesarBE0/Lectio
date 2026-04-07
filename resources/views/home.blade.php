@@ -1,4 +1,10 @@
 <x-layouts.layout>
+
+    @php
+        // Obtenemos los IDs de la lista de deseos del usuario
+        $userWishlistIds = Auth::check() ? \App\Models\Wishlist::where('user_id', Auth::id())->pluck('book_id')->toArray() : [];
+    @endphp
+
     <div class="container mx-auto px-6 pt-4 pb-12 space-y-12">
 
         {{-- BANNER PRINCIPAL (FLEXBOX PARA GARANTIZAR QUE ESTÉN LADO A LADO) --}}
@@ -64,11 +70,25 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
                     @foreach($descuentos as $libro)
                         <div class="card bg-white shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 h-full group flex flex-col relative rounded-2xl overflow-hidden">
+
+                            {{-- Etiqueta de Descuento (Izquierda) --}}
                             @if($libro->discount_percent)
                                 <div class="absolute top-3 left-3 z-20 bg-red-600 text-white text-[10px] font-black px-2 py-1 rounded shadow-md animate-pulse">
                                     {{ $libro->discount_percent }}
                                 </div>
                             @endif
+
+                            {{-- BOTÓN AJAX DE WISHLIST (Derecha) --}}
+                            @auth
+                                @php $isWished = in_array($libro->id, $userWishlistIds); @endphp
+                                <form action="{{ route('wishlist.toggle', $libro->id) }}" method="POST" class="wishlist-form absolute top-3 right-3 z-20">
+                                    @csrf
+                                    <button type="submit" class="bg-white/90 backdrop-blur p-2 rounded-full shadow-sm hover:scale-110 transition duration-200">
+                                        <svg class="w-5 h-5 transition-colors duration-300 {{ $isWished ? 'text-red-500 fill-current' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                                    </button>
+                                </form>
+                            @endauth
+
                             <figure class="px-4 pt-4 h-72 bg-gray-50/50">
                                 <a href="{{ route('books.show', $libro->id) }}" class="w-full h-full flex justify-center items-center">
                                     <img src="{{ asset($libro->image_url) }}" alt="{{ $libro->title }}" class="h-full object-contain drop-shadow-xl transform group-hover:scale-105 transition duration-500" />
@@ -108,10 +128,21 @@
                     @foreach($populares as $libro)
                         <div class="card bg-white shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 h-full group flex flex-col relative rounded-2xl overflow-hidden">
 
-                            {{-- Etiqueta Top Ventas automática --}}
-                            <div class="absolute top-3 right-3 z-20 bg-black text-[#D4AF37] text-[9px] uppercase font-black px-2 py-1 rounded border border-[#D4AF37]/30 shadow-sm">
+                            {{-- Etiqueta Top Ventas (Izquierda) --}}
+                            <div class="absolute top-3 left-3 z-20 bg-black text-[#D4AF37] text-[9px] uppercase font-black px-2 py-1 rounded border border-[#D4AF37]/30 shadow-sm">
                                 {{__("Top Ventas")}}
                             </div>
+
+                            {{-- BOTÓN AJAX DE WISHLIST (Derecha) --}}
+                            @auth
+                                @php $isWished = in_array($libro->id, $userWishlistIds); @endphp
+                                <form action="{{ route('wishlist.toggle', $libro->id) }}" method="POST" class="wishlist-form absolute top-3 right-3 z-20">
+                                    @csrf
+                                    <button type="submit" class="bg-white/90 backdrop-blur p-2 rounded-full shadow-sm hover:scale-110 transition duration-200">
+                                        <svg class="w-5 h-5 transition-colors duration-300 {{ $isWished ? 'text-red-500 fill-current' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                                    </button>
+                                </form>
+                            @endauth
 
                             <figure class="px-4 pt-4 h-72 bg-gray-50/50">
                                 <a href="{{ route('books.show', $libro->id) }}" class="w-full h-full flex justify-center items-center">
