@@ -69,6 +69,14 @@ class CartController extends Controller
             return redirect()->route('cart.index');
         }
 
+        if (($request->wantsJson() || $request->ajax()) && $request->input('action') !== 'buy_now') {
+            return response()->json([
+                'success' => true,
+                'message' => '¡Libro añadido al carrito!',
+                'cartCount' => count(session('cart', []))
+            ]);
+        }
+
         return redirect()->back()->with('success', 'Libro en formato ' . $format->type . ' añadido al carrito correctamente ✨');
     }
 

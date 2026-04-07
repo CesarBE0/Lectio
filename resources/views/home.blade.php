@@ -107,8 +107,8 @@
                                         @endif
                                     </div>
                                     <div class="grid grid-cols-2 gap-2">
-                                        <form action="{{ route('cart.add', $libro->id) }}" method="POST">@csrf<button type="submit" class="w-full border border-gray-200 text-gray-700 text-[10px] font-black uppercase py-2.5 rounded-lg hover:bg-gray-50 transition-colors">{{__("Añadir")}}</button></form>
-                                        <form action="{{ route('cart.add', $libro->id) }}" method="POST">@csrf<input type="hidden" name="action" value="buy_now"><button type="submit" class="w-full bg-black text-[#D4AF37] text-[10px] font-black uppercase py-2.5 rounded-lg hover:bg-gray-900 transition-colors">{{__("Comprar")}}</button></form>
+                                        <form action="{{ route('cart.add', $libro->id) }}" method="POST" class="ajax-cart-form w-full">@csrf<button type="submit" class="w-full border border-gray-200 text-gray-700 text-[10px] font-black uppercase py-2.5 rounded-lg hover:bg-gray-50 transition-colors">{{__("Añadir")}}</button></form>
+                                        <form action="{{ route('cart.add', $libro->id) }}" method="POST" class="w-full">@csrf<input type="hidden" name="action" value="buy_now"><button type="submit" class="w-full bg-black text-[#D4AF37] text-[10px] font-black uppercase py-2.5 rounded-lg hover:bg-gray-900 transition-colors">{{__("Comprar")}}</button></form>
                                     </div>
                                 </div>
                             </div>
@@ -159,8 +159,8 @@
                                         <span class="text-xl font-black text-black">{{ number_format($libro->hardcover_price ?? 0, 2) }}€</span>
                                     </div>
                                     <div class="grid grid-cols-2 gap-2">
-                                        <form action="{{ route('cart.add', $libro->id) }}" method="POST">@csrf<button type="submit" class="w-full border border-black text-black text-[10px] font-black uppercase py-2.5 rounded-lg hover:bg-black hover:text-[#D4AF37] transition-all">{{__("Añadir")}}</button></form>
-                                        <form action="{{ route('cart.add', $libro->id) }}" method="POST">@csrf<input type="hidden" name="action" value="buy_now"><button type="submit" class="w-full bg-gray-900 text-white text-[10px] font-black uppercase py-2.5 rounded-lg hover:bg-gray-700 transition-colors">{{__("Comprar")}}</button></form>
+                                        <form action="{{ route('cart.add', $libro->id) }}" method="POST" class="ajax-cart-form w-full">@csrf<button type="submit" class="w-full border border-gray-200 text-gray-700 text-[10px] font-black uppercase py-2.5 rounded-lg hover:bg-gray-50 transition-colors">{{__("Añadir")}}</button></form>
+                                        <form action="{{ route('cart.add', $libro->id) }}" method="POST" class="w-full">@csrf<input type="hidden" name="action" value="buy_now"><button type="submit" class="w-full bg-black text-[#D4AF37] text-[10px] font-black uppercase py-2.5 rounded-lg hover:bg-gray-900 transition-colors">{{__("Comprar")}}</button></form>
                                     </div>
                                 </div>
                             </div>

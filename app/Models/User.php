@@ -49,4 +49,9 @@ class User extends Authenticatable implements MustVerifyEmail
             ->withPivot('progress', 'is_favorite', 'format', 'address', 'city', 'price', 'discount', 'shipping', 'order_number')
             ->withTimestamps();
     }
+
+    public function coupons()
+    {
+        return $this->hasMany(Coupon::class);
+    }
 }

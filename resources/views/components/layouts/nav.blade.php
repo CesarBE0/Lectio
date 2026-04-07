@@ -85,15 +85,15 @@
         @endauth
 
         <div class="flex items-center gap-6">
-            <a href="{{ route('cart.index') }}" class="relative text-gray-600 hover:text-gray-900 transition group">
+            <a href="{{ route('cart.index') }}" id="cart-icon-container" class="relative text-gray-600 hover:text-gray-900 transition group">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
-                @if(session('cart') && count(session('cart')) > 0)
-                    <span class="absolute -top-2 -right-2 bg-gray-900 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm group-hover:bg-black transition">
-                        {{ count(session('cart')) }}
-                    </span>
-                @endif
+
+                {{-- La burbuja ahora siempre existe, pero se oculta si está a 0 --}}
+                <span id="cart-counter-badge" class="absolute -top-2 -right-2 bg-gray-900 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm group-hover:bg-black transition {{ (session('cart') && count(session('cart')) > 0) ? '' : 'hidden' }}">
+                    {{ session('cart') ? count(session('cart')) : 0 }}
+                </span>
             </a>
         </div>
 
@@ -232,5 +232,70 @@
                 }
             });
         }
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Seleccionamos todos los formularios de "Añadir"
+        const ajaxCartForms = document.querySelectorAll('.ajax-cart-form');
+
+        ajaxCartForms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                // Solo detenemos la recarga si NO hay un input oculto con value="buy_now"
+                const isBuyNow = this.querySelector('input[name="action"][value="buy_now"]');
+                if (isBuyNow) return; // Si es comprar ahora, que recargue normal
+
+                e.preventDefault(); // Evita que la página se recargue
+
+                const url = this.action;
+                const formData = new FormData(this);
+                const btn = this.querySelector('button[type="submit"]');
+
+                // Efecto visual de botón cargando
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<span class="animate-pulse">⏳ Añadiendo...</span>';
+                btn.disabled = true;
+
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+
+                        if (data.success) {
+                            // Actualizar el numerito rojo del carrito
+                            const cartBadge = document.getElementById('cart-counter-badge');
+                            if (cartBadge) {
+                                cartBadge.innerText = data.cartCount;
+                                cartBadge.classList.remove('hidden');
+                            }
+
+                            // Mostrar aviso elegante (SweetAlert si lo tienes, o un alert normal)
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({
+                                    toast: true, position: 'top-end', icon: 'success',
+                                    title: data.message, showConfirmButton: false, timer: 2000
+                                });
+                            } else {
+                                // Cambiar temporalmente el texto del botón a "Añadido!"
+                                btn.innerHTML = '✅ ¡Añadido!';
+                                setTimeout(() => { btn.innerHTML = originalText; }, 2000);
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                        console.error('Error:', error);
+                    });
+            });
+        });
     });
 </script>

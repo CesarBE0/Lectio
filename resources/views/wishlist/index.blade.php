@@ -61,7 +61,7 @@
 
                                 {{-- Los nuevos botones de Añadir y Comprar --}}
                                 <div class="grid grid-cols-2 gap-2 w-full">
-                                    <form action="{{ route('cart.add', $book->id) }}" method="POST" class="w-full">
+                                    <form action="{{ route('cart.add', $book->id) }}" method="POST" class="ajax-cart-form w-full">
                                         @csrf
                                         <input type="hidden" name="format_id" value="{{ $defaultFormatId }}">
                                         <button type="submit" class="w-full border border-black text-black text-[10px] font-black uppercase py-2 rounded-lg hover:bg-black hover:text-[#D4AF37] transition-all">

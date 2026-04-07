@@ -68,6 +68,7 @@ class ProfileController extends Controller
             $code = 'PUNTOS-' . strtoupper(Str::random(6));
 
             Coupon::create([
+                'user_id' => $user->id,
                 'code' => $code,
                 'discount_percentage' => 5, // 5% de descuento por 100 puntos
                 'is_active' => true

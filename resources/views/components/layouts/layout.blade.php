@@ -11,6 +11,7 @@
 </head>
 <body class="bg-brand-bg text-gray-800 flex flex-col min-h-screen font-sans">
 <x-layouts.nav />
+
 <main class="flex-grow">
     {{ $slot }}
 </main>
@@ -97,6 +98,5 @@
         });
     });
 </script>
-</body>
 </body>
 </html>

@@ -92,21 +92,23 @@
                         {{ number_format($defaultPrice, 2) }}€
                     </div>
 
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <form action="{{ route('cart.add', $book->id) }}" method="POST" class="flex-1">
+                    <div class="flex flex-col sm:flex-row gap-4 w-full">
+                        {{-- Formulario AJAX de Añadir al carrito --}}
+                        <form action="{{ route('cart.add', $book->id) }}" method="POST" class="ajax-cart-form flex-1">
                             @csrf
                             <input type="hidden" name="format_id" id="input-format-add" value="{{ $defaultFormatId }}">
-                            <button type="submit" class="btn btn-outline border-2 border-black text-black hover:bg-black hover:text-[#D4AF37] w-full gap-2 normal-case text-lg h-12 transition-all">
+                            <button type="submit" class="btn btn-outline border-2 border-black text-black hover:bg-black hover:text-[#D4AF37] w-full gap-2 normal-case text-lg h-12 transition-all flex items-center justify-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
                                 {{__("Añadir al carrito")}}
                             </button>
                         </form>
 
+                        {{-- Formulario normal de Comprar Ahora (sin la clase ajax) --}}
                         <form action="{{ route('cart.add', $book->id) }}" method="POST" class="flex-1">
                             @csrf
                             <input type="hidden" name="action" value="buy_now">
                             <input type="hidden" name="format_id" id="input-format-buy" value="{{ $defaultFormatId }}">
-                            <button type="submit" class="btn bg-black text-[#D4AF37] hover:bg-gray-900 border-none w-full normal-case text-lg h-12 shadow-lg transition-all">
+                            <button type="submit" class="btn bg-black text-[#D4AF37] hover:bg-gray-900 border-none w-full normal-case text-lg h-12 shadow-lg transition-all flex items-center justify-center">
                                 {{__("Comprar ahora")}}
                             </button>
                         </form>
