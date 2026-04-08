@@ -1,6 +1,8 @@
 <?php
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache; // 👈 Añadimos Cache
 
 class Book extends Model {
     protected $fillable = [
@@ -8,6 +10,21 @@ class Book extends Model {
         'synopsis', 'publisher', 'language', 'published_date', 'rating',
         'reviews_count', 'old_price', 'discount_percent'
     ];
+
+    // 👇 MAGIA DE INVALIDACIÓN DE CACHÉ 👇
+    protected static function booted()
+    {
+        // Cuando guardes un libro (crear o editar) desde tu panel admin...
+        static::saved(function ($book) {
+            Cache::flush(); // Borramos toda la memoria caché para forzar que coja los datos nuevos
+        });
+
+        // Cuando elimines un libro...
+        static::deleted(function ($book) {
+            Cache::flush();
+        });
+    }
+    // -------------------------------------
 
     public function formats() {
         return $this->hasMany(Format::class);
@@ -27,13 +44,13 @@ class Book extends Model {
         return $this->hasMany(Review::class)->latest(); // latest() para que salgan las más nuevas primero
     }
 
-// Calcula la media de estrellas
+    // Calcula la media de estrellas
     public function getAverageRatingAttribute()
     {
         return round($this->reviews()->avg('rating'), 1) ?? 0;
     }
 
-// Cuenta cuántas reseñas tiene
+    // Cuenta cuántas reseñas tiene
     public function getReviewsCountAttribute()
     {
         return $this->reviews()->count();

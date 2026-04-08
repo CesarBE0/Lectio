@@ -19,7 +19,15 @@ services:
       - mysql
     ports:
       - 8101:80
+  redis:
+    image: 'redis:alpine'
+    container_name: redis-lectio
+    ports:
+      - '6379:6379'
+    volumes:
+      - 'lectio_redis_data:/data'
 volumes:
   mysql:
+  lectio_redis_data:
 
 

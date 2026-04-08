@@ -67,10 +67,11 @@
                                 class="favorite-btn absolute top-3 right-3 z-20 w-9 h-9 flex items-center justify-center bg-white rounded-full shadow-md transition-all hover:scale-105 active:scale-90"
                                 data-favorite="{{ $book->pivot->is_favorite ? 'true' : 'false' }}">
 
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5"
-                                 class="heart-icon h-5 w-5 transition-colors duration-300 {{ $book->pivot->is_favorite ? 'fill-red-500 stroke-red-500' : 'fill-none stroke-gray-400' }}">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                      d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/>
+                            <svg id="star-icon-{{ $book->id }}"
+                                 class="w-5 h-5 transition-colors duration-300 {{ $book->pivot->is_favorite ? 'text-yellow-400 fill-current' : 'text-gray-400' }}"
+                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                             </svg>
 
                         </button>
@@ -193,15 +194,16 @@
 
     <script>
         function toggleFavorite(button, bookId) {
-            const svg = button.querySelector('.heart-icon');
+            // Buscamos el SVG directamente por su ID único (así no fallamos nunca)
+            const svg = document.getElementById('star-icon-' + bookId);
             let isFavorite = button.getAttribute('data-favorite') === 'true';
             const countElement = document.getElementById('favorites-count');
 
-            // 1. Cambiamos el color del corazón y el número al instante (Magia Visual)
+            // 1. Cambiamos el color de la estrella y el número al instante (Magia Visual)
             if (isFavorite) {
-                // Si era favorito, lo quitamos
-                svg.classList.remove('fill-red-500', 'stroke-red-500');
-                svg.classList.add('fill-none', 'stroke-gray-300');
+                // Si era favorito, lo quitamos y lo ponemos gris
+                svg.classList.remove('text-yellow-400', 'fill-current');
+                svg.classList.add('text-gray-400');
                 button.setAttribute('data-favorite', 'false');
 
                 // Restamos 1 al contador
@@ -209,9 +211,9 @@
                     countElement.innerText = parseInt(countElement.innerText) - 1;
                 }
             } else {
-                // Si no era favorito, lo ponemos rojo
-                svg.classList.remove('fill-none', 'stroke-gray-300');
-                svg.classList.add('fill-red-500', 'stroke-red-500');
+                // Si no era favorito, lo ponemos dorado brillante
+                svg.classList.remove('text-gray-400');
+                svg.classList.add('text-yellow-400', 'fill-current');
                 button.setAttribute('data-favorite', 'true');
 
                 // Sumamos 1 al contador
@@ -236,6 +238,7 @@
                 .catch(error => location.reload());
         }
 
+        // ... El resto de tus scripts (audio, envíos, etc.) se mantienen igual ...
         function openShippingModal(id) {
             document.getElementById('modal-shipping-' + id).classList.remove('hidden');
         }
