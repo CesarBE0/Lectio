@@ -5,8 +5,24 @@
         @if(session('cart') && count(session('cart')) > 0)
 
             <h1 class="text-4xl font-serif font-bold text-black mb-2 border-l-4 border-[#D4AF37] pl-3">{{__("Carrito de Compra")}}</h1>
-            <p class="text-gray-500 mb-10 pl-4"><span id="cart-count">{{ count(session('cart')) }}</span> {{__("artículos en tu cesta")}}</p>
+            <p class="text-gray-500 mb-10 pl-4"><span id="cart-count">{{ count(session('cart')) }}</span> {{__("artículos en tu carrito")}}</p>
+            {{-- BOTÓN VACIAR CARRITO ESTILO LECTIO --}}
+            <div class="flex justify-start mt-6 mb-10">
+                <a href="{{ url('/vaciar-carrito') }}"
+                   id="btn-empty-cart"
+                   class="group flex items-center gap-3 px-5 py-2.5 border border-[#D4AF37] rounded-lg transition-all duration-300 hover:bg-black">
 
+                    <div class="p-1.5 rounded-full bg-[#D4AF37]/10 group-hover:bg-[#D4AF37]/20 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#D4AF37]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </div>
+
+                    <span class="text-xs uppercase tracking-widest font-serif font-bold text-black group-hover:text-[#D4AF37] transition-colors">
+            {{__("Vaciar carrito de compra")}}
+        </span>
+                </a>
+            </div>
             <div class="flex flex-col lg:flex-row gap-12 items-start">
 
                 <div class="w-full lg:w-2/3 space-y-6">
@@ -209,5 +225,40 @@
                 .catch(error => console.error('Error al actualizar el carrito:', error));
         }
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const btnEmptyCart = document.getElementById('btn-empty-cart');
 
+            if(btnEmptyCart) {
+                btnEmptyCart.addEventListener('click', function(e) {
+                    e.preventDefault(); // Evitamos que el enlace nos lleve de golpe a la otra página
+                    const url = this.href; // Guardamos la ruta de vaciar el carrito
+
+                    Swal.fire({
+                        title: '¿Vaciar carrito?',
+                        text: "Se eliminarán todos los libros que has seleccionado.",
+                        icon: 'warning',
+                        iconColor: '#D4AF37', // Icono en dorado Lectio
+                        showCancelButton: true,
+                        confirmButtonColor: '#D4AF37', // Botón de confirmar negro
+                        cancelButtonColor: '#000000',  // Botón de cancelar gris clarito
+                        confirmButtonText: 'Sí, vaciar carrito',
+                        cancelButtonText: 'Cancelar',
+                        reverseButtons: true, // Pone el botón de cancelar a la izquierda (Mejor UX)
+                        customClass: {
+                            popup: 'border-2 border-[#D4AF37] rounded-2xl shadow-2xl',
+                            title: 'font-serif text-2xl text-black font-bold',
+                            confirmButton: 'text-[#D4AF37] uppercase tracking-widest text-xs font-bold px-6 py-3 rounded-lg hover:bg-gray-900 transition-colors',
+                            cancelButton: 'text-gray-600 uppercase tracking-widest text-xs font-bold px-6 py-3 rounded-lg hover:bg-gray-200 transition-colors border border-gray-200'
+                        }
+                    }).then((result) => {
+                        // Si el usuario le da al botón negro de confirmar...
+                        if (result.isConfirmed) {
+                            window.location.href = url; // ...lo enviamos a la ruta para vaciar el carrito
+                        }
+                    });
+                });
+            }
+        });
+    </script>
 </x-layouts.layout>

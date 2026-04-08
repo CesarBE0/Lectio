@@ -1,59 +1,137 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 📚 Lectio - E-commerce de Literatura Premium
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+![Lectio Logo](public/img/logo.webp)
 
-## About Laravel
+Lectio es una plataforma de comercio electrónico desarrollada en **Laravel** diseñada para ofrecer una experiencia de compra de libros de nivel premium. Centrada en la usabilidad, el diseño elegante y la conversión, Lectio combina una estética refinada con funcionalidades avanzadas como búsqueda asíncrona, fidelización de clientes y gestión inteligente de inventario.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## ✨ Características Principales
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 🛍️ Experiencia de Usuario (UX) y Tienda
+* **Catálogo Dinámico:** Filtrado avanzado por género, búsqueda por palabras clave y rango de precios.
+* **Buscador Inteligente (Live Search):** Resultados instantáneos en la barra de navegación sin recargar la página (AJAX).
+* **Fichas de Producto Detalladas:** Soporte para múltiples formatos (Físico, E-book, Audiolibro), valoraciones, sinopsis y cross-selling automático ("También te puede interesar").
+* **Lista de Deseos (Wishlist):** Gestión asíncrona de libros favoritos directamente desde el catálogo y las fichas de producto.
+* **Carrito y Checkout Fluido:** Añadir al carrito sin recargar la página, cálculo automático de envíos (gratis a partir de 30€) y vaciado rápido con confirmación de seguridad.
+* **Pasarela de Pago Segura:** Integración nativa con **Stripe** para procesar tarjetas de crédito/débito.
 
-## Learning Laravel
+### 🎁 Fidelización y Marketing
+* **Puntos Lectio:** Sistema de recompensas donde 1€ gastado equivale a 1 punto. Los usuarios pueden canjear 100 puntos por un descuento del 5%.
+* **Descuento de Bienvenida:** Cupón de un solo uso por usuario.
+* **Cupones Seguros:** Los cupones generados por puntos están vinculados a la cuenta del usuario que los canjea (intransferibles).
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### ⚙️ Panel de Administración (Backoffice)
+* **Dashboard Analítico:** Resumen de ventas, beneficios totales y libros más vendidos.
+* **Gestión de Inventario (CRUD):** Creación, edición y eliminación de libros, stock y formatos con control de ofertas (precio original tachado).
+* **Gestión de Pedidos:** Listado detallado de transacciones con opción de ver facturas e historial de clientes.
+* **Bandeja de Soporte:** Sistema de tickets integrado para responder a las consultas de los clientes directamente desde el panel.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## 🛠️ Tecnologías y Arquitectura
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+* **Backend:** Laravel 11.x (PHP 8.2+)
+* **Base de Datos:** MySQL (Gestión mediante Eloquent ORM y Migrations)
+* **Frontend:** Blade Templating Engine + Tailwind CSS (Diseño responsive y moderno)
+* **Interactividad:** Vanilla JavaScript + AJAX (Fetch API) + Alpine.js (opcional)
+* **Pagos:** Stripe PHP SDK
+* **Alertas:** SweetAlert2 (Notificaciones personalizadas e integradas)
 
-### Premium Partners
+---
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## 🚀 Requisitos Previos
 
-## Contributing
+Antes de instalar Lectio, asegúrate de tener instalado en tu entorno:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+* PHP >= 8.2
+* Composer
+* Node.js y npm (para compilar los assets de Tailwind)
+* Servidor MySQL o MariaDB
+* Una cuenta de [Stripe](https://stripe.com/) (para obtener las claves de API)
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 📥 Instalación
 
-## Security Vulnerabilities
+Sigue estos pasos para desplegar el proyecto en tu máquina local:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+1. **Clonar el repositorio:**
+   ```bash
+   git clone https://github.com/tu-usuario/lectio.git
+   cd lectio
+   ```
 
-## License
+2. **Instalar dependencias de PHP:**
+   ```bash
+   composer install
+   ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+3. **Instalar dependencias de Frontend:**
+   ```bash
+   npm install
+   ```
+
+4. **Configurar el entorno:**
+   Copia el archivo de ejemplo y configura tus variables.
+   ```bash
+   cp .env.example .env
+   ```
+   *Abre el archivo `.env` y configura tu base de datos y tus claves de Stripe:*
+   ```env
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=lectio_db
+   DB_USERNAME=root
+   DB_PASSWORD=
+
+   STRIPE_KEY=pk_test_tu_clave_publica_aqui
+   STRIPE_SECRET=sk_test_tu_clave_privada_aqui
+   ```
+
+5. **Generar la clave de la aplicación:**
+   ```bash
+   php artisan key:generate
+   ```
+
+6. **Ejecutar las migraciones y seeders:**
+   *(Asegúrate de que la base de datos configurada en el `.env` existe)*
+   ```bash
+   php artisan migrate --seed
+   ```
+
+7. **Compilar los assets (Tailwind CSS):**
+   ```bash
+   npm run build
+   ```
+   *(Si estás desarrollando activamente, usa `npm run dev`)*
+
+8. **Levantar el servidor local:**
+   ```bash
+   php artisan serve
+   ```
+   El proyecto estará disponible en: `http://localhost:8000`
+
+---
+
+## 🛡️ Seguridad y Pruebas
+
+El proyecto incluye medidas de seguridad estándar de la industria implementadas a través de Laravel:
+* Prevención contra inyecciones SQL mediante Eloquent ORM.
+* Protección CSRF en todos los formularios.
+* Saneamiento de salidas Blade (prevención XSS).
+* Bloqueo de asignación masiva (Mass Assignment) restringido con `$fillable`.
+* Rutas de administración protegidas por Middleware de roles.
+
+*(Para más detalles sobre los casos de prueba ejecutados, consultar la memoria del proyecto, apartado 4.2 Pruebas).*
+
+---
+
+## 📧 Soporte
+
+Si encuentras algún problema o tienes alguna sugerencia para mejorar Lectio, por favor abre un _issue_ en este repositorio o contacta con el administrador del sistema.
+
+---
+
+*Desarrollado con ❤️ para los amantes de la lectura.*
