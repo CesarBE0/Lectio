@@ -33,4 +33,4 @@ RUN npm run build
 RUN chmod -R 777 storage bootstrap/cache
 
 # 8. Arrancamos el servidor usando el puerto dinámico de Render
-CMD php artisan serve --host=0.0.0.0 --port=${PORT:-10000}
+CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-10000}
