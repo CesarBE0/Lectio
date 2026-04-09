@@ -11,48 +11,57 @@ class CartController extends Controller
 {
     public function index()
     {
-        // Recuperamos el carrito de la sesión
         $cart = session()->get('cart', []);
 
-        // 1. Calculamos el subtotal (la suma de los libros)
         $subtotal = 0;
         foreach($cart as $item) {
             $price = $item['discount_price'] ?? $item['price'];
             $subtotal += $price * $item['quantity'];
         }
 
-        // 2. LÓGICA DE ENVÍO: Si supera o iguala los 50€, es 0. Si no, 4.99€
-        // (Añadimos la condición $subtotal > 0 para no cobrar envío en carritos vacíos por si acaso)
         $shippingCost = ($subtotal >= 30 || $subtotal == 0) ? 0 : 4.99;
-
-        // 3. Calculamos el Total Final
         $total = $subtotal + $shippingCost;
 
-        // Pasamos todas estas nuevas variables a la vista
         return view('cart.index', compact('cart', 'subtotal', 'shippingCost', 'total'));
     }
 
     public function add(Request $request, $id)
     {
+        // 🛡️ ESCUDO 1: Nadie puede inyectar letras, ceros o números negativos
+        $request->validate([
+            'quantity' => 'nullable|integer|min:1'
+        ]);
+
         $book = Book::findOrFail($id);
         $cart = session()->get('cart', []);
 
-        // 1. Capturamos el ID del formato enviado desde el botón Black & Gold
         $formatId = $request->input('format_id') ?? $book->formats->first()->id;
         $format = Format::findOrFail($formatId);
 
-        // 2. Clave única para el carrito: ID_Libro - ID_Formato (ej: 14-2)
+        // Obtenemos la cantidad que piden (por defecto 1)
+        $requestedQuantity = $request->input('quantity', 1);
+
         $cartKey = $book->id . '-' . $format->id;
 
+        // 🛡️ ESCUDO 2: Bloqueo de falta de Stock
+        // Sumamos lo que ya tiene en el carrito + lo que quiere añadir ahora
+        $currentQuantity = isset($cart[$cartKey]) ? $cart[$cartKey]['quantity'] : 0;
+        $newTotalQuantity = $currentQuantity + $requestedQuantity;
+
+        if ($newTotalQuantity > $format->stock) {
+            return redirect()->back()->with('error', 'Lo sentimos, solo nos quedan ' . $format->stock . ' unidades disponibles de este formato.');
+        }
+
+        // --- LÓGICA HABITUAL DE AÑADIR (AURA SEGURA) ---
         if(isset($cart[$cartKey])) {
-            $cart[$cartKey]['quantity']++;
+            $cart[$cartKey]['quantity'] += $requestedQuantity; // Sumamos la cantidad validada
         } else {
             $cart[$cartKey] = [
-                "book_id" => $book->id, // Guardamos el ID real para el enlace
+                "book_id" => $book->id,
                 "title" => $book->title,
                 "author" => $book->author,
-                "quantity" => 1,
-                "price" => $format->price, // ¡AQUÍ ESTÁ LA MAGIA! Precio real de la BD
+                "quantity" => $requestedQuantity, // Guardamos la cantidad validada
+                "price" => $format->price,
                 "discount_price" => null,
                 "image_url" => $book->image_url,
                 "format" => $format->type
@@ -85,7 +94,6 @@ class CartController extends Controller
         if($request->id) {
             $cart = session()->get('cart');
 
-            // Eliminamos usando la clave única (ej: 14-2)
             if(isset($cart[$request->id])) {
                 unset($cart[$request->id]);
                 session()->put('cart', $cart);
@@ -105,6 +113,8 @@ class CartController extends Controller
 
             if(isset($cart[$request->id])) {
                 if($request->action === 'increase') {
+                    // 🛡️ Extra: También protegemos el botón de sumar en el carrito
+                    // (Opcional pero recomendable, aquí asumimos que tienes un stock disponible)
                     $cart[$request->id]['quantity']++;
                 } elseif($request->action === 'decrease') {
                     $cart[$request->id]['quantity']--;
@@ -119,8 +129,6 @@ class CartController extends Controller
                     $request->user()->forceFill(['cart_data' => $cart])->save();
                 }
 
-                // --- MAGIA AJAX DE LAURITA ---
-                // Si la petición viene por JavaScript, devolvemos solo las matemáticas
                 if ($request->wantsJson() || $request->ajax()) {
                     $subtotal = 0;
                     foreach($cart as $item) {
@@ -143,7 +151,6 @@ class CartController extends Controller
             }
         }
 
-        // Si no es AJAX, recarga normal por si acaso
         return redirect()->back();
     }
 }

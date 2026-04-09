@@ -14,8 +14,30 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\WishlistController;
+use Laravel\Socialite\Facades\Socialite;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
-// RUTAS DE USUARIO AUTENTICADO
+Route::get('/auth/google', function () {
+    return Socialite::driver('google')->redirect();
+})->name('google.login');
+
+Route::get('/auth/google/callback', function () {
+    $googleUser = Socialite::driver('google')->user();
+
+    $user = User::updateOrCreate([
+        'email' => $googleUser->email,
+    ], [
+        'name' => $googleUser->name,
+        'google_id' => $googleUser->id,
+        'password' => null
+    ]);
+
+    Auth::login($user);
+
+    return redirect()->route('catalogo')->with('success', '¡Sesión iniciada con Google!');
+});
+
 Route::middleware(['auth'])->group(function () {
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
@@ -25,7 +47,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/mi-cuenta', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::post('/mi-cuenta', [ProfileController::class, 'update'])->name('profile.update');
 
-    // Canjeo de Puntos Lectio
     Route::post('/canjear-puntos', [ProfileController::class, 'redeemPoints'])->name('points.redeem');
 
     Route::get('/mis-pedidos', [OrderController::class, 'index'])->name('orders.index');
@@ -34,12 +55,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/biblioteca', [LibraryController::class, 'index'])->name('library.index');
     Route::post('/biblioteca/favorito/{id}', [LibraryController::class, 'toggleFavorite'])->name('library.favorite');
 
-    // Lista de Deseos
     Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
     Route::post('/wishlist/toggle/{book}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
 });
 
-// IDIOMAS
 Route::get('/language/{locale}', function ($locale) {
     if (in_array($locale, ['en', 'es', 'fr', 'it', 'de', 'pt', 'ja', 'zh'])) {
         Session::put('locale', $locale);
@@ -47,36 +66,29 @@ Route::get('/language/{locale}', function ($locale) {
     return redirect()->back();
 })->name('lang.switch');
 
-// RUTAS DE ADMINISTRADOR
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('/inventario', [AdminController::class, 'inventory'])->name('admin.inventory');
     Route::get('/pedidos', [AdminController::class, 'orders'])->name('admin.orders');
 
-    // Panel Admin - Bandeja de Soporte
     Route::get('/soporte', [App\Http\Controllers\AdminSupportController::class, 'index'])->name('admin.support.index');
     Route::post('/soporte/{message}/reply', [App\Http\Controllers\AdminSupportController::class, 'reply'])->name('admin.support.reply');
     Route::patch('/soporte/{message}/read', [App\Http\Controllers\AdminSupportController::class, 'markAsRead'])->name('admin.support.read');
     Route::delete('/soporte/{message}', [App\Http\Controllers\AdminSupportController::class, 'destroy'])->name('admin.support.destroy');
-
-    // CRUD LIBROS
     Route::get('/libro/crear', [AdminController::class, 'createBook'])->name('admin.books.create');
     Route::post('/libro/guardar', [AdminController::class, 'storeBook'])->name('admin.books.store');
     Route::get('/libro/{id}/editar', [AdminController::class, 'editBook'])->name('admin.books.edit');
     Route::put('/libro/{id}/actualizar', [AdminController::class, 'updateBook'])->name('admin.books.update');
     Route::delete('/libro/{id}/eliminar', [AdminController::class, 'destroyBook'])->name('admin.books.destroy');
 
-    // DETALLES Y ELIMINACIÓN DE PEDIDOS
     Route::get('/pedidos/{orderNumber}/detalle', [AdminController::class, 'getOrderDetails'])->name('admin.orders.details');
     Route::delete('/pedidos/{orderNumber}', [AdminController::class, 'destroyOrder'])->name('admin.orders.destroy');
 
-    // CUPONES
     Route::get('/coupons', [CouponController::class, 'index'])->name('admin.coupons.index');
     Route::post('/coupons', [CouponController::class, 'store'])->name('admin.coupons.store');
     Route::put('/coupons/{coupon}', [CouponController::class, 'toggle'])->name('admin.coupons.toggle');
 });
 
-// PÚBLICO
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/catalogo', [CatalogController::class, 'index'])->name('catalogo');
 Route::get('/libro/{id}', [BookController::class, 'show'])->name('books.show');
@@ -85,7 +97,6 @@ Route::post('/carrito/add/{id}', [CartController::class, 'add'])->name('cart.add
 Route::post('/carrito/remove', [CartController::class, 'remove'])->name('cart.remove');
 Route::post('/carrito/actualizar', [CartController::class, 'updateQuantity'])->name('cart.update');
 
-// Buscador Live (AJAX)
 Route::get('/api/search', [SearchController::class, 'search'])->name('api.search');
 
 Route::get('/vaciar-carrito', function () {

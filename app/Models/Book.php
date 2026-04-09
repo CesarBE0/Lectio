@@ -2,9 +2,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Cache; // 👈 Añadimos Cache
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Book extends Model {
+    use HasFactory;
     protected $fillable = [
         'title', 'author', 'category', 'pages', 'image_url', 'is_bestseller',
         'synopsis', 'publisher', 'language', 'published_date', 'rating',

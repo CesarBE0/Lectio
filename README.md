@@ -1,137 +1,87 @@
-# 📚 Lectio - E-commerce de Literatura Premium
+# Lectio - Boutique Literaria Digital 📚✨
 
-![Lectio Logo](public/img/logo.webp)
+Lectio es una plataforma de comercio electrónico premium diseñada para amantes de la lectura. Se trata de una "boutique" digital que combina un diseño minimalista y elegante con una arquitectura de software robusta, segura y de alto rendimiento.
 
-Lectio es una plataforma de comercio electrónico desarrollada en **Laravel** diseñada para ofrecer una experiencia de compra de libros de nivel premium. Centrada en la usabilidad, el diseño elegante y la conversión, Lectio combina una estética refinada con funcionalidades avanzadas como búsqueda asíncrona, fidelización de clientes y gestión inteligente de inventario.
+## 🚀 Características Principales
 
----
+- **Autenticación Dual:** Registro tradicional y Login Social integrado con **Google (Laravel Socialite)**.
+- **Buscador Inteligente:** Sistema de sugerencias en tiempo real mediante API asíncrona.
+- **Rendimiento Optimizado:** Uso de **Redis** para la gestión de caché y colas de procesos (envío de correos).
+- **Pasarela de Pagos Segura:** Integración completa con **Stripe** para transacciones encriptadas.
+- **Carrito Blindado:** Lógica avanzada de validación de stock físico, prevención de cantidades negativas y persistencia en base de datos para usuarios registrados.
+- **Biblioteca Personal:** Espacio privado para gestionar adquisiciones y marcar libros favoritos.
+- **Panel Administrativo:** Gestión integral de inventario, pedidos y soporte técnico con control de acceso por roles (Middleware).
+- **Diseño Responsive:** Interfaz adaptativa optimizada para dispositivos móviles y escritorio.
 
-## ✨ Características Principales
+## 🛠️ Stack Tecnológico
 
-### 🛍️ Experiencia de Usuario (UX) y Tienda
-* **Catálogo Dinámico:** Filtrado avanzado por género, búsqueda por palabras clave y rango de precios.
-* **Buscador Inteligente (Live Search):** Resultados instantáneos en la barra de navegación sin recargar la página (AJAX).
-* **Fichas de Producto Detalladas:** Soporte para múltiples formatos (Físico, E-book, Audiolibro), valoraciones, sinopsis y cross-selling automático ("También te puede interesar").
-* **Lista de Deseos (Wishlist):** Gestión asíncrona de libros favoritos directamente desde el catálogo y las fichas de producto.
-* **Carrito y Checkout Fluido:** Añadir al carrito sin recargar la página, cálculo automático de envíos (gratis a partir de 30€) y vaciado rápido con confirmación de seguridad.
-* **Pasarela de Pago Segura:** Integración nativa con **Stripe** para procesar tarjetas de crédito/débito.
+- **Backend:** Laravel 11
+- **Frontend:** Tailwind CSS & Blade components
+- **Base de Datos:** MySQL
+- **Caché y Colas:** Redis
+- **Pagos:** Stripe API
+- **Testing:** Pest Framework
 
-### 🎁 Fidelización y Marketing
-* **Puntos Lectio:** Sistema de recompensas donde 1€ gastado equivale a 1 punto. Los usuarios pueden canjear 100 puntos por un descuento del 5%.
-* **Descuento de Bienvenida:** Cupón de un solo uso por usuario.
-* **Cupones Seguros:** Los cupones generados por puntos están vinculados a la cuenta del usuario que los canjea (intransferibles).
+## ⚙️ Instalación y Configuración
 
-### ⚙️ Panel de Administración (Backoffice)
-* **Dashboard Analítico:** Resumen de ventas, beneficios totales y libros más vendidos.
-* **Gestión de Inventario (CRUD):** Creación, edición y eliminación de libros, stock y formatos con control de ofertas (precio original tachado).
-* **Gestión de Pedidos:** Listado detallado de transacciones con opción de ver facturas e historial de clientes.
-* **Bandeja de Soporte:** Sistema de tickets integrado para responder a las consultas de los clientes directamente desde el panel.
-
----
-
-## 🛠️ Tecnologías y Arquitectura
-
-* **Backend:** Laravel 11.x (PHP 8.2+)
-* **Base de Datos:** MySQL (Gestión mediante Eloquent ORM y Migrations)
-* **Frontend:** Blade Templating Engine + Tailwind CSS (Diseño responsive y moderno)
-* **Interactividad:** Vanilla JavaScript + AJAX (Fetch API) + Alpine.js (opcional)
-* **Pagos:** Stripe PHP SDK
-* **Alertas:** SweetAlert2 (Notificaciones personalizadas e integradas)
-
----
-
-## 🚀 Requisitos Previos
-
-Antes de instalar Lectio, asegúrate de tener instalado en tu entorno:
-
-* PHP >= 8.2
-* Composer
-* Node.js y npm (para compilar los assets de Tailwind)
-* Servidor MySQL o MariaDB
-* Una cuenta de [Stripe](https://stripe.com/) (para obtener las claves de API)
-
----
-
-## 📥 Instalación
-
-Sigue estos pasos para desplegar el proyecto en tu máquina local:
+Sigue estos pasos para desplegar Lectio en tu entorno local:
 
 1. **Clonar el repositorio:**
-   ```bash
-   git clone https://github.com/tu-usuario/lectio.git
-   cd lectio
-   ```
+```bash
+git clone [https://github.com/CesarBE0/Lectio.git](https://github.com/CesarBE0/Lectio.git)
+cd Lectio
+```
 
 2. **Instalar dependencias de PHP:**
-   ```bash
-   composer install
-   ```
+```bash
+composer install
+```
 
-3. **Instalar dependencias de Frontend:**
-   ```bash
-   npm install
-   ```
+3. **Instalar y compilar dependencias de Frontend:**
+```bash
+npm install
+npm run build
+```
 
 4. **Configurar el entorno:**
-   Copia el archivo de ejemplo y configura tus variables.
-   ```bash
-   cp .env.example .env
-   ```
-   *Abre el archivo `.env` y configura tu base de datos y tus claves de Stripe:*
-   ```env
-   DB_CONNECTION=mysql
-   DB_HOST=127.0.0.1
-   DB_PORT=3306
-   DB_DATABASE=lectio_db
-   DB_USERNAME=root
-   DB_PASSWORD=
+   Crea una copia del archivo `.env` y configura tus credenciales (DB, Redis, Stripe, Google Socialite):
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-   STRIPE_KEY=pk_test_tu_clave_publica_aqui
-   STRIPE_SECRET=sk_test_tu_clave_privada_aqui
-   ```
+5. **Ejecutar migraciones y seeders:**
+```bash
+php artisan migrate --seed
+```
 
-5. **Generar la clave de la aplicación:**
-   ```bash
-   php artisan key:generate
-   ```
+6. **Iniciar el servidor y las colas:**
+```bash
+php artisan serve
+# En otra terminal para los correos:
+php artisan queue:work
+```
 
-6. **Ejecutar las migraciones y seeders:**
-   *(Asegúrate de que la base de datos configurada en el `.env` existe)*
-   ```bash
-   php artisan migrate --seed
-   ```
+## 🧪 Pruebas Automatizadas (Testing)
 
-7. **Compilar los assets (Tailwind CSS):**
-   ```bash
-   npm run build
-   ```
-   *(Si estás desarrollando activamente, usa `npm run dev`)*
+Lectio cuenta con una suite de pruebas de alta cobertura que garantiza la integridad del sistema. Se han implementado 17 módulos de prueba que ejecutan 39 comprobaciones automáticas de seguridad y lógica de negocio.
 
-8. **Levantar el servidor local:**
-   ```bash
-   php artisan serve
-   ```
-   El proyecto estará disponible en: `http://localhost:8000`
+Para ejecutar los tests, utiliza el framework **Pest**:
+```bash
+php artisan test
+```
 
----
+**Módulos verificados:**
+- ✅ Registro y Login (Seguridad anti-inyección SQL)
+- ✅ Protección CSRF en procesos críticos
+- ✅ Gestión de stock e integridad del carrito
+- ✅ Lógica de gastos de envío dinámicos
+- ✅ Control de acceso administrativo (Roles)
+- ✅ Interacciones AJAX (Wishlist y Favoritos)
 
-## 🛡️ Seguridad y Pruebas
+## 👤 Autor
 
-El proyecto incluye medidas de seguridad estándar de la industria implementadas a través de Laravel:
-* Prevención contra inyecciones SQL mediante Eloquent ORM.
-* Protección CSRF en todos los formularios.
-* Saneamiento de salidas Blade (prevención XSS).
-* Bloqueo de asignación masiva (Mass Assignment) restringido con `$fillable`.
-* Rutas de administración protegidas por Middleware de roles.
-
-*(Para más detalles sobre los casos de prueba ejecutados, consultar la memoria del proyecto, apartado 4.2 Pruebas).*
+**César** - [CesarBE0](https://github.com/CesarBE0)
 
 ---
-
-## 📧 Soporte
-
-Si encuentras algún problema o tienes alguna sugerencia para mejorar Lectio, por favor abre un _issue_ en este repositorio o contacta con el administrador del sistema.
-
----
-
-*Desarrollado con ❤️ para los amantes de la lectura.*
+Proyecto desarrollado como Trabajo de Fin de Grado (TFG). 🎓
