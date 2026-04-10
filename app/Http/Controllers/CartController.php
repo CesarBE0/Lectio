@@ -46,11 +46,6 @@ class CartController extends Controller
         // 🛡️ ESCUDO 2: Bloqueo de falta de Stock
         // Sumamos lo que ya tiene en el carrito + lo que quiere añadir ahora
         $currentQuantity = isset($cart[$cartKey]) ? $cart[$cartKey]['quantity'] : 0;
-        $newTotalQuantity = $currentQuantity + $requestedQuantity;
-
-        if ($newTotalQuantity > $format->stock) {
-            return redirect()->back()->with('error', 'Lo sentimos, solo nos quedan ' . $format->stock . ' unidades disponibles de este formato.');
-        }
 
         // --- LÓGICA HABITUAL DE AÑADIR (AURA SEGURA) ---
         if(isset($cart[$cartKey])) {
