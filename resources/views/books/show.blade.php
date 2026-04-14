@@ -14,7 +14,6 @@
 
                 <div class="w-full bg-gray-50 p-2 rounded-lg border border-[#D4AF37]/20 flex justify-center items-center shadow-sm relative">
 
-                    {{-- NUEVO: BOTÓN WISHLIST SOBRE LA IMAGEN --}}
                     @auth
                         <form action="{{ route('wishlist.toggle', $book->id) }}" method="POST" class="absolute top-4 right-4 z-10">
                             @csrf
@@ -93,7 +92,6 @@
                     </div>
 
                     <div class="flex flex-col sm:flex-row gap-4 w-full">
-                        {{-- Formulario AJAX de Añadir al carrito --}}
                         <form action="{{ route('cart.add', $book->id) }}" method="POST" class="ajax-cart-form flex-1">
                             @csrf
                             <input type="hidden" name="format_id" id="input-format-add" value="{{ $defaultFormatId }}">
@@ -103,7 +101,6 @@
                             </button>
                         </form>
 
-                        {{-- Formulario normal de Comprar Ahora (sin la clase ajax) --}}
                         <form action="{{ route('cart.add', $book->id) }}" method="POST" class="flex-1">
                             @csrf
                             <input type="hidden" name="action" value="buy_now">
@@ -115,10 +112,8 @@
                     </div>
                 </div>
 
-                {{-- NUEVO: RECOMENDACIONES CRUZADAS --}}
                 @if(isset($recommended) && count($recommended) > 0)
 
-                    {{-- Obtenemos todos los IDs de la lista de deseos del usuario para pintarlos rápido --}}
                     @php
                         $userWishlistIds = Auth::check() ? \App\Models\Wishlist::where('user_id', Auth::id())->pluck('book_id')->toArray() : [];
                     @endphp
@@ -130,7 +125,6 @@
                             @foreach($recommended as $recBook)
                                 <div class="group relative flex flex-col h-full bg-white rounded-xl border border-gray-100 p-2 shadow-sm hover:shadow-md transition">
 
-                                    {{-- BOTÓN AJAX DE WISHLIST --}}
                                     @auth
                                         @php $isWished = in_array($recBook->id, $userWishlistIds); @endphp
                                         <form action="{{ route('wishlist.toggle', $recBook->id) }}" method="POST" class="wishlist-form absolute top-4 right-4 z-20">
@@ -141,17 +135,14 @@
                                         </form>
                                     @endauth
 
-                                    {{-- Contenedor de la imagen --}}
                                     <a href="{{ route('books.show', $recBook->id) }}" class="relative aspect-[2/3] rounded-lg overflow-hidden mb-3 shadow-sm border border-gray-100 bg-gray-50 flex items-center justify-center p-2 z-10">
                                         <img src="{{ asset($recBook->image_url) }}" alt="{{ $recBook->title }}" class="max-w-full max-h-full object-contain group-hover:scale-105 transition duration-500">
                                     </a>
 
-                                    {{-- Info del libro --}}
                                     <a href="{{ route('books.show', $recBook->id) }}" class="flex flex-col flex-grow z-10">
                                         <h4 class="text-sm font-bold text-gray-900 line-clamp-2 group-hover:text-[#D4AF37] transition leading-tight">{{ $recBook->title }}</h4>
                                         <p class="text-[10px] text-gray-500 mt-1 mb-2">{{ $recBook->author }}</p>
 
-                                        {{-- El Precio --}}
                                         <div class="mt-auto pt-2">
                                             @php
                                                 $recFormat = $recBook->formats->first();

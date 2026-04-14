@@ -27,7 +27,6 @@ class CartController extends Controller
 
     public function add(Request $request, $id)
     {
-        // 🛡️ ESCUDO 1: Nadie puede inyectar letras, ceros o números negativos
         $request->validate([
             'quantity' => 'nullable|integer|min:1'
         ]);
@@ -38,24 +37,20 @@ class CartController extends Controller
         $formatId = $request->input('format_id') ?? $book->formats->first()->id;
         $format = Format::findOrFail($formatId);
 
-        // Obtenemos la cantidad que piden (por defecto 1)
         $requestedQuantity = $request->input('quantity', 1);
 
         $cartKey = $book->id . '-' . $format->id;
 
-        // 🛡️ ESCUDO 2: Bloqueo de falta de Stock
-        // Sumamos lo que ya tiene en el carrito + lo que quiere añadir ahora
         $currentQuantity = isset($cart[$cartKey]) ? $cart[$cartKey]['quantity'] : 0;
 
-        // --- LÓGICA HABITUAL DE AÑADIR (AURA SEGURA) ---
         if(isset($cart[$cartKey])) {
-            $cart[$cartKey]['quantity'] += $requestedQuantity; // Sumamos la cantidad validada
+            $cart[$cartKey]['quantity'] += $requestedQuantity;
         } else {
             $cart[$cartKey] = [
                 "book_id" => $book->id,
                 "title" => $book->title,
                 "author" => $book->author,
-                "quantity" => $requestedQuantity, // Guardamos la cantidad validada
+                "quantity" => $requestedQuantity,
                 "price" => $format->price,
                 "discount_price" => null,
                 "image_url" => $book->image_url,
@@ -108,8 +103,6 @@ class CartController extends Controller
 
             if(isset($cart[$request->id])) {
                 if($request->action === 'increase') {
-                    // 🛡️ Extra: También protegemos el botón de sumar en el carrito
-                    // (Opcional pero recomendable, aquí asumimos que tienes un stock disponible)
                     $cart[$request->id]['quantity']++;
                 } elseif($request->action === 'decrease') {
                     $cart[$request->id]['quantity']--;

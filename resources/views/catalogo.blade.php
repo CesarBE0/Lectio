@@ -1,7 +1,6 @@
 <x-layouts.layout title='{{__("Catálogo")}} - Lectio'>
 
     @php
-        // Obtenemos los IDs de la lista de deseos del usuario
         $userWishlistIds = Auth::check() ? \App\Models\Wishlist::where('user_id', Auth::id())->pluck('book_id')->toArray() : [];
     @endphp
 
@@ -151,19 +150,16 @@
 
             if (searchInput) {
                 searchInput.addEventListener('input', function(e) {
-                    // Convertimos lo que el usuario escribe a minúsculas
                     const searchTerm = e.target.value.toLowerCase().trim();
 
                     bookCards.forEach(card => {
-                        // Cogemos el texto del título y del autor de cada tarjeta
                         const title = card.querySelector('.card-title').textContent.toLowerCase();
                         const author = card.querySelector('.book-author').textContent.toLowerCase();
 
-                        // Si el título o el autor contienen lo que escribimos, mostramos la tarjeta
                         if (title.includes(searchTerm) || author.includes(searchTerm)) {
-                            card.style.display = ''; // Vuelve a su estado natural (flex)
+                            card.style.display = '';
                         } else {
-                            card.style.display = 'none'; // La ocultamos
+                            card.style.display = 'none';
                         }
                     });
                 });

@@ -19,14 +19,11 @@ class CheckoutController extends Controller
             return response()->json(['success' => false, 'message' => 'El cupón no existe.']);
         }
 
-        // --- 👇 NUEVO SISTEMA DE SEGURIDAD PARA CUPONES DE PUNTOS 👇 ---
-        // Si el cupón tiene un user_id asignado (es decir, viene de los Puntos Lectio)
         if ($coupon->user_id !== null) {
-            // 1. Debe estar logueado
             if (!Auth::check()) {
                 return response()->json(['success' => false, 'message' => 'Debes iniciar sesión para usar este cupón.']);
             }
-            // 2. El usuario logueado debe ser el dueño del cupón
+
             if ($coupon->user_id !== Auth::id()) {
                 return response()->json(['success' => false, 'message' => 'Este cupón pertenece a otro usuario y es intransferible.']);
             }
@@ -142,7 +139,6 @@ class CheckoutController extends Controller
                 $user->update(['welcome_coupon_used' => true]);
             }
 
-            // --- NUEVO: SUMAR PUNTOS LECTIO ---
             $user->increment('points', floor($total));
 
             $discountPercentage = session()->has('coupon') ? session('coupon')['discount'] : 0;

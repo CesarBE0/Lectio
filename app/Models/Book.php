@@ -13,29 +13,24 @@ class Book extends Model {
         'reviews_count', 'old_price', 'discount_percent'
     ];
 
-    // 👇 MAGIA DE INVALIDACIÓN DE CACHÉ 👇
     protected static function booted()
     {
-        // Cuando guardes un libro (crear o editar) desde tu panel admin...
         static::saved(function ($book) {
-            Cache::flush(); // Borramos toda la memoria caché para forzar que coja los datos nuevos
+            Cache::flush();
         });
 
-        // Cuando elimines un libro...
         static::deleted(function ($book) {
             Cache::flush();
         });
     }
-    // -------------------------------------
+
 
     public function formats() {
         return $this->hasMany(Format::class);
     }
 
-    // Acceso directo al precio de Tapa Dura para la Home
     public function getHardcoverPriceAttribute()
     {
-        // Buscamos el formato que se llame exactamente 'Tapa dura'
         $format = $this->formats->where('type', 'Tapa dura')->first();
 
         return $format ? $format->price : '0.00';
@@ -43,16 +38,14 @@ class Book extends Model {
 
     public function reviews()
     {
-        return $this->hasMany(Review::class)->latest(); // latest() para que salgan las más nuevas primero
+        return $this->hasMany(Review::class)->latest();
     }
 
-    // Calcula la media de estrellas
     public function getAverageRatingAttribute()
     {
         return round($this->reviews()->avg('rating'), 1) ?? 0;
     }
 
-    // Cuenta cuántas reseñas tiene
     public function getReviewsCountAttribute()
     {
         return $this->reviews()->count();

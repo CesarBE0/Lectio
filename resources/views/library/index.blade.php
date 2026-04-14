@@ -194,35 +194,28 @@
 
     <script>
         function toggleFavorite(button, bookId) {
-            // Buscamos el SVG directamente por su ID único (así no fallamos nunca)
             const svg = document.getElementById('star-icon-' + bookId);
             let isFavorite = button.getAttribute('data-favorite') === 'true';
             const countElement = document.getElementById('favorites-count');
 
-            // 1. Cambiamos el color de la estrella y el número al instante (Magia Visual)
             if (isFavorite) {
-                // Si era favorito, lo quitamos y lo ponemos gris
                 svg.classList.remove('text-yellow-400', 'fill-current');
                 svg.classList.add('text-gray-400');
                 button.setAttribute('data-favorite', 'false');
 
-                // Restamos 1 al contador
                 if (countElement) {
                     countElement.innerText = parseInt(countElement.innerText) - 1;
                 }
             } else {
-                // Si no era favorito, lo ponemos dorado brillante
                 svg.classList.remove('text-gray-400');
                 svg.classList.add('text-yellow-400', 'fill-current');
                 button.setAttribute('data-favorite', 'true');
 
-                // Sumamos 1 al contador
                 if (countElement) {
                     countElement.innerText = parseInt(countElement.innerText) + 1;
                 }
             }
 
-            // 2. Le avisamos a la base de datos "por debajo de la mesa"
             fetch(`/biblioteca/favorito/${bookId}`, {
                 method: 'POST',
                 headers: {
@@ -232,13 +225,11 @@
             })
                 .then(response => response.json())
                 .then(data => {
-                    // Si la base de datos da un error raro, recargamos la página por seguridad
                     if (!data.success) location.reload();
                 })
                 .catch(error => location.reload());
         }
 
-        // ... El resto de tus scripts (audio, envíos, etc.) se mantienen igual ...
         function openShippingModal(id) {
             document.getElementById('modal-shipping-' + id).classList.remove('hidden');
         }

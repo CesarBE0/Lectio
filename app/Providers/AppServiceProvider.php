@@ -26,16 +26,15 @@ class AppServiceProvider extends ServiceProvider
             \URL::forceScheme('https');
         }
 
-        // PERSONALIZACIÓN DEL CORREO DE VERIFICACIÓN
         VerifyEmail::toMailUsing(function (object $notifiable, string $url) {
             return (new MailMessage)
-                ->subject('¡Bienvenido a Lectio! Confirma tu correo') // El Asunto del correo
-                ->greeting('¡Hola, ' . $notifiable->name . '!') // Saluda por su nombre
+                ->subject('¡Bienvenido a Lectio! Confirma tu correo')
+                ->greeting('¡Hola, ' . $notifiable->name . '!')
                 ->line('Estamos encantados de tenerte en nuestra exclusiva librería.')
                 ->line('Para empezar a comprar tus libros favoritos y disfrutar de todas las ventajas, por favor confirma tu dirección de correo pulsando el botón de abajo:')
-                ->action('Confirmar mi cuenta en Lectio', $url) // El texto del botón
+                ->action('Confirmar mi cuenta en Lectio', $url)
                 ->line('Si tú no te has registrado en Lectio, no te preocupes, puedes ignorar este mensaje.')
-                ->salutation('Con cariño, el equipo de Lectio.'); // La despedida
+                ->salutation('Con cariño, el equipo de Lectio.');
         });
     }
 }

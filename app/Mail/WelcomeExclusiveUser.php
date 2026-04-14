@@ -14,7 +14,6 @@ class WelcomeExclusiveUser extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    // AÑADIDO: Declaramos la variable para poder usar $user->name en el correo
     public $user;
 
     /**
@@ -41,7 +40,7 @@ class WelcomeExclusiveUser extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            view: 'emails.welcome', // Esto apunta a resources/views/emails/welcome.blade.php
+            view: 'emails.welcome',
         );
     }
 

@@ -113,7 +113,6 @@
                         .then(response => response.json())
                         .then(data => {
                             if(data.success) {
-                                // Si se elimina de la lista con éxito, difuminamos la tarjeta y la ocultamos suavemente
                                 card.style.transition = "all 0.3s ease";
                                 card.style.opacity = "0";
                                 card.style.transform = "scale(0.95)";
@@ -121,7 +120,6 @@
                                 setTimeout(() => {
                                     card.remove();
 
-                                    // Si era el último libro, recargamos la página para mostrar el estado "Tu lista está vacía"
                                     if(document.querySelectorAll('.group').length === 0) {
                                         window.location.reload();
                                     }

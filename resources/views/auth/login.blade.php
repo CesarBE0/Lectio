@@ -61,7 +61,6 @@
                     </div>
                 </form>
 
-                {{-- --- SECCIÓN AÑADIDA: LOGIN CON GOOGLE --- --}}
                 <div class="mt-6">
                     <div class="relative mb-6">
                         <div class="absolute inset-0 flex items-center">
@@ -82,7 +81,6 @@
                         {{ __('Google') }}
                     </a>
                 </div>
-                {{-- --- FIN DE SECCIÓN GOOGLE --- --}}
 
                 <div class="text-center mt-6">
                     <p class="text-sm text-gray-600">

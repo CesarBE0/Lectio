@@ -23,8 +23,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'phone',
         'cart_data',
         'role',
-        'welcome_coupon_used', // El seguro del cupón
-        'points',              // Los Puntos Lectio
+        'welcome_coupon_used',
+        'points',
     ];
 
     protected $casts = [
