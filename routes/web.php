@@ -109,4 +109,8 @@ Route::post('/books/{book}/reviews', [App\Http\Controllers\ReviewController::cla
 Route::get('/contacto', [App\Http\Controllers\ContactController::class, 'index'])->name('contacto');
 Route::post('/contacto', [App\Http\Controllers\ContactController::class, 'store'])->name('contacto.store');
 
+Route::get('/biblioteca/leer/{book}', [App\Http\Controllers\LibraryController::class, 'read'])
+    ->name('library.read')
+    ->middleware('auth');
+
 require __DIR__ . '/auth.php';

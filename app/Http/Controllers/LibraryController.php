@@ -43,4 +43,27 @@ class LibraryController extends Controller
 
         return response()->json(['success' => false], 404);
     }
+
+    public function read(Book $book)
+    {
+        // 1. Validar que el usuario sea dueño del libro
+        $hasBook = auth()->user()->books()->where('book_id', $book->id)->exists();
+
+        if (!$hasBook) {
+            return redirect()->route('library.index')->with('error', 'No tienes acceso a este libro.');
+        }
+
+        // 2. Ruta al archivo privado
+        $path = storage_path('app/private/pdfs/' . $book->pdf_path);
+
+        if (!file_exists($path)) {
+            abort(404, 'El archivo no se encuentra en el servidor.');
+        }
+
+        // 3. Devolver el PDF para que se abra en el navegador
+        return response()->file($path, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $book->title . '.pdf"'
+        ]);
+    }
 }

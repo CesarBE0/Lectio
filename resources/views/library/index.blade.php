@@ -145,7 +145,7 @@
                                         </div>
 
                                     @elseif(str_contains($formato, 'e-book') || str_contains($formato, 'digital'))
-                                        <a href="{{ asset('pdfs/libro-' . $book->id . '.pdf') }}" target="_blank"
+                                        <a href="{{ route('library.read', $book->id) }}" target="_blank"
                                            class="w-full py-2 bg-black text-white text-xs font-bold uppercase tracking-widest hover:bg-[#D4AF37] transition-colors text-center block rounded-md">
                                             Leer
                                         </a>
