@@ -12,15 +12,17 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
-        User::factory()->create([
-            'name' => 'lectio',
-            'email' => 'admin@admin.com',
-            'password' => bcrypt('12345678'),
-            'role' => 'admin',
-        ]);
+        User::firstOrCreate(
+            ['email' => 'admin@admin.com'],
+            [
+                'name' => 'lectio',
+                'password' => bcrypt('12345678'),
+                'role' => 'admin',
+            ]
+        );
 
         $this->call([
-            BookSeeder::class,
+            //BookSeeder::class,
         ]);
 
     }

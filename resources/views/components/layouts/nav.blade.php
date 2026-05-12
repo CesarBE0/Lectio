@@ -77,8 +77,8 @@
 
         @auth
             @if(Auth::user()->isAdmin())
-                <a href="{{ route('admin.dashboard') }}" class="btn bg-gray-900 btn-sm w-1/4 text-white hover:bg-gray-700 border-none normal-case font-medium">
-                    Panel Admin
+                <a href="{{ route('admin.dashboard') }}" title="Panel Admin" class="btn btn-ghost btn-circle hover:bg-gray-100 transition">
+                    <img src="{{ asset('img/admin.png') }}" alt="Panel Admin" class="w-7 h-7 object-contain opacity-80 hover:opacity-100 transition-opacity">
                 </a>
             @endif
         @endauth
