@@ -21,7 +21,7 @@ class BookSeeder extends Seeder
         $books = [
             ['title' => 'La insoportable levedad del ser', 'author' => 'Milan Kundera', 'category' => 'Filosofía', 'pages' => 320, 'price' => 22.50, 'image_url' => 'img/LaInsoportableLevedadDelSer.png', 'is_bestseller' => false],
             ['title' => 'Don Quijote de la Mancha', 'author' => 'Miguel de Cervantes', 'category' => 'Novela', 'pages' => 863, 'price' => 24.99, 'image_url' => 'img/DonQuijoteDeLaMancha.jpg', 'is_bestseller' => false],
-            ['title' => 'Cien años de soledad', 'author' => 'Gabriel García Márquez', 'category' => 'Novela', 'pages' => 417, 'price' => 19.99, 'image_url' => 'img/CienAñosDeSoledad.png', 'is_bestseller' => false],
+            ['title' => 'Cien años de soledad', 'author' => 'Gabriel García Márquez', 'category' => 'Novela', 'pages' => 417, 'price' => 19.99, 'image_url' => 'img/CienAñosdeSoledad.png', 'is_bestseller' => false],
             ['title' => '1984', 'author' => 'George Orwell', 'category' => 'Distopía', 'pages' => 328, 'price' => 16.99, 'image_url' => 'img/1984.png', 'is_bestseller' => false],
             ['title' => 'Orgullo y prejuicio', 'author' => 'Jane Austen', 'category' => 'Romántica', 'pages' => 279, 'price' => 18.99, 'image_url' => 'img/OrgulloYPrejuicio.png', 'is_bestseller' => false],
             ['title' => 'La Odisea', 'author' => 'Homero', 'category' => 'Épica', 'pages' => 541, 'price' => 21.99, 'image_url' => 'img/Odisea.png', 'is_bestseller' => false],
