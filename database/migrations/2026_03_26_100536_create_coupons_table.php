@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('coupons', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->unique(); // Ej: 'VERANO20'
-            $table->integer('discount_percentage'); // Ej: 20
-            $table->boolean('is_active')->default(true); // Para poder apagarlos cuando acabe la promo
+            $table->string('code')->unique();
+            $table->integer('discount_percentage');
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

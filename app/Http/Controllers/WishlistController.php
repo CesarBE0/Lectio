@@ -14,7 +14,6 @@ class WishlistController extends Controller
         return view('wishlist.index', compact('wishlist'));
     }
 
-    // Le añadimos "Request $request" para poder detectar si es una petición AJAX
     public function toggle(Request $request, $bookId)
     {
         $userId = Auth::id();
@@ -30,8 +29,6 @@ class WishlistController extends Controller
             $message = '¡Libro guardado en tu lista de deseos!';
         }
 
-        // --- MAGIA AJAX ---
-        // Si la petición viene de JavaScript, solo devolvemos los datos, sin recargar
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
@@ -40,7 +37,6 @@ class WishlistController extends Controller
             ]);
         }
 
-        // Por si acaso falla el JS, recarga normal
         return back()->with('success', $message);
     }
 }

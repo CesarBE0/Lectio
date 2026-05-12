@@ -16,8 +16,6 @@ class OrderInvoice extends Mailable
     public $discountAmount;
     public $shipping;
     public $total;
-
-    // Recibimos todos los datos de la compra desde el CheckoutController
     public function __construct($orderNumber, $cartItems, $subtotal, $discountAmount, $shipping, $total)
     {
         $this->orderNumber = $orderNumber;

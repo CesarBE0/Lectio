@@ -13,8 +13,6 @@ class CheckPriceDrops extends Command
 
     public function handle()
     {
-        // Lógica futura: Aquí recorrerías las wishlists y compararías el precio antiguo con el actual.
-        // Si es menor, envías el correo: Mail::to($user->email)->send(new PriceDropMail($book));
         $this->info('Comprobación de precios ejecutada correctamente.');
     }
 }

@@ -21,8 +21,8 @@ return new class extends Migration
             $table->string('published_date')->nullable();
             $table->decimal('rating', 3, 1)->default(0);
             $table->integer('reviews_count')->default(0);
-            $table->decimal('old_price', 8, 2)->nullable(); // Para el tachado
-            $table->string('discount_percent')->nullable(); // Para la etiqueta roja
+            $table->decimal('old_price', 8, 2)->nullable();
+            $table->string('discount_percent')->nullable();
             $table->timestamps();
         });
     }

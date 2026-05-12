@@ -69,12 +69,10 @@
 
                                 <div class="book-card card bg-white shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 h-full group flex flex-col relative">
 
-                                    {{-- Etiqueta de Categoría (Izquierda) --}}
                                     <div class="absolute top-3 left-3 z-20 bg-black text-[#D4AF37] text-[10px] uppercase font-black px-2 py-1 rounded shadow-sm border border-[#D4AF37]/30">
                                         {{ $book->category }}
                                     </div>
 
-                                    {{-- BOTÓN AJAX DE WISHLIST (Derecha) --}}
                                     @auth
                                         @php $isWished = in_array($book->id, $userWishlistIds); @endphp
                                         <form action="{{ route('wishlist.toggle', $book->id) }}" method="POST" class="wishlist-form absolute top-3 right-3 z-20">

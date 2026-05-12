@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('order_id')->constrained()->onDelete('cascade');
             $table->foreignId('book_id')->constrained();
-            $table->string('format_type'); // 'Tapa dura', 'E-book', etc.
-            $table->decimal('price', 8, 2); // Precio al que se vendió
+            $table->string('format_type');
+            $table->decimal('price', 8, 2);
             $table->integer('quantity')->default(1);
             $table->timestamps();
         });

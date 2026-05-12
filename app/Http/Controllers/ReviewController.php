@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 class ReviewController extends Controller
 {
-    //
+
     public function store(Request $request, \App\Models\Book $book)
     {
         $request->validate([

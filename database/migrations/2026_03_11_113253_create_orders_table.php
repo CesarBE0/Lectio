@@ -15,7 +15,6 @@ return new class extends Migration
             $table->string('status')->default('pending');
             $table->string('address')->nullable();
 
-            // === AÑADE ESTA LÍNEA ===
             $table->string('trackingNumber')->unique()->nullable();
 
             $table->timestamps();

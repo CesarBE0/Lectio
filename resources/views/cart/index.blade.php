@@ -6,7 +6,6 @@
 
             <h1 class="text-4xl font-serif font-bold text-black mb-2 border-l-4 border-[#D4AF37] pl-3">{{__("Carrito de Compra")}}</h1>
             <p class="text-gray-500 mb-10 pl-4"><span id="cart-count">{{ count(session('cart')) }}</span> {{__("artículos en tu carrito")}}</p>
-            {{-- BOTÓN VACIAR CARRITO ESTILO LECTIO --}}
             <div class="flex justify-start mt-6 mb-10">
                 <a href="{{ url('/vaciar-carrito') }}"
                    id="btn-empty-cart"

@@ -12,7 +12,6 @@ return new class extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            // Por defecto es false (no lo ha usado)
             $table->boolean('welcome_coupon_used')->default(false)->after('role');
         });
     }

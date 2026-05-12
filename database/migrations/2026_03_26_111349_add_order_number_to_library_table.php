@@ -12,7 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('library', function (Blueprint $table) {
-            // Añadimos el número de pedido (nullable para no romper compras antiguas)
             $table->string('order_number')->nullable()->after('shipping');
         });
     }

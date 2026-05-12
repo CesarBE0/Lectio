@@ -65,7 +65,6 @@
                     </h2>
 
                     <div class="space-y-4">
-                        {{-- Unificamos todos los formatos para que muestren Ilimitado --}}
                         @foreach(['Tapa dura', 'E-book', 'Audiolibro'] as $tipo)
                             <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-[#D4AF37]/50 transition-colors">
                                 <span class="text-[10px] font-black text-black uppercase tracking-widest block mb-3">{{ $tipo }}</span>
@@ -78,7 +77,6 @@
                                     </div>
                                     <div class="flex items-end pb-2">
                                         <span class="text-[9px] text-gray-400 italic text-center w-full uppercase font-black">{{ __('Ilimitado') }}</span>
-                                        {{-- El stock se envía como 0 de forma interna --}}
                                         <input type="hidden" name="formats[{{ $tipo }}][stock]" value="0">
                                     </div>
                                 </div>

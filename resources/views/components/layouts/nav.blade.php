@@ -61,7 +61,6 @@
             </li>
         </ul>
 
-        {{-- NUEVO: BUSCADOR LIVE --}}
         <div class="relative hidden md:block w-64 group z-50">
             <div class="relative flex items-center">
                 <svg class="w-4 h-4 absolute left-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
@@ -90,7 +89,6 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
 
-                {{-- La burbuja ahora siempre existe, pero se oculta si está a 0 --}}
                 <span id="cart-counter-badge" class="absolute -top-2 -right-2 bg-gray-900 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm group-hover:bg-black transition {{ (session('cart') && count(session('cart')) > 0) ? '' : 'hidden' }}">
                     {{ session('cart') ? count(session('cart')) : 0 }}
                 </span>
@@ -112,7 +110,6 @@
                             <span class="text-xs text-gray-500 font-normal truncate">{{ Auth::user()->email }}</span>
                         </li>
 
-                        {{-- NUEVO: MOSTRAR PUNTOS Y BOTÓN DE CANJE --}}
                         <li class="px-4 py-2 mb-1 bg-yellow-50/50 rounded-lg">
                             <div class="flex justify-between items-center w-full px-0">
                                 <span class="text-xs font-bold text-[#D4AF37]">Puntos: {{ Auth::user()->points ?? 0 }}</span>
@@ -138,7 +135,6 @@
                             </a>
                         </li>
 
-                        {{-- NUEVO: ENLACE WISHLIST --}}
                         <li>
                             <a href="{{ route('wishlist.index') }}" class="py-2 text-gray-700 hover:text-brand-red hover:bg-red-50">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
@@ -185,7 +181,6 @@
     </div>
 </div>
 
-{{-- SCRIPT PARA EL BUSCADOR EN VIVO --}}
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const input = document.getElementById('live-search-input');

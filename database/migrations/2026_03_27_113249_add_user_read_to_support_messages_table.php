@@ -12,7 +12,6 @@ return new class extends Migration
     public function up()
     {
         Schema::table('support_messages', function (Blueprint $table) {
-            // Por defecto será false (no leído por el usuario)
             $table->boolean('user_read')->default(false)->after('is_admin_reply');
         });
     }

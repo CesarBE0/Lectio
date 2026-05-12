@@ -1,7 +1,6 @@
 <x-layouts.admin title="Bandeja de Soporte - Admin">
     <div class="p-6 sm:p-10 space-y-6">
 
-        {{-- Cabecera del Panel --}}
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
                 <h1 class="text-3xl font-serif font-bold text-gray-900 tracking-tight">{{__("Bandeja de Soporte")}}</h1>
@@ -14,14 +13,12 @@
             </div>
         </div>
 
-        {{-- Alertas de éxito --}}
         @if(session('success'))
             <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded-md shadow-sm">
                 <p class="text-sm text-green-700 font-medium">{{ session('success') }}</p>
             </div>
         @endif
 
-        {{-- Tabla de Mensajes --}}
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-sm whitespace-nowrap">
@@ -38,7 +35,6 @@
                     @forelse($messages as $msg)
                         <tr class="hover:bg-gray-50 transition-colors {{ !$msg->is_read ? 'bg-yellow-50/30' : '' }}">
 
-                            {{-- Estado simplificado en la tabla --}}
                             <td class="px-6 py-4">
                                 @if(!$msg->is_read)
                                     <span class="inline-flex items-center gap-1.5 py-1 px-2 rounded-md text-xs font-bold bg-[#D4AF37] text-black">
@@ -52,7 +48,6 @@
                                 @endif
                             </td>
 
-                            {{-- Remitente --}}
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
                                     <div class="w-8 h-8 rounded-full bg-black text-[#D4AF37] flex items-center justify-center font-serif font-bold text-xs flex-shrink-0">
@@ -65,23 +60,20 @@
                                 </div>
                             </td>
 
-                            {{-- Mensaje --}}
                             <td class="px-6 py-4 whitespace-normal min-w-[300px]">
                                 <p class="text-sm {{ !$msg->is_read ? 'text-black font-medium' : 'text-gray-600' }} line-clamp-2">
                                     {{ $msg->message }}
                                 </p>
                             </td>
 
-                            {{-- Fecha --}}
+
                             <td class="px-6 py-4 text-xs font-medium text-gray-500">
                                 {{ $msg->created_at->format('d M Y') }}<br>
                                 <span class="text-gray-400">{{ $msg->created_at->format('H:i') }}</span>
                             </td>
 
-                            {{-- Acciones --}}
                             <td class="px-6 py-4 text-right space-x-2">
 
-                                {{-- Solo mostramos el botón de responder si NO es una respuesta tuya --}}
                                 @if(!$msg->is_admin_reply)
                                     <button type="button" onclick="openReplyModal('{{ route('admin.support.reply', $msg->id) }}', '{{ $msg->email }}', '{{ addslashes($msg->name) }}')"
                                             class="text-xs font-bold text-blue-600 border border-blue-200 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded-lg transition-colors shadow-sm">
@@ -123,7 +115,6 @@
                 </table>
             </div>
 
-            {{-- Paginación --}}
             @if(isset($messages) && $messages->hasPages())
                 <div class="px-6 py-4 border-t border-gray-100 bg-gray-50">
                     {{ $messages->links() }}
@@ -132,7 +123,6 @@
         </div>
     </div>
 
-    {{-- MODAL PARA RESPONDER --}}
     <div id="replyModal" class="fixed inset-0 z-50 hidden bg-black/60 flex items-center justify-center backdrop-blur-sm transition-opacity">
         <div class="bg-white rounded-2xl w-full max-w-lg p-6 shadow-2xl transform transition-transform scale-100 mx-4">
             <h3 class="text-xl font-bold font-serif mb-1">{{__("Responder a")}} <span id="modal-name" class="text-[#D4AF37]"></span></h3>
@@ -151,7 +141,6 @@
                         {{__("Cancelar")}}
                     </button>
                     <button type="submit" class="px-5 py-2.5 text-xs font-bold uppercase tracking-widest bg-black text-[#D4AF37] hover:bg-gray-900 rounded-xl shadow-lg transition-transform active:scale-95 flex items-center gap-2">
-                        {{-- Flecha recta hacia la derecha --}}
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                         </svg>

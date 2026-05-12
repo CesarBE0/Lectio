@@ -57,7 +57,6 @@ class ProfileController extends Controller
         return redirect()->back()->with('success', 'Tus datos se han actualizado con éxito ✨');
     }
 
-    // NUEVO: Función para canjear Puntos Lectio
     public function redeemPoints()
     {
         $user = Auth::user();
@@ -70,7 +69,7 @@ class ProfileController extends Controller
             Coupon::create([
                 'user_id' => $user->id,
                 'code' => $code,
-                'discount_percentage' => 5, // 5% de descuento por 100 puntos
+                'discount_percentage' => 5,
                 'is_active' => true
             ]);
 

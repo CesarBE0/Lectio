@@ -7,14 +7,12 @@ use Illuminate\Http\Request;
 
 class CouponController extends Controller
 {
-    // 1. Mostrar la lista de cupones
     public function index()
     {
         $coupons = Coupon::orderBy('created_at', 'desc')->get();
         return view('admin.coupons', compact('coupons'));
     }
 
-    // 2. Guardar un nuevo cupón
     public function store(Request $request)
     {
         $request->validate([
@@ -23,7 +21,7 @@ class CouponController extends Controller
         ]);
 
         Coupon::create([
-            'code' => strtoupper($request->code), // Siempre en mayúsculas
+            'code' => strtoupper($request->code),
             'discount_percentage' => $request->discount_percentage,
             'is_active' => true
         ]);
@@ -31,7 +29,6 @@ class CouponController extends Controller
         return redirect()->back()->with('success', '¡Cupón creado con éxito para Lectio!');
     }
 
-    // 3. Activar o desactivar un cupón
     public function toggle(Coupon $coupon)
     {
         $coupon->update([

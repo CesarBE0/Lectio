@@ -12,7 +12,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('library', function (Blueprint $table) {
-            $table->string('format')->nullable()->after('book_id'); // Aquí guardaremos "Ebook", "Tapa Dura", etc.
+            $table->string('format')->nullable()->after('book_id');
         });
     }
 

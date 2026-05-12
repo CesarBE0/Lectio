@@ -11,10 +11,9 @@ class SettingsController extends Controller
     {
         $user = Auth::user();
 
-        // Lista de idiomas con su código de PAÍS para la bandera (flag_country)
         $languages = [
             ['code' => 'es', 'name' => 'Español',       'flag_country' => 'es'],
-            ['code' => 'en', 'name' => 'English',       'flag_country' => 'gb'], // Bandera UK
+            ['code' => 'en', 'name' => 'English',       'flag_country' => 'gb'],
             ['code' => 'fr', 'name' => 'Français',      'flag_country' => 'fr'],
             ['code' => 'it', 'name' => 'Italiano',      'flag_country' => 'it'],
             ['code' => 'de', 'name' => 'Deutsch',       'flag_country' => 'de'],
@@ -30,7 +29,6 @@ class SettingsController extends Controller
     {
         $user = Auth::user();
 
-        // Validamos los datos
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'phone' => 'nullable|string|max:20',
@@ -40,7 +38,6 @@ class SettingsController extends Controller
             'country' => 'nullable|string|max:100',
         ]);
 
-        // Guardamos
         $user->update($validated);
 
         return redirect()->back()->with('success', __('¡Datos actualizados correctamente!'));

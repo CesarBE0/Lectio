@@ -105,7 +105,6 @@ class ExtractJsonTranslations extends Command
                 continue;
             }
 
-            // IMPORTANTE: mantener el orden original + añadir al final
             $merged = $existing + $newEntries;
 
             file_put_contents(

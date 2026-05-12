@@ -12,7 +12,6 @@ return new class extends Migration
     public function up()
     {
         Schema::table('support_messages', function (Blueprint $table) {
-            // Añadimos una columna para saber si es respuesta del admin
             $table->boolean('is_admin_reply')->default(false)->after('is_read');
         });
     }

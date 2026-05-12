@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('support_messages', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null'); // Por si es un usuario registrado
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
             $table->string('name')->nullable();
             $table->string('email')->nullable();
             $table->text('message');
-            $table->boolean('is_read')->default(false); // Para saber si ya lo has leído como Admin
+            $table->boolean('is_read')->default(false);
             $table->timestamps();
         });
     }

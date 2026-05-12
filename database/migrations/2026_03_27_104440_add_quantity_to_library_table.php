@@ -12,7 +12,6 @@ return new class extends Migration
     public function up()
     {
         Schema::table('library', function (Blueprint $table) {
-            // Añadimos la columna quantity y por defecto valdrá 1
             $table->integer('quantity')->default(1)->after('format');
         });
     }

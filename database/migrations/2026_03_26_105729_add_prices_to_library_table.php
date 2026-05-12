@@ -12,7 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('library', function (Blueprint $table) {
-            // Guardamos el precio original y el dinero descontado
             $table->decimal('price', 8, 2)->nullable()->after('city');
             $table->decimal('discount', 8, 2)->default(0)->after('price');
         });

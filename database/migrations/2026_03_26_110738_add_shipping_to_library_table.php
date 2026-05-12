@@ -12,7 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('library', function (Blueprint $table) {
-            // Guardamos la parte proporcional del envío
             $table->decimal('shipping', 8, 2)->default(0)->after('discount');
         });
     }

@@ -13,7 +13,7 @@ return new class extends Migration
         Schema::create('formats', function (Blueprint $table) {
             $table->id();
             $table->foreignId('book_id')->constrained()->onDelete('cascade');
-            $table->string('type'); // 'Tapa dura', 'E-book', 'Audiolibro'
+            $table->string('type');
             $table->decimal('price', 8, 2);
             $table->integer('stock')->default(0);
             $table->timestamps();

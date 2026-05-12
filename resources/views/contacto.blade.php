@@ -1,10 +1,8 @@
 <x-layouts.layout title="Chat de Soporte - Lectio">
     <div class="container mx-auto px-4 py-8 max-w-3xl">
 
-        {{-- CONTENEDOR DEL CHAT --}}
         <div class="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden flex flex-col h-[700px]">
 
-            {{-- CABECERA DEL CHAT --}}
             <div class="bg-black p-4 flex items-center gap-4 shadow-md z-10 relative">
                 <div class="w-12 h-12 rounded-full bg-[#D4AF37] flex items-center justify-center text-black font-serif font-bold text-xl border-2 border-white">
                     L
@@ -18,10 +16,8 @@
                 </div>
             </div>
 
-            {{-- ZONA DE MENSAJES --}}
             <div class="flex-1 bg-gray-50 p-6 overflow-y-auto flex flex-col gap-4" id="chat-box">
 
-                {{-- Mensaje Automático de Lectio --}}
                 <div class="flex items-end gap-2 w-full max-w-[85%]">
                     <div class="w-8 h-8 rounded-full bg-black flex-shrink-0 flex items-center justify-center text-[#D4AF37] text-xs font-serif font-bold">L</div>
                     <div class="bg-white border border-gray-200 p-4 rounded-2xl rounded-bl-none shadow-sm">
@@ -30,10 +26,8 @@
                     </div>
                 </div>
 
-                {{-- Historial de mensajes del usuario y del Admin --}}
                 @foreach($messages as $msg)
                     @if($msg->is_admin_reply)
-                        {{-- Mensaje del ADMIN (Izquierda, blanco) --}}
                         <div class="flex items-end gap-2 w-full max-w-[85%] mt-4 animate-fade-in-up">
                             <div class="w-8 h-8 rounded-full bg-black flex-shrink-0 flex items-center justify-center text-[#D4AF37] text-xs font-serif font-bold shadow-md">L</div>
                             <div class="bg-white border border-gray-200 p-4 rounded-2xl rounded-bl-none shadow-sm relative">
@@ -42,7 +36,6 @@
                             </div>
                         </div>
                     @else
-                        {{-- Mensaje del USUARIO (Derecha, Dorado) --}}
                         <div class="flex flex-col items-end w-full mt-4 animate-fade-in-up">
                             <div class="bg-[#D4AF37] text-black p-3.5 rounded-2xl rounded-br-none shadow-md max-w-[85%] relative">
                                 <p class="text-sm font-medium leading-relaxed">{{ $msg->message }}</p>
@@ -57,7 +50,6 @@
                     @endif
                 @endforeach
 
-                {{-- Mensaje de éxito temporal --}}
                 @if(session('success'))
                     <div class="flex items-end gap-2 w-full max-w-[85%] mt-2 animate-fade-in-up">
                         <div class="w-8 h-8 rounded-full bg-black flex-shrink-0 flex items-center justify-center text-[#D4AF37] text-xs font-serif font-bold">L</div>
@@ -71,7 +63,6 @@
                 @endif
             </div>
 
-            {{-- ZONA DE INPUT (Formulario) --}}
             <div class="bg-white p-4 border-t border-gray-100">
                 <form action="{{ route('contacto.store') }}" method="POST" class="flex items-end gap-2 relative">
                     @csrf
@@ -80,7 +71,6 @@
                               placeholder="{{__('Escribe tu mensaje aquí...')}}" required></textarea>
 
                     <button type="submit" class="bg-black text-[#D4AF37] w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 hover:bg-gray-900 transition-transform active:scale-95 shadow-md">
-                        {{-- Flecha recta hacia la derecha --}}
                         <svg class="w-5 h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                         </svg>
@@ -96,7 +86,6 @@
 
     </div>
 
-    {{-- Script para que el chat siempre baje hasta el último mensaje automáticamente --}}
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             var chatBox = document.getElementById("chat-box");

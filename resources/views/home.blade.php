@@ -7,7 +7,6 @@
 
     <div class="container mx-auto px-6 pt-4 pb-12 space-y-12">
 
-        {{-- BANNER PRINCIPAL (FLEXBOX PARA GARANTIZAR QUE ESTÉN LADO A LADO) --}}
         <section class="flex flex-col md:flex-row gap-6 mb-8">
 
             <div class="w-full md:w-2/3 bg-black text-white p-8 md:p-12 rounded-3xl flex flex-col justify-between border border-[#D4AF37]/20 relative overflow-hidden shadow-2xl group">
@@ -61,7 +60,6 @@
             </div>
         </section>
 
-        {{-- SECCIÓN OFERTAS DEL MES --}}
         @if(isset($descuentos) && $descuentos->count() > 0)
             <section class="mb-16">
                 <h2 class="text-3xl text-red-600 font-serif font-bold mb-8 flex items-center gap-2">
@@ -71,14 +69,12 @@
                     @foreach($descuentos as $libro)
                         <div class="card bg-white shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 h-full group flex flex-col relative rounded-2xl overflow-hidden">
 
-                            {{-- Etiqueta de Descuento (Izquierda) --}}
                             @if($libro->discount_percent)
                                 <div class="absolute top-3 left-3 z-20 bg-red-600 text-white text-[10px] font-black px-2 py-1 rounded shadow-md animate-pulse">
                                     {{ $libro->discount_percent }}
                                 </div>
                             @endif
 
-                            {{-- BOTÓN AJAX DE WISHLIST (Derecha) --}}
                             @auth
                                 @php $isWished = in_array($libro->id, $userWishlistIds); @endphp
                                 <form action="{{ route('wishlist.toggle', $libro->id) }}" method="POST" class="wishlist-form absolute top-3 right-3 z-20">
@@ -118,7 +114,6 @@
             </section>
         @endif
 
-        {{-- SECCIÓN LOS MÁS COMPRADOS (Solo aparece si hay ventas reales) --}}
         @if($populares->count() > 0)
             <section class="py-12">
                 <h2 class="text-3xl text-black font-serif font-bold mb-8 flex items-center gap-2 border-l-4 border-[#D4AF37] pl-4">
@@ -128,12 +123,10 @@
                     @foreach($populares as $libro)
                         <div class="card bg-white shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 h-full group flex flex-col relative rounded-2xl overflow-hidden">
 
-                            {{-- Etiqueta Top Ventas (Izquierda) --}}
                             <div class="absolute top-3 left-3 z-20 bg-black text-[#D4AF37] text-[9px] uppercase font-black px-2 py-1 rounded border border-[#D4AF37]/30 shadow-sm">
                                 {{__("Top Ventas")}}
                             </div>
 
-                            {{-- BOTÓN AJAX DE WISHLIST (Derecha) --}}
                             @auth
                                 @php $isWished = in_array($libro->id, $userWishlistIds); @endphp
                                 <form action="{{ route('wishlist.toggle', $libro->id) }}" method="POST" class="wishlist-form absolute top-3 right-3 z-20">

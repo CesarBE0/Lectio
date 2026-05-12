@@ -13,13 +13,11 @@ class ContactController extends Controller
         if (\Illuminate\Support\Facades\Auth::check()) {
             $userId = \Illuminate\Support\Facades\Auth::id();
 
-            // 1. Buscamos las respuestas del admin que el usuario aún no ha leído y las marcamos como leídas
             \App\Models\SupportMessage::where('user_id', $userId)
                 ->where('is_admin_reply', true)
                 ->where('user_read', false)
                 ->update(['user_read' => true]);
 
-            // 2. Cargamos el historial de mensajes
             $messages = \App\Models\SupportMessage::where('user_id', $userId)->get();
         } else {
             $messages = collect();
@@ -35,7 +33,7 @@ class ContactController extends Controller
         ]);
 
         SupportMessage::create([
-            'user_id' => Auth::id(), // Será null si no ha iniciado sesión
+            'user_id' => Auth::id(),
             'name' => Auth::check() ? Auth::user()->name : 'Invitado',
             'email' => Auth::check() ? Auth::user()->email : 'anonimo@lectio.com',
             'message' => $request->message

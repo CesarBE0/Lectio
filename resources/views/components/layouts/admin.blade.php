@@ -14,17 +14,15 @@
         .brand-font { font-family: 'Playfair Display', serif; }
         body { font-family: 'Inter', sans-serif; }
 
-        /* 2. REVISIÓN: Estilo de enlace activo mejorado para el hover */
         .active-link {
-            background-color: #D4AF37 !important; /* Dorado Lectio */
-            color: #000000 !important; /* Texto negro para contraste */
+            background-color: #D4AF37 !important;
+            color: #000000 !important;
             font-weight: 700;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
-        /* Evita que el texto desaparezca al pasar el ratón sobre el botón de la página actual */
         .active-link:hover {
-            background-color: #B8962E !important; /* Un dorado un poco más oscuro al pasar el ratón */
+            background-color: #B8962E !important;
             color: #000000 !important;
         }
     </style>

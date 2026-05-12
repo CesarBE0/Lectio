@@ -14,7 +14,6 @@ class AdminController extends Controller {
     {
         $periodo = $request->get('periodo', 'todos');
 
-        // Dashboard basado en la tabla library (compras reales)
         $queryBase = DB::table('library')->whereNotNull('order_number');
 
         if ($periodo == '7_dias') { $queryBase->where('created_at', '>=', now()->subDays(7)); }
@@ -97,7 +96,6 @@ class AdminController extends Controller {
             ->join('books', 'library.book_id', '=', 'books.id')
             ->join('users', 'library.user_id', '=', 'users.id')
             ->where('library.order_number', $orderNumber)
-            // AÑADIMOS: address y city a la selección
             ->select('books.title', 'library.format as format_type', 'library.price', 'library.discount', 'library.shipping', 'users.name as user_name', 'library.created_at', 'library.address', 'library.city')
             ->get();
 
@@ -108,7 +106,6 @@ class AdminController extends Controller {
 
         return response()->json([
             'user' => ['name' => $items->first()->user_name],
-            // ENVIAMOS: Dirección y Ciudad al modal
             'address' => $items->first()->address,
             'city' => $items->first()->city,
             'status' => $status,
@@ -133,22 +130,18 @@ class AdminController extends Controller {
         return back()->with('success', 'Libro eliminado.');
     }
 
-    // 1. Mostrar el formulario de creación
     public function createBook()
     {
         return view('admin.books.create');
     }
 
-    // 2. Mostrar el formulario de edición con los datos del libro
     public function editBook($id)
     {
-        // Buscamos el libro con sus formatos para que aparezcan en los campos
         $book = \App\Models\Book::with('formats')->findOrFail($id);
         return view('admin.books.edit', compact('book'));
     }
 
     public function storeBook(Request $request) {
-        // Añadimos old_price y discount_percent a la creación
         $book = Book::create($request->only([
             'title', 'author', 'image_url', 'description', 'old_price', 'discount_percent'
         ]));
@@ -157,7 +150,7 @@ class AdminController extends Controller {
             $book->formats()->create([
                 'type' => $type,
                 'price' => $data['price'],
-                'stock' => 0, // Como pediste, siempre inicia en 0
+                'stock' => 0,
             ]);
         }
         return redirect()->route('admin.inventory')->with('success', 'Libro añadido con éxito al catálogo.');
@@ -167,16 +160,12 @@ class AdminController extends Controller {
     {
         $book = \App\Models\Book::findOrFail($id);
 
-        // 1. Obtenemos el porcentaje del formulario (ej: 20)
         $percent = intval($request->discount_percentage);
 
-        // 2. Actualizamos datos generales
         $book->update($request->only(['title', 'author', 'image_url', 'description']));
 
-        // 3. Lógica de Marketing (Etiqueta roja y Precio tachado)
         if ($percent > 0) {
             $book->discount_percent = "-" . $percent . "%";
-            // El precio tachado ("old_price") será el precio original del formato principal
             $book->old_price = $request->formats['Tapa dura']['price'] ?? 0;
         } else {
             $book->discount_percent = null;
@@ -184,11 +173,9 @@ class AdminController extends Controller {
         }
         $book->save();
 
-        // 4. Actualizamos los formatos aplicando el descuento al vuelo
         foreach ($request->formats as $type => $data) {
             $originalPrice = floatval($data['price']);
 
-            // Calculamos el precio final: si hay 20%, el precio es el 80% del original
             $finalPrice = $percent > 0 ? ($originalPrice * (1 - ($percent / 100))) : $originalPrice;
 
             $book->formats()->updateOrCreate(
