@@ -115,4 +115,6 @@ Route::get('/biblioteca/leer/{book}', [App\Http\Controllers\LibraryController::c
 
 Route::get('/biblioteca/escuchar/{book}', [LibraryController::class, 'streamAudio'])->name('library.audio')->middleware('auth');
 
+Route::put('/admin/pedidos/{orderNumber}/estado', [App\Http\Controllers\AdminController::class, 'updateStatus']);
+
 require __DIR__ . '/auth.php';

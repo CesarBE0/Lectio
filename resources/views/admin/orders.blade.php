@@ -4,7 +4,7 @@
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b-2 border-[#D4AF37] pb-4 gap-4">
             <div>
                 <h1 class="text-3xl font-serif font-bold text-black">{{ __('Gestión de Pedidos') }}</h1>
-                </div>
+            </div>
 
             <div class="flex items-center gap-2">
                 <label class="text-[10px] uppercase font-black text-gray-400">Filtrar:</label>
@@ -83,14 +83,25 @@
                 </div>
 
                 <div class="p-6 space-y-6">
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-2 gap-4 items-start">
                         <div>
-                            <p class="text-[10px] text-gray-400 uppercase font-black">Cliente</p>
+                            <p class="text-[10px] text-gray-400 uppercase font-black mb-1">Cliente</p>
                             <p id="modal-cliente" class="text-sm font-bold text-black">-</p>
                         </div>
-                        <div class="text-right">
-                            <p class="text-[10px] text-gray-400 uppercase font-black">Estado Actual</p>
-                            <span id="modal-status-badge" class="px-2 py-1 rounded-full text-[9px] font-black uppercase border inline-block mt-1"></span>
+
+                        <div class="text-right flex flex-col items-end">
+                            <p class="text-[10px] text-gray-400 uppercase font-black mb-1">Modificar Estado</p>
+                            <div class="flex items-center gap-2 mt-1">
+                                <select id="modal-status-select" class="text-xs font-bold border border-gray-200 rounded-md shadow-sm py-1.5 pl-2 pr-6 focus:border-[#D4AF37] focus:ring focus:ring-[#D4AF37]/50 outline-none">
+                                    <option value="preparando">Preparando</option>
+                                    <option value="de_camino">De camino</option>
+                                    <option value="entregado">Entregado</option>
+                                </select>
+                                <button onclick="updateOrderStatus()" class="bg-black text-[#D4AF37] text-[10px] font-bold px-3 py-1.5 rounded-md hover:bg-gray-800 transition shadow-sm">
+                                    Guardar
+                                </button>
+                            </div>
+                            <input type="hidden" id="modal-order-number" value="">
                         </div>
                     </div>
 
@@ -121,7 +132,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // Limpiar URL al seleccionar "Todos"
         function cambiarFiltro(status) {
             if (status === 'todos') {
                 window.location.href = "{{ route('admin.orders') }}";
@@ -140,18 +150,12 @@
                 .then(order => {
                     document.getElementById('modal-cliente').innerText = order.user.name;
                     document.getElementById('modal-total').innerText = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(order.totalPrice);
-
-                    // CARGAR DIRECCIÓN
                     document.getElementById('modal-direccion').innerText = `${order.address}, ${order.city}`;
 
-                    const badge = document.getElementById('modal-status-badge');
-                    badge.innerText = order.status;
-                    const colors = {
-                        'preparando': 'bg-orange-100 text-orange-700 border-orange-200',
-                        'de_camino': 'bg-blue-100 text-blue-700 border-blue-200',
-                        'entregado': 'bg-green-100 text-green-700 border-green-200'
-                    };
-                    badge.className = `px-2 py-1 rounded-full text-[9px] font-black uppercase border inline-block mt-1 ${colors[order.status]}`;
+                    // PRE-SELECCIONAMOS EL ESTADO ACTUAL EN EL DESPLEGABLE
+                    document.getElementById('modal-status-select').value = order.status;
+                    // GUARDAMOS EL NÚMERO DE PEDIDO EN EL INPUT OCULTO
+                    document.getElementById('modal-order-number').value = order.order_number;
 
                     const list = document.getElementById('modal-items');
                     list.innerHTML = '';
@@ -161,6 +165,49 @@
                             <span class="font-bold">${item.price}€</span>
                         </li>`;
                     });
+                });
+        }
+
+        // NUEVA FUNCIÓN PARA ENVIAR EL CAMBIO A LARAVEL
+        function updateOrderStatus() {
+            const orderNumber = document.getElementById('modal-order-number').value;
+            const newStatus = document.getElementById('modal-status-select').value;
+
+            // Cambiamos el texto del botón temporalmente
+            const btn = event.target;
+            const originalText = btn.innerText;
+            btn.innerText = '⏳...';
+            btn.disabled = true;
+
+            fetch(`/admin/pedidos/${orderNumber}/estado`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}' // Token de seguridad obligatorio de Laravel
+                },
+                body: JSON.stringify({ status: newStatus })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Estado actualizado!',
+                            text: 'El cliente ya puede ver el nuevo estado de su pedido.',
+                            confirmButtonColor: '#000',
+                        }).then(() => {
+                            location.reload(); // Recargamos para que la tabla principal se actualice
+                        });
+                    } else {
+                        Swal.fire('Error', 'Hubo un error al actualizar', 'error');
+                        btn.innerText = originalText;
+                        btn.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    Swal.fire('Error', 'No se pudo conectar con el servidor', 'error');
+                    btn.innerText = originalText;
+                    btn.disabled = false;
                 });
         }
 
