@@ -22,7 +22,7 @@
                         {{__("La literatura que deja huella en tu biblioteca.")}}
                     </h1>
                     <p class="text-gray-300 text-sm md:text-base max-w-lg leading-relaxed font-medium">
-                        {{__("Descubre una selección de obras maestras curadas por expertos. Desde clásicos inmortales hasta narrativa contemporánea de élite.")}}
+                        {{__("Descubre una selección de obras maestras creadas por expertos. Desde clásicos inmortales hasta narrativa contemporánea de élite.")}}
                     </p>
                 </div>
 

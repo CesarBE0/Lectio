@@ -66,4 +66,27 @@ class LibraryController extends Controller
             'Content-Disposition' => 'inline; filename="' . $book->title . '.pdf"'
         ]);
     }
+
+    public function streamAudio(Book $book)
+    {
+        // 1. Validar que el usuario sea dueño del libro
+        $hasBook = auth()->user()->books()->where('book_id', $book->id)->exists();
+
+        if (!$hasBook) {
+            abort(403);
+        }
+
+        // 2. Ruta al archivo privado (Crea la carpeta storage/app/private/audio/)
+        $path = storage_path('app/private/audios/' . $book->audio_path);
+
+        if (!file_exists($path)) {
+            abort(404);
+        }
+
+        // 3. Enviamos el archivo como flujo de audio
+        return response()->file($path, [
+            'Content-Type' => 'audio/mpeg',
+            'Content-Disposition' => 'inline; filename="' . $book->title . '.mp3"'
+        ]);
+    }
 }

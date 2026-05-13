@@ -113,4 +113,6 @@ Route::get('/biblioteca/leer/{book}', [App\Http\Controllers\LibraryController::c
     ->name('library.read')
     ->middleware('auth');
 
+Route::get('/biblioteca/escuchar/{book}', [LibraryController::class, 'streamAudio'])->name('library.audio')->middleware('auth');
+
 require __DIR__ . '/auth.php';

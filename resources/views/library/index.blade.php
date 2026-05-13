@@ -159,7 +159,7 @@
                                         <div id="audio-container-{{ $book->id }}"
                                              class="hidden mt-3 bg-gray-50 border border-gray-200 p-2.5 rounded-md shadow-inner flex items-center gap-3 transition-all">
                                             <audio id="audio-{{ $book->id }}"
-                                                   src="{{ asset('audio/libro-' . $book->id . '.mp3') }}"
+                                                   src="{{ route('library.audio', $book->id) }}"
                                                    preload="metadata"></audio>
                                             <button onclick="togglePlay({{ $book->id }})"
                                                     class="w-8 h-8 flex-shrink-0 flex items-center justify-center bg-black text-[#D4AF37] rounded-full hover:scale-105 transition shadow-sm">
