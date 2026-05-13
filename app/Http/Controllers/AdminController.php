@@ -192,13 +192,12 @@ class AdminController extends Controller {
 
     public function updateStatus(\Illuminate\Http\Request $request, $orderNumber)
     {
-        // Usamos DB::table para ir directamente a tu tabla pivote
-        // y actualizar el estado de todos los libros que pertenezcan a ese pedido.
-        \Illuminate\Support\Facades\DB::table('book_user')
+        // Usamos DB::table apuntando a tu tabla real: 'library'
+        \Illuminate\Support\Facades\DB::table('library')
             ->where('order_number', $orderNumber)
             ->update(['status' => $request->status]);
 
-        // Ahora sí, devolvemos un JSON limpio para que Javascript lo entienda
+        // Devolvemos el OK a Javascript
         return response()->json(['success' => true]);
     }
 
