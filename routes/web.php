@@ -119,4 +119,10 @@ Route::put('/admin/pedidos/{orderNumber}/estado', [App\Http\Controllers\AdminCon
     ->name('admin.orders.status')
     ->middleware('auth');
 
+// Páginas legales y de información
+Route::view('/preguntas-frecuentes', 'pages.faq')->name('faq');
+Route::view('/terminos-y-condiciones', 'pages.terminos')->name('terminos');
+Route::view('/politica-privacidad', 'pages.privacidad')->name('privacidad');
+Route::view('/envios-y-devoluciones', 'pages.envios')->name('envios');
+
 require __DIR__ . '/auth.php';

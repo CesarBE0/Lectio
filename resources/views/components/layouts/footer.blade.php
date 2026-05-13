@@ -30,10 +30,10 @@
             <div>
                 <h3 class="text-white font-bold uppercase tracking-wider text-xs mb-4">Ayuda & Legal</h3>
                 <ul class="space-y-3 text-sm">
-                    <li><a href="#" class="hover:text-[#D4AF37] transition-colors">Preguntas Frecuentes</a></li>
-                    <li><a href="#" class="hover:text-[#D4AF37] transition-colors">Términos y Condiciones</a></li>
-                    <li><a href="#" class="hover:text-[#D4AF37] transition-colors">Política de Privacidad</a></li>
-                    <li><a href="#" class="hover:text-[#D4AF37] transition-colors">Política de Envíos y Devoluciones</a></li>
+                    <li><a href="{{ route('faq') }}" class="hover:text-[#D4AF37] transition-colors">Preguntas Frecuentes</a></li>
+                    <li><a href="{{ route('terminos') }}" class="hover:text-[#D4AF37] transition-colors">Términos y Condiciones</a></li>
+                    <li><a href="{{ route('privacidad') }}" class="hover:text-[#D4AF37] transition-colors">Política de Privacidad</a></li>
+                    <li><a href="{{ route('envios') }}" class="hover:text-[#D4AF37] transition-colors">Política de Envíos y Devoluciones</a></li>
                 </ul>
             </div>
 
