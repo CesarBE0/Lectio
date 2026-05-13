@@ -192,13 +192,16 @@ class AdminController extends Controller {
 
     public function updateStatus(\Illuminate\Http\Request $request, $orderNumber)
     {
-        // Solo actualizamos tu tabla pivote real y única: 'library'
-        \Illuminate\Support\Facades\DB::table('library')
+        // Usamos update() directamente sobre la tabla library
+        $affected = \Illuminate\Support\Facades\DB::table('library')
             ->where('order_number', $orderNumber)
             ->update(['status' => $request->input('status')]);
 
-        // Devolvemos el OK a Javascript
-        return response()->json(['success' => true]);
+        if ($affected > 0) {
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['success' => false, 'message' => 'No se encontró el pedido o el estado es el mismo']);
     }
 
 }

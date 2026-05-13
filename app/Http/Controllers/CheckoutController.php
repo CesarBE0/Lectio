@@ -152,17 +152,21 @@ class CheckoutController extends Controller
             } while ($exists);
 
             // 🚀 1. EL DETECTOR DE FORMATOS DE LAURITA
+            // 1. Empezamos asumiendo que es digital
             $hasPhysicalBook = false;
+
             foreach ($cartItems as $item) {
-                $formato = strtolower($item['format'] ?? '');
-                // Si encontramos alguna palabra clave de formato físico, activamos la alarma
+                // Pasamos a minúsculas y quitamos espacios para comparar sin errores
+                $formato = strtolower(trim($item['format'] ?? ''));
+
+                // Si el formato NO es digital (es decir, es físico o tapa dura)
                 if (str_contains($formato, 'tapa dura') || str_contains($formato, 'físico')) {
                     $hasPhysicalBook = true;
                     break;
                 }
             }
 
-            // 🚀 2. DECIDIMOS EL ESTADO INICIAL
+// 2. Si detectamos algo físico, marcamos como preparando, si no, entregado
             $initialStatus = $hasPhysicalBook ? 'preparando' : 'entregado';
 
             $booksToSync = [];
