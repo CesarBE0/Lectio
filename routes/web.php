@@ -17,6 +17,8 @@ use App\Http\Controllers\WishlistController;
 use Laravel\Socialite\Facades\Socialite;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Str;
 
 Route::get('/auth/google', function () {
     return Socialite::driver('google')->redirect();
@@ -124,5 +126,67 @@ Route::view('/preguntas-frecuentes', 'pages.faq')->name('faq');
 Route::view('/terminos-y-condiciones', 'pages.terminos')->name('terminos');
 Route::view('/politica-privacidad', 'pages.privacidad')->name('privacidad');
 Route::view('/envios-y-devoluciones', 'pages.envios')->name('envios');
+
+
+
+
+Route::get('/generar-pdfs-lectio', function () {
+    $books = [
+        ['title' => 'El retrato de Dorian Gray', 'author' => 'Oscar Wilde', 'category' => 'Novela', 'pages' => 256, 'text' => 'El estudio estaba lleno del intenso olor de las rosas, y cuando el ligero viento de verano soplaba entre los árboles del jardín, entraba por la puerta abierta el pesado aroma de las lilas...'],
+        ['title' => 'Drácula', 'author' => 'Bram Stoker', 'category' => 'Terror', 'pages' => 418, 'text' => 'Diario de Jonathan Harker. 3 de mayo. Bistritz. Salí de Múnich a las 8:35 de la noche del 1 de mayo, llegando a Viena a la mañana siguiente temprano...'],
+        ['title' => 'Un mundo feliz', 'author' => 'Aldous Huxley', 'category' => 'Distopía', 'pages' => 288, 'text' => 'Un edificio gris, achaparrado, de sólo treinta y cuatro plantas. Sobre la entrada principal las palabras: Centro de Incubación y Condicionamiento de la Central de Londres...'],
+        ['title' => 'El conde de Montecristo', 'author' => 'Alexandre Dumas', 'category' => 'Aventuras', 'pages' => 1243, 'text' => 'El 24 de febrero de 1815 el vigía de Nuestra Señora de la Guarda señaló el buque de tres palos el Faraón, procedente de Esmirna, Trieste y Nápoles...'],
+        ['title' => 'Frankenstein', 'author' => 'Mary Shelley', 'category' => 'Terror', 'pages' => 280, 'text' => 'Carta 1. A la señora Saville, Inglaterra. San Petersburgo, 11 de diciembre. Te alegrará saber que no ha habido contratiempos al comienzo de la empresa...'],
+        ['title' => 'Ensayo sobre la ceguera', 'author' => 'José Saramago', 'category' => 'Novela', 'pages' => 328, 'text' => 'El disco amarillo se iluminó. Dos de los coches que esperaban en cabeza aceleraron antes de que el rojo se encendiera. En el paso de peatones apareció el muñeco verde...'],
+        ['title' => 'Pedro Páramo', 'author' => 'Juan Rulfo', 'category' => 'Novela', 'pages' => 132, 'text' => 'Vine a Comala porque me dijeron que acá vivía mi padre, un tal Pedro Páramo. Mi madre me lo dijo. Y yo le prometí que vendría a verlo en cuanto ella muriera...'],
+        ['title' => 'El nombre de la rosa', 'author' => 'Umberto Eco', 'category' => 'Histórica', 'pages' => 784, 'text' => 'En el principio era el Verbo y el Verbo era en Dios, y el Verbo era Dios. Esto era en el principio, en Dios, y la tarea del monje fiel sería repetir cada día...'],
+        ['title' => 'Rayuela', 'author' => 'Julio Cortázar', 'category' => 'Novela', 'pages' => 600, 'text' => '¿Encontraría a la Maga? Tantas veces me había bastado asomarme, viniendo por la rue de Seine, al arco que da al Quai de Conti, y apenas la luz de ceniza y olivo...'],
+        ['title' => 'Los miserables', 'author' => 'Victor Hugo', 'category' => 'Clásico', 'pages' => 1463, 'text' => 'En 1815, monseñor Charles-François-Bienvenu Myriel era obispo de Digne. Era un anciano de unos setenta y cinco años; ocupaba la sede de Digne desde 1806...'],
+        ['title' => 'Rebelión en la granja', 'author' => 'George Orwell', 'category' => 'Sátira', 'pages' => 144, 'text' => 'El señor Jones, de la Granja Manor, había cerrado los gallineros para la noche, pero estaba demasiado borracho para recordar que había dejado abiertas las trampillas...'],
+        ['title' => 'Nada', 'author' => 'Carmen Laforet', 'category' => 'Novela', 'pages' => 304, 'text' => 'Por dificultades en el último momento para adquirir billetes, llegué a Barcelona a medianoche, en un tren distinto del que había anunciado, y no me esperaba nadie...']
+    ];
+
+    foreach ($books as $book) {
+        $html = '<!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                body { font-family: "Times New Roman", Times, serif; color: #111; line-height: 1.6; padding: 25px; }
+                .header { text-align: center; margin-bottom: 40px; }
+                .edition { font-size: 11pt; color: #555; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
+                .title { font-size: 26pt; font-weight: bold; margin-bottom: 10px; text-transform: uppercase; }
+                .author { font-size: 16pt; color: #333; margin-bottom: 5px; }
+                .meta { font-size: 12pt; color: #555; margin-bottom: 40px; }
+                .section-title { font-size: 12pt; font-weight: bold; text-transform: uppercase; margin-bottom: 15px; }
+                .content { font-size: 12pt; text-align: justify; margin-bottom: 40px; }
+                .footer { position: fixed; bottom: 30px; width: 100%; text-align: center; font-size: 9pt; color: #777; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <div class="edition">LECTIO DIGITAL EDITION</div>
+                <div class="title">' . $book['title'] . '</div>
+                <div class="author">por ' . $book['author'] . '</div>
+                <div class="meta">' . $book['category'] . ' &nbsp;&nbsp;&nbsp; ' . $book['pages'] . ' páginas</div>
+            </div>
+            <div class="section-title">PARTE I - CAPÍTULO 1</div>
+            <div class="content">' . $book['text'] . '</div>
+            <div class="footer">
+                &copy; ' . date('Y') . ' Lectio. Todos los derechos reservados. Copia autorizada para el usuario de la plataforma.
+            </div>
+        </body>
+        </html>';
+
+        // Guardamos el PDF en tu carpeta storage/app/public
+        $filename = Str::slug($book['title']) . '.pdf';
+        Pdf::loadHTML($html)->save(storage_path('app/public/' . $filename));
+    }
+
+    return "¡Los 12 PDFs se han generado correctamente en tu carpeta storage/app/public!";
+});
+
+
+
 
 require __DIR__ . '/auth.php';

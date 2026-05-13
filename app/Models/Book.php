@@ -10,7 +10,7 @@ class Book extends Model {
     protected $fillable = [
         'title', 'author', 'category', 'pages', 'image_url', 'is_bestseller',
         'synopsis', 'publisher', 'language', 'published_date', 'rating',
-        'reviews_count', 'old_price', 'discount_percent'
+        'reviews_count', 'old_price', 'discount_percent','pdf_path', 'audio_path'
     ];
 
     protected static function booted()
