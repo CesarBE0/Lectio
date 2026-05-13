@@ -145,6 +145,10 @@
             modal.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
 
+            // 🚀 ¡LA MAGIA ESTÁ AQUÍ!
+            // Guardamos el orderNumber directamente nada más abrir el modal, sin esperar a la base de datos.
+            document.getElementById('modal-order-number').value = orderNumber;
+
             fetch(`/pedidos/${orderNumber}/detalle`)
                 .then(r => r.json())
                 .then(order => {
@@ -154,16 +158,16 @@
 
                     // PRE-SELECCIONAMOS EL ESTADO ACTUAL EN EL DESPLEGABLE
                     document.getElementById('modal-status-select').value = order.status;
-                    // GUARDAMOS EL NÚMERO DE PEDIDO EN EL INPUT OCULTO
-                    document.getElementById('modal-order-number').value = order.order_number;
+
+                    // (Hemos borrado de aquí la línea que daba problemas)
 
                     const list = document.getElementById('modal-items');
                     list.innerHTML = '';
                     order.order_items.forEach(item => {
                         list.innerHTML += `<li class="flex justify-between items-center bg-white p-2.5 rounded-lg border border-gray-100 shadow-sm text-xs">
-                            <span><b>${item.book.title}</b> (${item.format_type})</span>
-                            <span class="font-bold">${item.price}€</span>
-                        </li>`;
+                    <span><b>${item.book.title}</b> (${item.format_type})</span>
+                    <span class="font-bold">${item.price}€</span>
+                </li>`;
                     });
                 });
         }
