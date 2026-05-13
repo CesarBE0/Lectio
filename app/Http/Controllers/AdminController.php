@@ -192,7 +192,13 @@ class AdminController extends Controller {
 
     public function updateStatus(\Illuminate\Http\Request $request, $orderNumber)
     {
-        // Usamos DB::table apuntando a tu tabla real: 'library'
+        // 1. Actualizamos la tabla principal (para que el Admin lo vea)
+        // ⚠️ OJO: Si en DBeaver tu tabla de pedidos se llama 'pedidos' en vez de 'orders', cámbialo aquí.
+        \Illuminate\Support\Facades\DB::table('orders')
+            ->where('order_number', $orderNumber)
+            ->update(['status' => $request->status]);
+
+        // 2. Actualizamos la tabla pivote (para que el Usuario lo vea en su biblioteca)
         \Illuminate\Support\Facades\DB::table('library')
             ->where('order_number', $orderNumber)
             ->update(['status' => $request->status]);

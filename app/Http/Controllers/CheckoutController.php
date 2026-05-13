@@ -151,6 +151,20 @@ class CheckoutController extends Controller
                 $exists = \Illuminate\Support\Facades\DB::table('library')->where('order_number', $orderNumber)->exists();
             } while ($exists);
 
+            // 🚀 1. EL DETECTOR DE FORMATOS DE LAURITA
+            $hasPhysicalBook = false;
+            foreach ($cartItems as $item) {
+                $formato = strtolower($item['format'] ?? '');
+                // Si encontramos alguna palabra clave de formato físico, activamos la alarma
+                if (str_contains($formato, 'tapa dura') || str_contains($formato, 'físico')) {
+                    $hasPhysicalBook = true;
+                    break;
+                }
+            }
+
+            // 🚀 2. DECIDIMOS EL ESTADO INICIAL
+            $initialStatus = $hasPhysicalBook ? 'preparando' : 'entregado';
+
             $booksToSync = [];
             foreach($cartItems as $item) {
                 $id = $item['id'] ?? $item['book_id'] ?? ($item['book']['id'] ?? null);
@@ -168,7 +182,8 @@ class CheckoutController extends Controller
                         'price' => $itemPrice,
                         'discount' => $itemDiscount,
                         'shipping' => $shippingPerItem,
-                        'order_number' => $orderNumber
+                        'order_number' => $orderNumber,
+                        'status' => $initialStatus // 🚀 3. GUARDAMOS EL ESTADO INTELIGENTE
                     ];
                 }
             }
