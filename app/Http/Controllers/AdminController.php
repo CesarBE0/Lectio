@@ -190,16 +190,15 @@ class AdminController extends Controller {
         return redirect()->route('admin.inventory')->with('success', 'Libro y ofertas actualizados con éxito.');
     }
 
-    public function updateStatus(Illuminate\Http\Request $request, $orderNumber)
+    public function updateStatus(\Illuminate\Http\Request $request, $orderNumber)
     {
-        // Buscamos el pedido en tu base de datos (asegúrate de poner tu modelo correcto, como Order::class)
-        $order = \App\Models\Order::where('order_number', $orderNumber)->firstOrFail();
+        // Usamos DB::table para ir directamente a tu tabla pivote
+        // y actualizar el estado de todos los libros que pertenezcan a ese pedido.
+        \Illuminate\Support\Facades\DB::table('book_user')
+            ->where('order_number', $orderNumber)
+            ->update(['status' => $request->status]);
 
-        // Actualizamos el estado
-        $order->status = $request->status;
-        $order->save();
-
-        // Devolvemos la respuesta positiva a Javascript
+        // Ahora sí, devolvemos un JSON limpio para que Javascript lo entienda
         return response()->json(['success' => true]);
     }
 
