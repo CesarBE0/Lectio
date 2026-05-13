@@ -58,31 +58,28 @@ class AdminController extends Controller {
     {
         $statusFilter = $request->input('status', 'todos');
 
+        // Subquery: Agrupamos por pedido y traemos el estado real (status)
         $subquery = DB::table('library')
             ->join('users', 'library.user_id', '=', 'users.id')
             ->select(
                 'library.order_number',
                 'users.name as user_name',
                 DB::raw('MAX(library.created_at) as created_at'),
-                DB::raw('SUM(library.price - library.discount + library.shipping) as totalPrice')
+                DB::raw('SUM(library.price - library.discount + library.shipping) as totalPrice'),
+                // Seleccionamos el estado real (cogemos el MAX por si hay ligeras variaciones, aunque todos deberían ser iguales por pedido)
+                DB::raw('MAX(library.status) as status')
             )
             ->whereNotNull('library.order_number')
             ->groupBy('library.order_number', 'users.name');
 
+        // Construimos la query principal sobre la subquery
         $query = DB::table(DB::raw("({$subquery->toSql()}) as sub"))
             ->mergeBindings($subquery)
-            ->select('*', DB::raw("CASE
-                WHEN TIMESTAMPDIFF(HOUR, created_at, NOW()) <= 48 THEN 'preparando'
-                WHEN TIMESTAMPDIFF(HOUR, created_at, NOW()) <= 96 THEN 'de_camino'
-                ELSE 'entregado'
-            END as status"));
+            ->select('*');
 
+        // Aplicamos el filtro si el administrador ha seleccionado uno
         if ($statusFilter !== 'todos') {
-            $query->whereRaw("CASE
-                WHEN TIMESTAMPDIFF(HOUR, created_at, NOW()) <= 48 THEN 'preparando'
-                WHEN TIMESTAMPDIFF(HOUR, created_at, NOW()) <= 96 THEN 'de_camino'
-                ELSE 'entregado'
-            END = ?", [$statusFilter]);
+            $query->where('status', '=', $statusFilter);
         }
 
         $orders = $query->orderBy('created_at', 'desc')->paginate(10);
@@ -96,19 +93,19 @@ class AdminController extends Controller {
             ->join('books', 'library.book_id', '=', 'books.id')
             ->join('users', 'library.user_id', '=', 'users.id')
             ->where('library.order_number', $orderNumber)
-            ->select('books.title', 'library.format as format_type', 'library.price', 'library.discount', 'library.shipping', 'users.name as user_name', 'library.created_at', 'library.address', 'library.city')
+            ->select('books.title', 'library.format as format_type', 'library.price', 'library.discount', 'library.shipping', 'users.name as user_name', 'library.created_at', 'library.address', 'library.city', 'library.status')
             ->get();
 
         if ($items->isEmpty()) return response()->json(['error' => 'No encontrado'], 404);
 
-        $horas = Carbon::parse($items->first()->created_at)->diffInHours(now());
-        $status = $horas <= 48 ? 'preparando' : ($horas <= 96 ? 'de_camino' : 'entregado');
+        // AHORA SÍ: Usamos el estado que viene de la base de datos, no el cálculo de horas.
+        $statusReal = $items->first()->status;
 
         return response()->json([
             'user' => ['name' => $items->first()->user_name],
             'address' => $items->first()->address,
             'city' => $items->first()->city,
-            'status' => $status,
+            'status' => $statusReal, // <-- ¡Pasamos el estado real al modal!
             'totalPrice' => $items->sum(fn($i) => $i->price - $i->discount + $i->shipping),
             'order_items' => $items->map(fn($i) => [
                 'book' => ['title' => $i->title],
