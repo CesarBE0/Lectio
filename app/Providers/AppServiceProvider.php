@@ -36,5 +36,14 @@ class AppServiceProvider extends ServiceProvider
                 ->line('Si tú no te has registrado en Lectio, no te preocupes, puedes ignorar este mensaje.')
                 ->salutation('Con cariño, el equipo de Lectio.');
         });
+
+        VerifyEmail::toMailUsing(function (object $notifiable, string $url) {
+            return (new MailMessage)
+                ->subject('🔑 Bienvenido a Lectio - Verifica tu cuenta')
+                ->view('emails.verify', [
+                    'url' => $url,
+                    'user' => $notifiable
+                ]);
+        });
     }
 }
