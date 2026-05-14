@@ -166,6 +166,8 @@ class AdminController extends Controller {
 
             // Movemos la imagen a la carpeta public/img
             $file->move(public_path('img'), $imageName);
+
+            $imagePathForDB = 'img/' . $imageName;
         }
 
         // 3. Tomamos el precio del formato 'Tapa dura' como precio base del libro
@@ -178,7 +180,7 @@ class AdminController extends Controller {
             'category' => $request->category,
             'pages' => $request->pages,
             'synopsis' => $request->synopsis,
-            'image_url' => $imageName,
+            'image_url' => $imagePathForDB,
             'price' => $basePrice,
             'is_bestseller' => false,
         ]);
@@ -199,10 +201,20 @@ class AdminController extends Controller {
     {
         $book = \App\Models\Book::findOrFail($id);
 
+        // 1. Validamos los datos (puedes añadir más reglas si quieres)
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'author' => 'required|string|max:255',
+            'category' => 'required|string',
+            'synopsis' => 'nullable|string',
+        ]);
+
         $percent = intval($request->discount_percentage);
 
-        $book->update($request->only(['title', 'author', 'image_url', 'synopsis']));
+        // 2. Actualizamos los datos principales (incluyendo category y usando synopsis)
+        $book->update($request->only(['title', 'author', 'category', 'synopsis', 'image_url']));
 
+        // 3. Lógica de descuentos (la que ya tenías)
         if ($percent > 0) {
             $book->discount_percent = "-" . $percent . "%";
             $book->old_price = $request->formats['Tapa dura']['price'] ?? 0;
@@ -212,9 +224,9 @@ class AdminController extends Controller {
         }
         $book->save();
 
+        // 4. Actualizamos los formatos
         foreach ($request->formats as $type => $data) {
             $originalPrice = floatval($data['price']);
-
             $finalPrice = $percent > 0 ? ($originalPrice * (1 - ($percent / 100))) : $originalPrice;
 
             $book->formats()->updateOrCreate(
@@ -226,7 +238,7 @@ class AdminController extends Controller {
             );
         }
 
-        return redirect()->route('admin.inventory')->with('success', 'Libro y ofertas actualizados con éxito.');
+        return redirect()->route('admin.inventory')->with('success', 'Libro y género actualizados con éxito.');
     }
 
     public function updateStatus(\Illuminate\Http\Request $request, $orderNumber)

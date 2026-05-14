@@ -5,6 +5,10 @@
                 <h1 class="text-4xl font-serif font-bold text-black uppercase tracking-widest">{{ __('Editar y Ofertar') }}</h1>
                 <p class="text-gray-500 font-medium mt-1 italic">{{ __('Gestionando:') }} <span class="text-black font-bold">{{ $book->title }}</span></p>
             </div>
+            <a href="{{ route('admin.inventory') }}" class="text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-black transition-colors flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                {{ __('Volver al Inventario') }}
+            </a>
         </div>
 
         <form action="{{ route('admin.books.update', $book->id) }}" method="POST" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -14,10 +18,36 @@
                 <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden">
                     <div class="absolute top-0 left-0 w-1 h-full bg-[#D4AF37]"></div>
                     <h2 class="text-xs font-black text-gray-400 uppercase tracking-[0.3em] mb-6">🖋️ {{ __('Información de la Obra') }}</h2>
-                    <div class="space-y-6">
-                        <input type="text" name="title" value="{{ old('title', $book->title) }}" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm font-bold outline-none focus:border-[#D4AF37]" required>
-                        <input type="text" name="author" value="{{ old('author', $book->author) }}" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm font-bold outline-none focus:border-[#D4AF37]" required>
-                        <textarea name="description" rows="5" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm outline-none focus:border-[#D4AF37]">{{ old('description', $book->description) }}</textarea>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="md:col-span-2">
+                            <label class="text-[10px] font-black text-gray-500 uppercase tracking-widest block mb-2">{{ __('Título del Libro') }}</label>
+                            <input type="text" name="title" value="{{ old('title', $book->title) }}" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm font-bold outline-none focus:border-[#D4AF37] focus:ring-2 focus:ring-[#D4AF37]/50 transition-all" required>
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] font-black text-gray-500 uppercase tracking-widest block mb-2">{{ __('Autor / Escritor') }}</label>
+                            <input type="text" name="author" value="{{ old('author', $book->author) }}" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm font-bold outline-none focus:border-[#D4AF37] focus:ring-2 focus:ring-[#D4AF37]/50 transition-all" required>
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] font-black text-gray-500 uppercase tracking-widest block mb-2">{{ __('Género Literario') }}</label>
+                            <select name="category" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm font-bold text-black outline-none focus:border-[#D4AF37] focus:ring-2 focus:ring-[#D4AF37]/50 transition-all" required>
+                                @php
+                                    $generos = ['Novela', 'Terror', 'Fantasía', 'Distopía', 'Filosofía', 'Épica', 'Romántica', 'Aventuras', 'Fábula', 'Clásico', 'Histórica', 'Sátira'];
+                                @endphp
+                                @foreach($generos as $genero)
+                                    <option value="{{ $genero }}" {{ (old('category', $book->category) == $genero) ? 'selected' : '' }}>
+                                        {{ $genero }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="text-[10px] font-black text-gray-500 uppercase tracking-widest block mb-2">{{ __('Sinopsis Editorial') }}</label>
+                            <textarea name="synopsis" rows="5" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm outline-none focus:border-[#D4AF37] focus:ring-2 focus:ring-[#D4AF37]/50 transition-all">{{ old('synopsis', $book->synopsis) }}</textarea>
+                        </div>
                     </div>
                 </div>
             </div>
