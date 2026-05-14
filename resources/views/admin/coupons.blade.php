@@ -26,6 +26,7 @@
                     <table class="w-full text-left border-collapse">
                         <thead class="bg-gray-50 text-gray-500 text-[10px] uppercase tracking-widest">
                         <tr>
+                            <th class="text-xs font-black text-gray-400 uppercase tracking-widest">Usuario</th>
                             <th class="p-4 font-black">Código</th>
                             <th class="p-4 font-black">Descuento</th>
                             <th class="p-4 font-black text-center">Estado</th>
@@ -35,6 +36,7 @@
                         <tbody class="divide-y divide-gray-100">
                         @forelse($coupons ?? [] as $coupon)
                             <tr class="hover:bg-gray-50">
+                                <td class="font-bold text-sm text-black">{{ $coupon->user ? $coupon->user->name : 'Cupón Global' }}</td>
                                 <td class="p-4"><span class="font-mono font-bold text-black bg-gray-100 px-2 py-1 rounded">{{ $coupon->code }}</span></td>
                                 <td class="p-4"><span class="text-[#D4AF37] font-black text-lg">-{{ $coupon->discount_percentage }}%</span></td>
                                 <td class="p-4 text-center">

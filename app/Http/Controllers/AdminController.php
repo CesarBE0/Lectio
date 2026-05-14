@@ -255,4 +255,12 @@ class AdminController extends Controller {
         return response()->json(['success' => false, 'message' => 'No se encontró el pedido o el estado es el mismo']);
     }
 
+    public function coupons()
+    {
+        // Traemos los cupones junto con su usuario asociado
+        $coupons = Coupon::with('user')->orderBy('created_at', 'desc')->paginate(10);
+
+        return view('admin.coupons', compact('coupons'));
+    }
+
 }
