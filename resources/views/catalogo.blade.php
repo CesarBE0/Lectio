@@ -20,7 +20,7 @@
                             <span class="text-[#D4AF37]">🔍</span> {{__("Filtrar búsqueda")}}
                         </h3>
 
-                        <form action="{{ route('catalogo') }}" method="GET" class="space-y-5">
+                        <form id="catalogFilterForm" action="{{ route('catalogo') }}" method="GET" class="space-y-5">
 
                             <div>
                                 <label class="block text-[10px] text-gray-400 uppercase font-black mb-1">{{__("Palabra Clave")}}</label>
@@ -144,22 +144,20 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const searchInput = document.getElementById('live-search');
-            const bookCards = document.querySelectorAll('.book-card');
+            const filterForm = document.getElementById('catalogFilterForm');
+            let typingTimer;
 
             if (searchInput) {
-                searchInput.addEventListener('input', function(e) {
-                    const searchTerm = e.target.value.toLowerCase().trim();
+                searchInput.addEventListener('keyup', function() {
+                    clearTimeout(typingTimer);
+                    // Esperamos 500ms tras dejar de escribir para enviar la petición al servidor
+                    typingTimer = setTimeout(function() {
+                        filterForm.submit();
+                    }, 500);
+                });
 
-                    bookCards.forEach(card => {
-                        const title = card.querySelector('.card-title').textContent.toLowerCase();
-                        const author = card.querySelector('.book-author').textContent.toLowerCase();
-
-                        if (title.includes(searchTerm) || author.includes(searchTerm)) {
-                            card.style.display = '';
-                        } else {
-                            card.style.display = 'none';
-                        }
-                    });
+                searchInput.addEventListener('keydown', function() {
+                    clearTimeout(typingTimer);
                 });
             }
         });
