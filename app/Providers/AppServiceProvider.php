@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Auth\Notifications\ResetPassword;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,19 +29,23 @@ class AppServiceProvider extends ServiceProvider
 
         VerifyEmail::toMailUsing(function (object $notifiable, string $url) {
             return (new MailMessage)
-                ->subject('¡Bienvenido a Lectio! Confirma tu correo')
-                ->greeting('¡Hola, ' . $notifiable->name . '!')
-                ->line('Estamos encantados de tenerte en nuestra exclusiva librería.')
-                ->line('Para empezar a comprar tus libros favoritos y disfrutar de todas las ventajas, por favor confirma tu dirección de correo pulsando el botón de abajo:')
-                ->action('Confirmar mi cuenta en Lectio', $url)
-                ->line('Si tú no te has registrado en Lectio, no te preocupes, puedes ignorar este mensaje.')
-                ->salutation('Con cariño, el equipo de Lectio.');
-        });
-
-        VerifyEmail::toMailUsing(function (object $notifiable, string $url) {
-            return (new MailMessage)
                 ->subject('🔑 Bienvenido a Lectio - Verifica tu cuenta')
                 ->view('emails.verify', [
+                    'url' => $url,
+                    'user' => $notifiable
+                ]);
+        });
+
+        ResetPassword::toMailUsing(function (object $notifiable, string $token) {
+            // Laravel necesita generar la URL exacta con el token y el email del usuario
+            $url = url(route('password.reset', [
+                'token' => $token,
+                'email' => $notifiable->getEmailForPasswordReset(),
+            ], false));
+
+            return (new MailMessage)
+                ->subject('🔐 Restablece tu contraseña - Lectio')
+                ->view('emails.reset', [
                     'url' => $url,
                     'user' => $notifiable
                 ]);
