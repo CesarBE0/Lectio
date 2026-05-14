@@ -20,7 +20,7 @@
             </div>
         @endif
 
-        <form action="{{ route('admin.books.store') }}" method="POST" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <form action="{{ route('admin.books.store') }}" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             @csrf
 
             <div class="lg:col-span-2 space-y-6">
@@ -30,8 +30,8 @@
                         <span class="text-[#D4AF37]">🖋️</span> {{ __('Detalles de la Publicación') }}
                     </h2>
 
-                    <div class="space-y-6">
-                        <div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="md:col-span-2">
                             <label class="text-[10px] font-black text-gray-500 uppercase tracking-widest block mb-2">{{ __('Título del Libro') }}</label>
                             <input type="text" name="title" value="{{ old('title') }}" placeholder="Ej: La insoportable levedad del ser"
                                    class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm font-bold text-black focus:ring-2 focus:ring-[#D4AF37]/50 focus:border-[#D4AF37] outline-none transition-all" required>
@@ -44,15 +44,40 @@
                         </div>
 
                         <div>
-                            <label class="text-[10px] font-black text-gray-500 uppercase tracking-widest block mb-2">{{ __('Portada (Ruta de imagen)') }}</label>
-                            <input type="text" name="image_url" value="{{ old('image_url') }}" placeholder="Ej: img/libro2.png"
-                                   class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm font-mono text-gray-600 focus:ring-2 focus:ring-[#D4AF37]/50 focus:border-[#D4AF37] outline-none transition-all" required>
+                            <label class="text-[10px] font-black text-gray-500 uppercase tracking-widest block mb-2">{{ __('Género Literario') }}</label>
+                            <select name="category" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm font-bold text-black focus:ring-2 focus:ring-[#D4AF37]/50 focus:border-[#D4AF37] outline-none transition-all" required>
+                                <option value="" disabled selected>Selecciona un género</option>
+                                <option value="Novela" {{ old('category') == 'Novela' ? 'selected' : '' }}>Novela</option>
+                                <option value="Terror" {{ old('category') == 'Terror' ? 'selected' : '' }}>Terror</option>
+                                <option value="Fantasía" {{ old('category') == 'Fantasía' ? 'selected' : '' }}>Fantasía</option>
+                                <option value="Distopía" {{ old('category') == 'Distopía' ? 'selected' : '' }}>Distopía</option>
+                                <option value="Filosofía" {{ old('category') == 'Filosofía' ? 'selected' : '' }}>Filosofía</option>
+                                <option value="Épica" {{ old('category') == 'Épica' ? 'selected' : '' }}>Épica</option>
+                                <option value="Romántica" {{ old('category') == 'Romántica' ? 'selected' : '' }}>Romántica</option>
+                                <option value="Aventuras" {{ old('category') == 'Aventuras' ? 'selected' : '' }}>Aventuras</option>
+                                <option value="Fábula" {{ old('category') == 'Fábula' ? 'selected' : '' }}>Fábula</option>
+                                <option value="Clásico" {{ old('category') == 'Clásico' ? 'selected' : '' }}>Clásico</option>
+                                <option value="Histórica" {{ old('category') == 'Histórica' ? 'selected' : '' }}>Histórica</option>
+                                <option value="Sátira" {{ old('category') == 'Sátira' ? 'selected' : '' }}>Sátira</option>
+                            </select>
                         </div>
 
                         <div>
+                            <label class="text-[10px] font-black text-gray-500 uppercase tracking-widest block mb-2">{{ __('Nº de Páginas') }}</label>
+                            <input type="number" name="pages" value="{{ old('pages') }}" placeholder="Ej: 320"
+                                   class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm font-bold text-black focus:ring-2 focus:ring-[#D4AF37]/50 focus:border-[#D4AF37] outline-none transition-all" required>
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] font-black text-gray-500 uppercase tracking-widest block mb-2">{{ __('Portada (Archivo)') }}</label>
+                            <input type="file" name="image" accept="image/*"
+                                   class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-600 focus:ring-2 focus:ring-[#D4AF37]/50 focus:border-[#D4AF37] outline-none transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#D4AF37] file:text-black hover:file:bg-[#D4AF37]/80" required>
+                        </div>
+
+                        <div class="md:col-span-2 mt-2">
                             <label class="text-[10px] font-black text-gray-500 uppercase tracking-widest block mb-2">{{ __('Sinopsis Editorial') }}</label>
-                            <textarea name="description" rows="5" placeholder="Escribe un breve resumen de la obra..."
-                                      class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm text-gray-700 focus:ring-2 focus:ring-[#D4AF37]/50 focus:border-[#D4AF37] outline-none transition-all">{{ old('description') }}</textarea>
+                            <textarea name="synopsis" rows="5" placeholder="Escribe un breve resumen de la obra..."
+                                      class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm text-gray-700 focus:ring-2 focus:ring-[#D4AF37]/50 focus:border-[#D4AF37] outline-none transition-all">{{ old('synopsis') }}</textarea>
                         </div>
                     </div>
                 </div>

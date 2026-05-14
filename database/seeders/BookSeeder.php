@@ -89,8 +89,6 @@ class BookSeeder extends Seeder
                 'synopsis' => 'A través de los ojos de la pequeña Scout Finch, viajamos al sur de Estados Unidos durante la Gran Depresión. Su padre, el íntegro abogado Atticus Finch, decide defender a un hombre negro acusado injustamente de un terrible crimen, enfrentándose a los arraigados prejuicios y al racismo de toda una comunidad.',
                 'pdf_path' => 'Matar_a_un_ruisenor.pdf', 'audio_path' => 'Matar_a_un_ruisenor.mp3'
             ],
-
-            // --- LOS 12 NUEVOS ---
             [
                 'title' => 'El retrato de Dorian Gray', 'author' => 'Oscar Wilde', 'category' => 'Novela', 'pages' => 256, 'price' => 18.50, 'is_bestseller' => false,
                 'image_url' => 'img/El_retrato_de_dorian_gray.png',

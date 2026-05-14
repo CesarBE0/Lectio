@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class AdminController extends Controller {
 
@@ -138,19 +139,60 @@ class AdminController extends Controller {
         return view('admin.books.edit', compact('book'));
     }
 
-    public function storeBook(Request $request) {
-        $book = Book::create($request->only([
-            'title', 'author', 'image_url', 'description', 'old_price', 'discount_percent'
-        ]));
+    public function storeBook(Request $request)
+    {
+        // 1. Validamos todos los campos que vienen del nuevo formulario
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'author' => 'required|string|max:255',
+            'category' => 'required|string',
+            'pages' => 'required|integer',
+            'synopsis' => 'nullable|string',
+            'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'formats' => 'required|array'
+        ]);
 
+        $imageName = null;
+
+        // 2. Comprobamos si hay foto y le damos el formato perfecto (Ej: Nuevo_libro.png)
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+
+            $cleanTitle = Str::slug($request->title, '_');
+            $cleanTitle = ucfirst($cleanTitle);
+
+            $extension = $file->getClientOriginalExtension();
+            $imageName = $cleanTitle . '.' . $extension;
+
+            // Movemos la imagen a la carpeta public/img
+            $file->move(public_path('img'), $imageName);
+        }
+
+        // 3. Tomamos el precio del formato 'Tapa dura' como precio base del libro
+        $basePrice = $request->formats['Tapa dura']['price'] ?? 0;
+
+        // 4. Creamos el libro en la base de datos
+        $book = Book::create([
+            'title' => $request->title,
+            'author' => $request->author,
+            'category' => $request->category,
+            'pages' => $request->pages,
+            'synopsis' => $request->synopsis,
+            'image_url' => $imageName,
+            'price' => $basePrice,
+            'is_bestseller' => false,
+        ]);
+
+        // 5. Guardamos las relaciones de los formatos (Tapa dura, E-book, Audiolibro)
         foreach ($request->formats as $type => $data) {
             $book->formats()->create([
                 'type' => $type,
                 'price' => $data['price'],
-                'stock' => 0,
+                'stock' => $data['stock'] ?? 0,
             ]);
         }
-        return redirect()->route('admin.inventory')->with('success', 'Libro añadido con éxito al catálogo.');
+
+        return redirect()->route('admin.inventory')->with('success', '¡Libro y portada añadidos con éxito al catálogo!');
     }
 
     public function updateBook(Request $request, $id)
@@ -159,7 +201,7 @@ class AdminController extends Controller {
 
         $percent = intval($request->discount_percentage);
 
-        $book->update($request->only(['title', 'author', 'image_url', 'description']));
+        $book->update($request->only(['title', 'author', 'image_url', 'synopsis']));
 
         if ($percent > 0) {
             $book->discount_percent = "-" . $percent . "%";
