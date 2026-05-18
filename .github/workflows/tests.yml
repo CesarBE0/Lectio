@@ -1,0 +1,54 @@
+name: Pruebas de Código (CI)
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+jobs:
+  laravel-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Descargar el código del repositorio
+      - uses: actions/checkout@v4
+
+      # 2. Configurar el entorno de PHP
+      - name: Configurar PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3' # Pon aquí tu versión de PHP si usas otra
+          extensions: mbstring, dom, fileinfo, sqlite, pdo_sqlite
+          coverage: none
+
+      # 3. Preparar el archivo de entorno para tests (Usando SQLite)
+      - name: Preparar Entorno de Pruebas
+        run: |
+          cp .env.example .env
+          sed -i 's/DB_CONNECTION=.*/DB_CONNECTION=sqlite/' .env
+          sed -i 's/DB_DATABASE=.*/DB_DATABASE=:memory:/' .env
+
+      # 4. Instalar dependencias de PHP (Composer)
+      - name: Instalar Dependencias de Composer
+        run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+      # 5. Generar la clave de la aplicación
+      - name: Generar Application Key
+        run: php artisan key:generate
+
+      # 6. Configurar Node.js y compilar Vue/Tailwind
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Tu versión de Node
+          cache: 'npm'
+
+      - name: Instalar y Compilar Assets (NPM)
+        run: |
+          npm ci
+          npm run build
+
+      # 7. ¡EL MOMENTO DE LA VERDAD! Ejecutar los tests de Laravel
+      - name: Ejecutar Tests
+        run: php artisan test
