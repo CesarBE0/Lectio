@@ -6,6 +6,7 @@
 
             <h1 class="text-4xl font-serif font-bold text-black mb-2 border-l-4 border-[#D4AF37] pl-3">{{__("Carrito de Compra")}}</h1>
             <p class="text-gray-500 mb-10 pl-4"><span id="cart-count">{{ count(session('cart')) }}</span> {{__("artículos en tu carrito")}}</p>
+
             <div class="flex justify-start mt-6 mb-10">
                 <a href="{{ url('/vaciar-carrito') }}"
                    id="btn-empty-cart"
@@ -18,14 +19,14 @@
                     </div>
 
                     <span class="text-xs uppercase tracking-widest font-serif font-bold text-black group-hover:text-[#D4AF37] transition-colors">
-            {{__("Vaciar carrito de compra")}}
-        </span>
+                        {{__("Vaciar carrito de compra")}}
+                    </span>
                 </a>
             </div>
+
             <div class="flex flex-col lg:flex-row gap-12 items-start">
 
                 <div class="w-full lg:w-2/3 space-y-6">
-
                     @foreach(session('cart') as $cartKey => $details)
                         <div id="row-{{ $cartKey }}" class="flex flex-col sm:flex-row gap-6 bg-white p-4 rounded-xl border border-gray-100 shadow-sm transition hover:shadow-md hover:border-[#D4AF37]/30 group">
 
@@ -61,7 +62,6 @@
                                 </div>
 
                                 <div class="flex justify-between items-end mt-4">
-
                                     <div class="flex items-center border border-gray-300 rounded-lg h-8 overflow-hidden bg-white">
                                         <button type="button" onclick="updateCart('{{ $cartKey }}', 'decrease')" class="w-8 h-full flex items-center justify-center text-gray-600 hover:bg-gray-200 hover:text-red-500 transition-colors font-bold text-lg cursor-pointer">
                                             -
@@ -126,20 +126,46 @@
 
                         <div class="flex flex-col gap-3">
                             @auth
-                                <form action="#" method="POST" class="w-full">
-                                    @csrf
-                                    <a href="{{ route('checkout.index') }}"
-                                       class="btn bg-[#D4AF37] hover:bg-[#b5952f] text-black border-none w-full text-lg normal-case font-black h-12 rounded-lg shadow-md transition-colors">
-                                        {{ __('Proceder al Pago') }}
-                                    </a>
-                                </form>
+                                {{-- Comprobamos si el usuario está verificado --}}
+                                @if(auth()->user()->hasVerifiedEmail())
+                                    {{-- ✅ VERIFICADO: Botón de pago normal --}}
+                                    <form action="#" method="POST" class="w-full">
+                                        @csrf
+                                        <a href="{{ route('checkout.index') }}"
+                                           class="btn bg-[#D4AF37] hover:bg-[#b5952f] text-black border-none w-full text-lg normal-case font-black h-12 rounded-lg shadow-md transition-colors flex items-center justify-center">
+                                            {{ __('Proceder al Pago') }}
+                                        </a>
+                                    </form>
+                                @else
+                                    {{-- ❌ REGISTRADO PERO NO VERIFICADO: Alerta integrada en la tarjeta negra --}}
+                                    <div class="bg-gray-900 border border-gray-800 p-4 rounded-xl text-center space-y-2 mb-1 shadow-inner">
+                                        <div class="flex items-center justify-center gap-2 text-red-400">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                            </svg>
+                                            <p class="text-[10px] font-black uppercase tracking-widest text-gray-300">{{ __('Verificación Requerida') }}</p>
+                                        </div>
+                                        <p class="text-xs text-gray-400 italic leading-relaxed">
+                                            {{ __('Confirma tu correo electrónico para desbloquear la pasarela de pago de tus libros.') }}
+                                        </p>
+                                        <a href="{{ route('verification.notice') }}" class="inline-block mt-1 text-[11px] text-[#D4AF37] font-bold underline hover:text-[#b5952f] transition-colors">
+                                            {{ __('Revisar estado de verificación') }}
+                                        </a>
+                                    </div>
+
+                                    {{-- Botón deshabilitado visualmente --}}
+                                    <button disabled class="w-full bg-gray-800 text-gray-500 font-black py-4 rounded-xl uppercase tracking-[0.2em] text-xs border border-gray-700 cursor-not-allowed opacity-50 h-12 flex items-center justify-center">
+                                        {{ __('Pago bloqueado') }}
+                                    </button>
+                                @endif
                             @else
+                                {{-- 👤 INVITADO: Pide iniciar sesión --}}
                                 <a href="{{ route('login') }}" class="btn bg-white hover:bg-gray-200 text-black border-none w-full text-lg normal-case font-black h-12 rounded-lg shadow-md transition-colors flex items-center justify-center">
                                     {{__("Inicia sesión para comprar")}}
                                 </a>
                             @endauth
 
-                            <a href="{{ route('catalogo') }}" class="btn btn-outline border-gray-600 text-gray-300 hover:border-[#D4AF37] hover:text-[#D4AF37] hover:bg-transparent w-full normal-case font-medium h-12 rounded-lg transition-colors">
+                            <a href="{{ route('catalogo') }}" class="btn btn-outline border-gray-600 text-gray-300 hover:border-[#D4AF37] hover:text-[#D4AF37] hover:bg-transparent w-full normal-case font-medium h-12 rounded-lg transition-colors flex items-center justify-center">
                                 {{__("Seguir comprando")}}
                             </a>
                         </div>
@@ -174,7 +200,7 @@
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json' // Pedimos al servidor que nos devuelva JSON
+                    'Accept': 'application/json'
                 },
                 body: JSON.stringify({
                     id: id,
@@ -184,26 +210,20 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-
-                        // 1. Si el producto se ha quedado a 0, lo borramos de la pantalla
                         if (data.new_quantity === 0) {
                             document.getElementById('row-' + id).remove();
-                            // Si era el último producto, recargamos para mostrar el "Carrito Vacío"
                             if (data.is_empty) {
                                 window.location.reload();
                                 return;
                             }
                         } else {
-                            // 2. Si no, actualizamos su cantidad y su precio
                             document.getElementById('qty-' + id).value = data.new_quantity;
                             document.getElementById('item-total-' + id).innerText = data.item_total.toFixed(2) + '€';
                         }
 
-                        // 3. Actualizamos la caja negra de resumen
                         document.getElementById('summary-subtotal').innerText = data.subtotal.toFixed(2) + '€';
                         document.getElementById('summary-total').innerText = data.total.toFixed(2) + '€';
 
-                        // 4. Actualizamos el texto del envío (Gratis o 4.99€)
                         const shippingDiv = document.getElementById('summary-shipping');
                         if (data.shippingCost === 0) {
                             shippingDiv.innerHTML = '<span class="font-black text-[#D4AF37]">GRATIS</span>';
@@ -211,7 +231,6 @@
                             shippingDiv.innerHTML = '<span class="font-medium text-white">' + data.shippingCost.toFixed(2) + '€</span>';
                         }
 
-                        // 5. Actualizamos el mensaje de "Te faltan X€ para envío gratis"
                         const upsellDiv = document.getElementById('upsell-container');
                         if (data.shippingCost > 0 && data.subtotal > 0) {
                             const faltan = (50 - data.subtotal).toFixed(2);
@@ -224,26 +243,27 @@
                 .catch(error => console.error('Error al actualizar el carrito:', error));
         }
     </script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const btnEmptyCart = document.getElementById('btn-empty-cart');
 
             if(btnEmptyCart) {
                 btnEmptyCart.addEventListener('click', function(e) {
-                    e.preventDefault(); // Evitamos que el enlace nos lleve de golpe a la otra página
-                    const url = this.href; // Guardamos la ruta de vaciar el carrito
+                    e.preventDefault();
+                    const url = this.href;
 
                     Swal.fire({
                         title: '¿Vaciar carrito?',
                         text: "Se eliminarán todos los libros que has seleccionado.",
                         icon: 'warning',
-                        iconColor: '#D4AF37', // Icono en dorado Lectio
+                        iconColor: '#D4AF37',
                         showCancelButton: true,
-                        confirmButtonColor: '#D4AF37', // Botón de confirmar negro
-                        cancelButtonColor: '#000000',  // Botón de cancelar gris clarito
+                        confirmButtonColor: '#D4AF37',
+                        cancelButtonColor: '#000000',
                         confirmButtonText: 'Sí, vaciar carrito',
                         cancelButtonText: 'Cancelar',
-                        reverseButtons: true, // Pone el botón de cancelar a la izquierda (Mejor UX)
+                        reverseButtons: true,
                         customClass: {
                             popup: 'border-2 border-[#D4AF37] rounded-2xl shadow-2xl',
                             title: 'font-serif text-2xl text-black font-bold',
@@ -251,9 +271,8 @@
                             cancelButton: 'text-gray-600 uppercase tracking-widest text-xs font-bold px-6 py-3 rounded-lg hover:bg-gray-200 transition-colors border border-gray-200'
                         }
                     }).then((result) => {
-                        // Si el usuario le da al botón negro de confirmar...
                         if (result.isConfirmed) {
-                            window.location.href = url; // ...lo enviamos a la ruta para vaciar el carrito
+                            window.location.href = url;
                         }
                     });
                 });

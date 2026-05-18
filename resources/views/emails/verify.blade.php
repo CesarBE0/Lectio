@@ -13,14 +13,8 @@
     </tr>
 
     <tr>
-        <td class="header">
-            <img src="{{ $message->embed(public_path('img/logo.png')) }}" alt="Lectio Logo" class="logo" style="width: 80px; margin-bottom: 15px; display: inline-block;">
-            <h1>LECTIO</h1>
-        </td>
-    </tr>
-
-    <tr>
         <td style="padding: 40px 30px; text-align: center; background-color: #000000;">
+            <img src="{{ $message->embed(public_path('img/logo.png')) }}" alt="Lectio Logo" style="width: 80px; height: auto; margin-bottom: 15px; display: inline-block;">
             <h1 style="color: #D4AF37; margin: 0; font-size: 32px; letter-spacing: 6px; text-transform: uppercase; font-weight: 900;">LECTIO</h1>
             <p style="color: #888888; font-size: 12px; margin-top: 10px; letter-spacing: 2px; text-transform: uppercase;">Catálogo Global de Obras</p>
         </td>
@@ -35,7 +29,7 @@
             </p>
 
             <div style="text-align: center; margin: 40px 0;">
-                <a href="{{ $url }}" style="background-color: #000000; color: #D4AF37; text-decoration: none; padding: 18px 36px; border-radius: 8px; font-weight: bold; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; display: inline-block;">
+                <a href="{{ $url }}" style="background-color: #000000; color: #D4AF37; text-decoration: none; padding: 18px 36px; border-radius: 8px; font-weight: bold; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; display: inline-block; border: 1px solid #D4AF37;">
                     Verificar mi cuenta
                 </a>
             </div>
