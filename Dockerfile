@@ -31,3 +31,6 @@ RUN npm run build
 
 # 7. Damos permisos a las carpetas de Laravel
 RUN chmod -R 777 storage bootstrap/cache
+
+# 8. Arrancamos el servidor usando el puerto dinámico de Render
+CMD php artisan migrate --force && php artisan db:seed --force && php artisan serve --host=0.0.0.0 --port=${PORT:-10000}
