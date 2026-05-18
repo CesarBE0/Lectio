@@ -11,7 +11,9 @@ class LibraryController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-        $query = $user->books();
+
+        // ✅ CORREGIDO: Forzamos a Laravel a cargar todas las columnas de la tabla intermedia
+        $query = $user->books()->withPivot('is_favorite', 'format', 'order_number', 'address', 'city');
 
         $filter = $request->query('filter');
 
@@ -32,16 +34,32 @@ class LibraryController extends Controller
     public function toggleFavorite($id)
     {
         $user = Auth::user();
-        $book = $user->books()->where('book_id', $id)->first();
 
-        if ($book) {
-            $newStatus = !$book->pivot->is_favorite;
+        // 1. Buscamos directamente en la tabla pivote 'library' para asegurar el valor real
+        $pivot = \Illuminate\Support\Facades\DB::table('library')
+            ->where('user_id', $user->id)
+            ->where('book_id', $id)
+            ->first();
+
+        if ($pivot) {
+            // 2. Invertimos el estado de forma segura (si es 1 pasa a 0, si es 0 a 1)
+            $newStatus = !$pivot->is_favorite;
+
             $user->books()->updateExistingPivot($id, ['is_favorite' => $newStatus]);
 
-            return response()->json(['success' => true, 'is_favorite' => $newStatus]);
+            // 3. Soportamos ambos mundos: si el test pide HTML o si tu JavaScript pide JSON
+            if (request()->ajax() || request()->wantsJson()) {
+                return response()->json(['success' => true, 'is_favorite' => $newStatus]);
+            }
+
+            return redirect()->back()->with('success', 'Estado de favorito actualizado.');
         }
 
-        return response()->json(['success' => false], 404);
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json(['success' => false], 404);
+        }
+
+        abort(404);
     }
 
     public function read(Book $book)

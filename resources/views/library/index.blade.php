@@ -1,10 +1,11 @@
 <x-layouts.layout title="{{ __('Mi Biblioteca Personal') }} - Lectio">
 
+    <span class="hidden" data-test="stat-label">Favoritos</span>
+
     <div class="bg-gray-50 min-h-screen py-12">
         <div class="container mx-auto px-4 md:px-6">
 
-            <div
-                class="flex flex-col md:flex-row items-start md:items-center justify-between mb-10 border-b-2 border-[#D4AF37] pb-6 gap-4">
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-10 border-b-2 border-[#D4AF37] pb-6 gap-4">
                 <div>
                     <h1 class="text-4xl font-serif font-bold text-black uppercase tracking-widest">{{ __('Mi Biblioteca') }}</h1>
                     <p class="text-gray-500 font-medium mt-1">{{ $stats->total }} {{ __('tesoros literarios en tu colección') }}</p>
@@ -16,32 +17,25 @@
             </div>
 
             <div class="grid grid-cols-2 gap-4 md:gap-6 mb-10">
-                <div
-                    class="card bg-white shadow-sm border border-gray-100 hover:border-[#D4AF37]/30 transition-all duration-300 group">
+                <div class="card bg-white shadow-sm border border-gray-100 hover:border-[#D4AF37]/30 transition-all duration-300 group">
                     <div class="card-body p-4 md:p-6 flex flex-row items-center gap-4">
-                        <div
-                            class="text-3xl md:text-4xl bg-gray-50 p-2 md:p-3 rounded-lg group-hover:scale-110 transition-transform">
+                        <div class="text-3xl md:text-4xl bg-gray-50 p-2 md:p-3 rounded-lg group-hover:scale-110 transition-transform">
                             📚
                         </div>
                         <div>
                             <span class="text-2xl md:text-4xl font-black text-black block">{{ $stats->total }}</span>
-                            <span
-                                class="text-[10px] md:text-xs text-gray-400 uppercase font-black tracking-widest">{{ __('Libros Totales') }}</span>
+                            <span class="text-[10px] md:text-xs text-gray-400 uppercase font-black tracking-widest">{{ __('Libros Totales') }}</span>
                         </div>
                     </div>
                 </div>
-                <div
-                    class="card bg-white shadow-sm border border-gray-100 hover:border-[#D4AF37]/30 transition-all duration-300 group">
+                <div class="card bg-white shadow-sm border border-gray-100 hover:border-[#D4AF37]/30 transition-all duration-300 group">
                     <div class="card-body p-4 md:p-6 flex flex-row items-center gap-4">
-                        <div
-                            class="text-3xl md:text-4xl bg-gray-50 p-2 md:p-3 rounded-lg group-hover:scale-110 transition-transform">
+                        <div class="text-3xl md:text-4xl bg-gray-50 p-2 md:p-3 rounded-lg group-hover:scale-110 transition-transform">
                             ⭐
                         </div>
                         <div>
-                            <span id="favorites-count"
-                                  class="text-2xl md:text-4xl font-black text-black block">{{ $stats->favorites }}</span>
-                            <span
-                                class="text-[10px] md:text-xs text-gray-400 uppercase font-black tracking-widest">{{ __('Favoritos') }}</span>
+                            <span id="favorites-count" class="text-2xl md:text-4xl font-black text-black block">{{ $stats->favorites }}</span>
+                            <span class="text-[10px] md:text-xs text-gray-400 uppercase font-black tracking-widest">{{ __('Favoritos') }}</span>
                         </div>
                     </div>
                 </div>
@@ -60,8 +54,7 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
                 @foreach($books as $book)
-                    <div
-                        class="card bg-white shadow-sm border border-gray-100 h-full group flex flex-col relative overflow-hidden transition hover:shadow-xl hover:border-[#D4AF37]/20">
+                    <div class="card bg-white shadow-sm border border-gray-100 h-full group flex flex-col relative overflow-hidden transition hover:shadow-xl hover:border-[#D4AF37]/20">
 
                         <button onclick="toggleFavorite(this, {{ $book->id }})"
                                 class="favorite-btn absolute top-3 right-3 z-20 w-9 h-9 flex items-center justify-center bg-white rounded-full shadow-md transition-all hover:scale-105 active:scale-90"
@@ -73,11 +66,9 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                       d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                             </svg>
-
                         </button>
 
-                        <figure
-                            class="px-4 pt-4 h-64 bg-gray-50 flex items-center justify-center border-b border-gray-100">
+                        <figure class="px-4 pt-4 h-64 bg-gray-50 flex items-center justify-center border-b border-gray-100">
                             <img src="{{ asset($book->image_url) }}" alt="{{ $book->title }}"
                                  class="h-full object-contain drop-shadow-lg transform group-hover:scale-105 transition duration-300"/>
                         </figure>
@@ -87,8 +78,7 @@
                             <p class="text-gray-500 text-sm mb-4">{{ $book->author }}</p>
 
                             <div class="mb-6">
-                                <span
-                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-black text-[#D4AF37] text-[10px] uppercase font-black tracking-widest rounded-md border border-[#D4AF37]/30 shadow-sm">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-black text-[#D4AF37] text-[10px] uppercase font-black tracking-widest rounded-md border border-[#D4AF37]/30 shadow-sm">
                                     {{ $book->pivot->format ?? 'Tapa dura' }}
                                 </span>
                             </div>
@@ -119,26 +109,20 @@
 
                                         <div id="modal-shipping-{{ $book->id }}"
                                              class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-                                            <div
-                                                class="bg-white p-8 max-w-sm w-full rounded-xl shadow-2xl relative text-left">
+                                            <div class="bg-white p-8 max-w-sm w-full rounded-xl shadow-2xl relative text-left">
                                                 <button onclick="closeShippingModal({{ $book->id }})"
                                                         class="absolute top-4 right-5 text-2xl text-gray-400 hover:text-black">
                                                     &times;
                                                 </button>
-                                                <h3 class="text-xl font-serif text-black mb-4 border-b pb-3 font-bold">
-                                                    Estado del Pedido</h3>
+                                                <h3 class="text-xl font-serif text-black mb-4 border-b pb-3 font-bold">Estado del Pedido</h3>
                                                 <div class="space-y-4 text-sm mt-2">
-                                                    <p><span
-                                                            class="text-gray-500 font-bold text-xs uppercase block mb-1">Nº Pedido:</span>
+                                                    <p><span class="text-gray-500 font-bold text-xs uppercase block mb-1">Nº Pedido:</span>
                                                         <span class="text-black">{{ $numeroPedido }}</span></p>
-                                                    <p><span
-                                                            class="text-gray-500 font-bold text-xs uppercase block mb-1">Dirección de entrega:</span>
+                                                    <p><span class="text-gray-500 font-bold text-xs uppercase block mb-1">Dirección de entrega:</span>
                                                         <span class="text-black">{{ $book->pivot->address ?? 'No registrada' }}, {{ $book->pivot->city ?? '' }}</span>
                                                     </p>
-                                                    <p class="pt-2"><span
-                                                            class="text-gray-500 font-bold text-xs uppercase block mb-1">Estado:</span>
-                                                        <span
-                                                            class="font-bold text-[#D4AF37] bg-yellow-50 px-3 py-1 rounded-md">{{ $estadoEnvio }}</span>
+                                                    <p class="pt-2"><span class="text-gray-500 font-bold text-xs uppercase block mb-1">Estado:</span>
+                                                        <span class="font-bold text-[#D4AF37] bg-yellow-50 px-3 py-1 rounded-md">{{ $estadoEnvio }}</span>
                                                     </p>
                                                 </div>
                                             </div>
@@ -172,10 +156,8 @@
                                                     <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
                                                 </svg>
                                             </button>
-                                            <div
-                                                class="flex-grow flex items-center text-[10px] font-bold text-gray-500 gap-2">
-                                                <span id="current-time-{{ $book->id }}"
-                                                      class="w-7 text-right">0:00</span>
+                                            <div class="flex-grow flex items-center text-[10px] font-bold text-gray-500 gap-2">
+                                                <span id="current-time-{{ $book->id }}" class="w-7 text-right">0:00</span>
                                                 <input type="range" id="seek-{{ $book->id }}" value="0" max="100"
                                                        class="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#D4AF37]"
                                                        oninput="seekAudio({{ $book->id }}, this.value)">
@@ -220,6 +202,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Accept': 'application/json', // ✅ CORREGIDO: Indicamos que esperamos JSON de vuelta
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
             })

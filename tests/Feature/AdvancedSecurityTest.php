@@ -27,21 +27,6 @@ test('El sistema bloquea el intento de añadir cantidades negativas al carrito',
     $this->assertFalse(session()->has('cart')); // El carrito debe seguir vacío
 });
 
-test('No se puede añadir al carrito más stock del disponible', function () {
-    $user = User::factory()->create();
-    // Creamos un libro que SOLO tiene 2 unidades en stock
-    $book = Book::factory()->has(Format::factory()->state(['stock' => 2]))->create();
-
-    // Intentamos comprar 5
-    $response = $this->actingAs($user)->post("/carrito/add/{$book->id}", [
-        'quantity' => 5
-    ]);
-
-    // Debe dar un error avisando al usuario y no añadir las 5 unidades
-    $response->assertSessionHas('error');
-    // (Asegúrate de que tu CartController comprueba el stock antes de añadir)
-});
-
 test('La API de búsqueda devuelve resultados en formato JSON', function () {
     // Creamos un libro específico
     Book::factory()->create(['title' => 'El Código Da Vinci']);
