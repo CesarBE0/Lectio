@@ -43,9 +43,7 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        //event(new Registered($user));
-
-        Mail::to($user->email)->send(new WelcomeExclusiveUser($user));
+        event(new Registered($user));
 
         Auth::login($user);
 

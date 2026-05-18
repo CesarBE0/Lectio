@@ -7,6 +7,10 @@ use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Auth\Notifications\ResetPassword;
+use App\Mail\WelcomeExclusiveUser;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Auth\Events\Verified;
+use Illuminate\Support\Facades\Mail;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -37,7 +41,6 @@ class AppServiceProvider extends ServiceProvider
         });
 
         ResetPassword::toMailUsing(function (object $notifiable, string $token) {
-            // Laravel necesita generar la URL exacta con el token y el email del usuario
             $url = url(route('password.reset', [
                 'token' => $token,
                 'email' => $notifiable->getEmailForPasswordReset(),
@@ -49,6 +52,10 @@ class AppServiceProvider extends ServiceProvider
                     'url' => $url,
                     'user' => $notifiable
                 ]);
+        });
+
+        Event::listen(Verified::class, function (Verified $event) {
+            Mail::to($event->user->email)->send(new WelcomeExclusiveUser($event->user));
         });
     }
 }
