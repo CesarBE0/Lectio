@@ -25,6 +25,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'role',
         'welcome_coupon_used',
         'points',
+        'google_id',
+        'email_verified_at',
     ];
 
     protected $casts = [
@@ -46,7 +48,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function books()
     {
         return $this->belongsToMany(Book::class, 'library')
-            ->withPivot('format', 'quantity', 'price', 'address', 'city', 'order_number', 'discount', 'shipping', 'status')
+            ->withPivot('is_favorite', 'format', 'quantity', 'price', 'address', 'city', 'order_number', 'discount', 'shipping', 'status')
             ->withTimestamps();
     }
 

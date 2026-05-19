@@ -72,6 +72,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
     Route::post('/checkout/cupon', [CheckoutController::class, 'applyCoupon'])->name('coupon.apply');
     Route::post('/checkout/cupon/quitar', [CheckoutController::class, 'removeCoupon'])->name('coupon.remove');
+    Route::get('/contacto', [App\Http\Controllers\ContactController::class, 'index'])->name('contacto');
+    Route::post('/contacto', [App\Http\Controllers\ContactController::class, 'store'])->name('contacto.store');
 });
 
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -114,8 +116,7 @@ Route::get('/vaciar-carrito', function () {
 
 Route::get('/api/search', [SearchController::class, 'search'])->name('api.search');
 
-Route::get('/contacto', [App\Http\Controllers\ContactController::class, 'index'])->name('contacto');
-Route::post('/contacto', [App\Http\Controllers\ContactController::class, 'store'])->name('contacto.store');
+
 
 Route::get('/language/{locale}', function ($locale) {
     if (in_array($locale, ['en', 'es', 'fr', 'it', 'de', 'pt', 'ja', 'zh'])) {
