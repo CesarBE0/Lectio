@@ -40,41 +40,6 @@
                                 <input type="email" name="email" value="{{ old('email', $user->email) }}" required
                                        class="w-full bg-gray-50 border border-gray-200 rounded-sm px-4 py-3 text-gray-600 focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] transition-all">
                             </div>
-
-                            <div class="space-y-2 md:col-span-2 mt-2">
-                                <label
-                                    class="text-xs uppercase text-gray-400 tracking-widest font-bold">{{ __('Idioma') }}</label>
-
-                                <div class="relative" id="custom-lang-select">
-                                    <input type="hidden" name="preferred_language" id="preferred_language"
-                                           value="{{ old('preferred_language', $user->preferred_language ?? 'es') }}">
-
-                                    <button type="button" onclick="toggleLangMenu()"
-                                            class="w-full bg-white border border-gray-200 rounded-sm px-4 py-3 text-black focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] transition-all flex items-center justify-between">
-                                        <span id="selected-lang-text" class="flex items-center gap-3">
-                                            Seleccionando...
-                                        </span>
-                                        <svg class="w-4 h-4 text-gray-400" xmlns="http://www.w3.org/2000/svg"
-                                             viewBox="0 0 20 20" fill="currentColor">
-                                            <path
-                                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
-                                        </svg>
-                                    </button>
-
-                                    <div id="lang-menu"
-                                         class="hidden absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-sm shadow-xl max-h-60 overflow-y-auto">
-                                        @foreach($languages as $lang)
-                                            <div
-                                                onclick="selectLang('{{ $lang['code'] }}', '{{ $lang['name'] }}', '{{ $lang['flag_country'] }}')"
-                                                class="px-4 py-3 hover:bg-gray-50 cursor-pointer flex items-center gap-3 transition-colors text-black border-b border-gray-50 last:border-0">
-                                                <span
-                                                    class="fi fi-{{ $lang['flag_country'] }} w-5 h-4 rounded-sm shadow-sm"></span>
-                                                <span class="font-medium">{{ $lang['name'] }}</span>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
