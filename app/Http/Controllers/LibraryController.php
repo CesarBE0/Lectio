@@ -64,21 +64,25 @@ class LibraryController extends Controller
 
     public function read(Book $book)
     {
-        // 1. Validar que el usuario sea dueño del libro
         $hasBook = auth()->user()->books()->where('book_id', $book->id)->exists();
 
         if (!$hasBook) {
             return redirect()->route('library.index')->with('error', 'No tienes acceso a este libro.');
         }
 
-        // 2. Ruta al archivo privado
         $path = storage_path('app/private/pdfs/' . $book->pdf_path);
 
         if (!file_exists($path)) {
-            abort(404, 'El archivo no se encuentra en el servidor.');
+            // 🚀 CHIVATO ACTIVADO: Escáner del servidor
+            dd([
+                '1_MENSAJE' => '¡Te pillé! Laravel no encuentra el archivo físico en el disco.',
+                '2_NOMBRE_EN_BD' => $book->pdf_path ?? '¡CUIDADO! Está guardado como NULL en la base de datos.',
+                '3_RUTA_BUSCADA' => $path,
+                '4_CARPETA_EXISTE' => is_dir(storage_path('app/private/pdfs')),
+                '5_CONTENIDO_DE_CARPETA' => is_dir(storage_path('app/private/pdfs')) ? scandir(storage_path('app/private/pdfs')) : 'No existe la carpeta'
+            ]);
         }
 
-        // 3. Devolver el PDF para que se abra en el navegador
         return response()->file($path, [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="' . $book->title . '.pdf"'
@@ -96,7 +100,13 @@ class LibraryController extends Controller
         $path = storage_path('app/private/audios/' . $book->audio_path);
 
         if (!file_exists($path)) {
-            abort(404);
+            // 🚀 CHIVATO ACTIVADO: Escáner del servidor
+            dd([
+                '1_MENSAJE' => '¡Te pillé! El audio no está físicamente en el disco.',
+                '2_NOMBRE_EN_BD' => $book->audio_path ?? '¡CUIDADO! Guardado como NULL en la base de datos.',
+                '3_RUTA_BUSCADA' => $path,
+                '4_CONTENIDO_DE_CARPETA' => is_dir(storage_path('app/private/audios')) ? scandir(storage_path('app/private/audios')) : 'No existe'
+            ]);
         }
 
         return response()->file($path, [

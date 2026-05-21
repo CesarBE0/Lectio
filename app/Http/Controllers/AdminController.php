@@ -170,7 +170,8 @@ class AdminController extends Controller {
         $pdfPath = null;
         if ($request->hasFile('pdf_file')) {
             $pdfName = $cleanTitle . '.' . $request->file('pdf_file')->getClientOriginalExtension();
-            $request->file('pdf_file')->storeAs('private/pdfs', $pdfName, 'local');
+            // 🚀 TRUCO DEFINITIVO: Forzamos la ruta absoluta ignorando la configuración de los discos
+            $request->file('pdf_file')->move(storage_path('app/private/pdfs'), $pdfName);
             $pdfPath = $pdfName;
         }
 
@@ -178,7 +179,8 @@ class AdminController extends Controller {
         $audioPath = null;
         if ($request->hasFile('audio_file')) {
             $audioName = $cleanTitle . '.' . $request->file('audio_file')->getClientOriginalExtension();
-            $request->file('audio_file')->storeAs('private/audios', $audioName, 'local');
+            // 🚀 TRUCO DEFINITIVO: Forzamos la ruta absoluta ignorando la configuración de los discos
+            $request->file('audio_file')->move(storage_path('app/private/audios'), $audioName);
             $audioPath = $audioName;
         }
 
