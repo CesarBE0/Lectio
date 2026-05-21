@@ -150,8 +150,8 @@ class AdminController extends Controller {
             'synopsis' => 'nullable|string',
             'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
             'formats' => 'required|array',
-            'pdf_file' => 'nullable|mimes:pdf|max:10000', // Máx 10MB
-            'audio_file' => 'nullable|mimes:mp3,wav|max:50000', // Máx 50MB
+            'pdf_file' => 'nullable|mimes:pdf|max:50000', // Máx 50MB
+            'audio_file' => 'nullable|mimes:mp3,wav|max:100000', // Máx 100MB
         ]);
 
         $cleanTitle = Str::slug($request->title, '_');
