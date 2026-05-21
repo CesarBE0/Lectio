@@ -73,14 +73,7 @@ class LibraryController extends Controller
         $path = storage_path('app/private/pdfs/' . $book->pdf_path);
 
         if (!file_exists($path)) {
-            // 🚀 CHIVATO ACTIVADO: Escáner del servidor
-            dd([
-                '1_MENSAJE' => '¡Te pillé! Laravel no encuentra el archivo físico en el disco.',
-                '2_NOMBRE_EN_BD' => $book->pdf_path ?? '¡CUIDADO! Está guardado como NULL en la base de datos.',
-                '3_RUTA_BUSCADA' => $path,
-                '4_CARPETA_EXISTE' => is_dir(storage_path('app/private/pdfs')),
-                '5_CONTENIDO_DE_CARPETA' => is_dir(storage_path('app/private/pdfs')) ? scandir(storage_path('app/private/pdfs')) : 'No existe la carpeta'
-            ]);
+            abort(404, 'El archivo multimedia no se encuentra disponible en el servidor.');
         }
 
         return response()->file($path, [
@@ -100,13 +93,7 @@ class LibraryController extends Controller
         $path = storage_path('app/private/audios/' . $book->audio_path);
 
         if (!file_exists($path)) {
-            // 🚀 CHIVATO ACTIVADO: Escáner del servidor
-            dd([
-                '1_MENSAJE' => '¡Te pillé! El audio no está físicamente en el disco.',
-                '2_NOMBRE_EN_BD' => $book->audio_path ?? '¡CUIDADO! Guardado como NULL en la base de datos.',
-                '3_RUTA_BUSCADA' => $path,
-                '4_CONTENIDO_DE_CARPETA' => is_dir(storage_path('app/private/audios')) ? scandir(storage_path('app/private/audios')) : 'No existe'
-            ]);
+            abort(404, 'El archivo multimedia no se encuentra disponible en el servidor.');
         }
 
         return response()->file($path, [
