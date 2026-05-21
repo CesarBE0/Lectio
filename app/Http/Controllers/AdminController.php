@@ -141,7 +141,7 @@ class AdminController extends Controller {
 
     public function storeBook(Request $request)
     {
-        // 1. Validamos todos los campos que vienen del nuevo formulario
+        // 1. Validamos todos los campos (¡Añadimos validación para pdf y audio!)
         $request->validate([
             'title' => 'required|string|max:255',
             'author' => 'required|string|max:255',
@@ -149,31 +149,45 @@ class AdminController extends Controller {
             'pages' => 'required|integer',
             'synopsis' => 'nullable|string',
             'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
-            'formats' => 'required|array'
+            'formats' => 'required|array',
+            'pdf_file' => 'nullable|mimes:pdf|max:10000', // Máx 10MB
+            'audio_file' => 'nullable|mimes:mp3,wav|max:50000', // Máx 50MB
         ]);
 
-        $imageName = null;
+        $cleanTitle = Str::slug($request->title, '_');
+        $cleanTitle = ucfirst($cleanTitle);
 
-        // 2. Comprobamos si hay foto y le damos el formato perfecto (Ej: Nuevo_libro.png)
+        // 2. Procesar Portada (Pública)
+        $imagePathForDB = null;
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-
-            $cleanTitle = Str::slug($request->title, '_');
-            $cleanTitle = ucfirst($cleanTitle);
-
-            $extension = $file->getClientOriginalExtension();
-            $imageName = $cleanTitle . '.' . $extension;
-
-            // Movemos la imagen a la carpeta public/img
+            $imageName = $cleanTitle . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('img'), $imageName);
-
             $imagePathForDB = 'img/' . $imageName;
         }
 
-        // 3. Tomamos el precio del formato 'Tapa dura' como precio base del libro
+        // 3. Procesar PDF Seguro (Privado)
+        $pdfPath = null;
+        if ($request->hasFile('pdf_file')) {
+            // Guarda en: storage/app/private/pdfs/Nombre_del_libro.pdf
+            $pdfName = $cleanTitle . '.' . $request->file('pdf_file')->getClientOriginalExtension();
+            $request->file('pdf_file')->storeAs('private/pdfs', $pdfName);
+            $pdfPath = $pdfName;
+        }
+
+        // 4. Procesar Audio Seguro (Privado)
+        $audioPath = null;
+        if ($request->hasFile('audio_file')) {
+            // Guarda en: storage/app/private/audios/Nombre_del_libro.mp3
+            $audioName = $cleanTitle . '.' . $request->file('audio_file')->getClientOriginalExtension();
+            $request->file('audio_file')->storeAs('private/audios', $audioName);
+            $audioPath = $audioName;
+        }
+
+        // 5. Tomamos el precio base
         $basePrice = $request->formats['Tapa dura']['price'] ?? 0;
 
-        // 4. Creamos el libro en la base de datos
+        // 6. Creamos el libro en la base de datos ¡y le añadimos las rutas de los archivos!
         $book = Book::create([
             'title' => $request->title,
             'author' => $request->author,
@@ -183,18 +197,21 @@ class AdminController extends Controller {
             'image_url' => $imagePathForDB,
             'price' => $basePrice,
             'is_bestseller' => false,
+            // AÑADIDO: Guardamos las rutas de los archivos digitales en el libro
+            'pdf_path' => $pdfPath,
+            'audio_path' => $audioPath,
         ]);
 
-        // 5. Guardamos las relaciones de los formatos (Tapa dura, E-book, Audiolibro)
+        // 7. Guardamos los formatos
         foreach ($request->formats as $type => $data) {
             $book->formats()->create([
                 'type' => $type,
                 'price' => $data['price'],
-                'stock' => $data['stock'] ?? 0,
+                'stock' => 999, // Para productos digitales el stock es siempre infinito
             ]);
         }
 
-        return redirect()->route('admin.inventory')->with('success', '¡Libro y portada añadidos con éxito al catálogo!');
+        return redirect()->route('admin.inventory')->with('success', '¡Libro y archivos digitales añadidos con éxito al catálogo!');
     }
 
     public function updateBook(Request $request, $id)
@@ -258,7 +275,7 @@ class AdminController extends Controller {
     public function coupons()
     {
         // Traemos los cupones junto con su usuario asociado
-        $coupons = Coupon::with('user')->orderBy('created_at', 'desc')->paginate(10);
+        $coupons = \App\Models\Coupon::with('user')->orderBy('created_at', 'desc')->paginate(10);
 
         return view('admin.coupons', compact('coupons'));
     }

@@ -90,23 +90,49 @@
                     </h2>
 
                     <div class="space-y-4">
-                        @foreach(['Tapa dura', 'E-book', 'Audiolibro'] as $tipo)
-                            <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-[#D4AF37]/50 transition-colors">
-                                <span class="text-[10px] font-black text-black uppercase tracking-widest block mb-3">{{ $tipo }}</span>
-
-                                <div class="grid grid-cols-2 gap-3">
-                                    <div>
-                                        <label class="text-[9px] text-gray-400 uppercase font-bold">{{ __('Precio (€)') }}</label>
-                                        <input type="number" step="0.01" name="formats[{{ $tipo }}][price]" placeholder="0.00"
-                                               class="w-full bg-white border border-gray-200 rounded-lg p-2 text-xs font-bold text-black focus:border-[#D4AF37] outline-none" required>
-                                    </div>
-                                    <div class="flex items-end pb-2">
-                                        <span class="text-[9px] text-gray-400 italic text-center w-full uppercase font-black">{{ __('Ilimitado') }}</span>
-                                        <input type="hidden" name="formats[{{ $tipo }}][stock]" value="0">
-                                    </div>
+                        <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-[#D4AF37]/50 transition-colors">
+                            <span class="text-[10px] font-black text-black uppercase tracking-widest block mb-3">Tapa dura</span>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="text-[9px] text-gray-400 uppercase font-bold">{{ __('Precio (€)') }}</label>
+                                    <input type="number" step="0.01" name="formats[Tapa dura][price]" placeholder="0.00" class="w-full bg-white border border-gray-200 rounded-lg p-2 text-xs font-bold text-black focus:border-[#D4AF37] outline-none" required>
+                                </div>
+                                <div class="flex items-end pb-2">
+                                    <span class="text-[9px] text-gray-400 italic text-center w-full uppercase font-black">{{ __('Stock Infinito') }}</span>
+                                    <input type="hidden" name="formats[Tapa dura][stock]" value="999">
                                 </div>
                             </div>
-                        @endforeach
+                        </div>
+
+                        <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-[#D4AF37]/50 transition-colors">
+                            <span class="text-[10px] font-black text-black uppercase tracking-widest block mb-3">E-book</span>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="text-[9px] text-gray-400 uppercase font-bold">{{ __('Precio (€)') }}</label>
+                                    <input type="number" step="0.01" name="formats[E-book][price]" placeholder="0.00" class="w-full bg-white border border-gray-200 rounded-lg p-2 text-xs font-bold text-black focus:border-[#D4AF37] outline-none" required>
+                                    <input type="hidden" name="formats[E-book][stock]" value="999">
+                                </div>
+                                <div>
+                                    <label class="text-[9px] text-gray-400 uppercase font-bold">{{ __('Archivo PDF Seguro') }}</label>
+                                    <input type="file" name="pdf_file" accept="application/pdf" class="w-full bg-white border border-gray-200 rounded-lg p-1.5 text-[10px] focus:border-[#D4AF37] outline-none">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-[#D4AF37]/50 transition-colors">
+                            <span class="text-[10px] font-black text-black uppercase tracking-widest block mb-3">Audiolibro</span>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="text-[9px] text-gray-400 uppercase font-bold">{{ __('Precio (€)') }}</label>
+                                    <input type="number" step="0.01" name="formats[Audiolibro][price]" placeholder="0.00" class="w-full bg-white border border-gray-200 rounded-lg p-2 text-xs font-bold text-black focus:border-[#D4AF37] outline-none" required>
+                                    <input type="hidden" name="formats[Audiolibro][stock]" value="999">
+                                </div>
+                                <div>
+                                    <label class="text-[9px] text-gray-400 uppercase font-bold">{{ __('Archivo de Audio (MP3)') }}</label>
+                                    <input type="file" name="audio_file" accept="audio/*" class="w-full bg-white border border-gray-200 rounded-lg p-1.5 text-[10px] focus:border-[#D4AF37] outline-none">
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
