@@ -11,6 +11,11 @@ class CartController extends Controller
 {
     public function index()
     {
+        // 🚀 NUEVA LÓGICA: Si estamos logueados, no hay nada en sesión, pero sí en la BD, lo cargamos
+        if (Auth::check() && !session()->has('cart') && !empty(Auth::user()->cart_data)) {
+            session()->put('cart', Auth::user()->cart_data);
+        }
+
         $cart = session()->get('cart', []);
 
         $subtotal = 0;
