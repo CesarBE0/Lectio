@@ -20,28 +20,16 @@ class WishlistController extends Controller
         $userId = Auth::id();
         $isRemoveOnly = $request->query('action') === 'remove_only';
 
-        // 🚀 Usamos el Query del propio Modelo.
-        // Esto garantiza que ataquemos a la tabla EXACTA que usas para pintar la pantalla.
+        // Hacemos el borrado asegurando la tabla correcta con el Modelo
         $deletedRows = Wishlist::query()
             ->where('user_id', $userId)
             ->where('book_id', $bookId)
             ->delete();
 
-        if ($deletedRows === 0 && $isRemoveOnly) {
-            // Si falla, le pedimos al Modelo que nos enseñe qué hay realmente guardado
-            $registrosReales = Wishlist::query()->where('user_id', $userId)->get();
-
-            return response()->json([
-                'success' => false,
-                'message' => "Error: El botón envía el ID {$bookId}, pero no coincide con tu base de datos.",
-                'debug_info' => [
-                    'intentando_borrar_book_id' => $bookId,
-                    'tus_filas_reales_segun_el_modelo' => $registrosReales
-                ]
-            ], 422);
-        }
-
         if ($isRemoveOnly) {
+            // 🚀 LA MAGIA DE LA IDEMPOTENCIA:
+            // Si borró 1 fila (primer clic) o si borró 0 porque ya no existía (clic fantasma duplicado),
+            // el resultado es el que buscamos: el libro ya no está. Devolvemos éxito siempre.
             return response()->json([
                 'success' => true,
                 'is_wished' => false,
@@ -49,7 +37,7 @@ class WishlistController extends Controller
             ]);
         }
 
-        // Lógica normal para el catálogo
+        // Lógica normal para el botón de corazón del Catálogo
         if ($deletedRows > 0) {
             $isWished = false;
             $message = 'Libro eliminado de tu lista de deseos.';
@@ -62,10 +50,14 @@ class WishlistController extends Controller
             $message = '¡Libro guardado en tu lista de deseos!';
         }
 
-        return response()->json([
-            'success' => true,
-            'is_wished' => $isWished,
-            'message' => $message
-        ]);
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'is_wished' => $isWished,
+                'message' => $message
+            ]);
+        }
+
+        return back()->with('success', $message);
     }
 }
