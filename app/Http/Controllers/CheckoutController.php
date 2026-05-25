@@ -175,9 +175,7 @@ class CheckoutController extends Controller
 
             // 4. CREAR LA FACTURA PRINCIPAL (Tabla orders)
             $userId = Auth::id(); // Asegurar ID del usuario
-            $direccionCompleta = $request->input('address') . ', ' .
-                $request->input('city') . ', CP: ' .
-                $request->input('zip');
+            $direccionCompleta = $request->input('address');
 
             $orderId = \Illuminate\Support\Facades\DB::table('orders')->insertGetId([
                 'user_id' => $userId,
@@ -223,17 +221,24 @@ class CheckoutController extends Controller
                 // 5.2 Dar acceso en la biblioteca personal (Tabla user_library)
                 // Evitamos duplicados si el usuario compra dos veces lo mismo
                 $hasBook = \Illuminate\Support\Facades\DB::table('user_library')
-                    ->where('user_id', Auth::id()) // Usamos el estándar de Laravel
-                    ->where('book_id', $formatId)  // Cambiado de format_id a book_id
-                    ->where('format', $item['format']) // Verificamos también el formato
+                    ->where('user_id', Auth::id())
+                    ->where('book_id', $formatId)
+                    ->where('format', $item['format'])
                     ->exists();
 
                 if (!$hasBook) {
                     \Illuminate\Support\Facades\DB::table('user_library')->insert([
-                        'user_id'    => Auth::id(),  // Estandarizado a minúsculas
-                        'book_id'    => $formatId,   // Cambiado de format_id a book_id
-                        'format'     => $item['format'], // Guardamos el nombre del formato
-                        'quantity'   => $quantity,
+                        'user_id' => Auth::id(),
+                        'book_id' => $formatId,
+                        'format' => $item['format'],
+                        'quantity' => $quantity,
+
+                        // --- AÑADE ESTO (Asegúrate de que los nombres coinciden con DBeaver) ---
+                        'address' => $direccionCompleta, // La variable que unificamos antes
+                        'order_number' => $orderNumber,       // El número de pedido generado
+                        'tracking_number' => $orderNumber,       // O la columna que tengas para el tracking
+                        'price' => $itemPrice,         // El precio del artículo
+
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]);
