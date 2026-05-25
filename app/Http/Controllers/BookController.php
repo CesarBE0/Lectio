@@ -21,15 +21,15 @@ class BookController extends Controller
         }
 
         $recommended = Cache::remember("book_{$id}_recommendations", 600, function () use ($id) {
-            $userIds = DB::table('library')->where('book_id', $id)->pluck('user_id');
+            $userIds = DB::table('user_library')->where('book_id', $id)->pluck('user_id');
 
             if($userIds->count() > 0) {
                 return Book::with('formats')
                     ->select('books.*')
-                    ->join('library', 'books.id', '=', 'library.book_id')
-                    ->whereIn('library.user_id', $userIds)
+                    ->join('user_library', 'books.id', '=', 'library.book_id')
+                    ->whereIn('user_library.user_id', $userIds)
                     ->where('books.id', '!=', $id)
-                    ->selectRaw('COUNT(library.book_id) as total_buys')
+                    ->selectRaw('COUNT(user_library.book_id) as total_buys')
                     ->groupBy('books.id')
                     ->orderByDesc('total_buys')
                     ->take(4)
