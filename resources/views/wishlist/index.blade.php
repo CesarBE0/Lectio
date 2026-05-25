@@ -105,17 +105,24 @@
                         .then(response => response.json())
                         .then(data => {
                             if(data.success) {
-                                card.style.transition = "all 0.3s ease";
-                                card.style.opacity = "0";
-                                card.style.transform = "scale(0.95)";
+                                // 🚀 AHORA COMPROBAMOS QUÉ HA HECHO EL SERVIDOR REALMENTE
+                                if (data.is_wished === false) {
+                                    card.style.transition = "all 0.3s ease";
+                                    card.style.opacity = "0";
+                                    card.style.transform = "scale(0.95)";
 
-                                setTimeout(() => {
-                                    card.remove();
+                                    setTimeout(() => {
+                                        card.remove();
 
-                                    if(document.querySelectorAll('.group').length === 0) {
-                                        window.location.reload();
-                                    }
-                                }, 300);
+                                        // Si la lista se queda vacía, recargamos para mostrar el mensaje de "Tu lista está vacía"
+                                        if(document.querySelectorAll('.group').length === 0) {
+                                            window.location.reload();
+                                        }
+                                    }, 300);
+                                } else {
+                                    // Si por algún motivo lo añadió (estado de desincronización), recargamos
+                                    window.location.reload();
+                                }
                             }
                         })
                         .catch(error => console.error('Error:', error));
