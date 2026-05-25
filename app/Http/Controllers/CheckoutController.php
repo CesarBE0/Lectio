@@ -204,11 +204,15 @@ class CheckoutController extends Controller
                 }
 
                 // 5.1 Crear la línea de producto vendido (Tabla order_items)
+                // 5.1 Crear la línea de producto vendido (Tabla order_items)
                 \Illuminate\Support\Facades\DB::table('order_items')->insert([
-                    'orderId' => $orderId,
-                    'formatId' => $formatId,
-                    'quantity' => $quantity,
-                    'priceAtPurchase' => $itemPrice,
+                    'order_id'        => $orderId,          // Ajustado a la columna real
+                    'book_id'         => $formatId,         // Ajustado a la columna real (antes era formatId)
+                    'format_type'     => $item['format'],   // Añadido para que coincida con tu tabla
+                    'price'           => $itemPrice,        // Ajustado a la columna real (antes era priceAtPurchase)
+                    'quantity'        => $quantity,
+                    'created_at'      => now(),             // Buena práctica añadir el timestamp
+                    'updated_at'      => now(),
                 ]);
 
                 // 5.2 Dar acceso en la biblioteca personal (Tabla user_library)
