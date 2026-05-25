@@ -11,6 +11,8 @@ use App\Mail\WelcomeExclusiveUser;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Auth\Events\Login;
+use App\Listeners\MergeCartOnLogin;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -57,5 +59,7 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(Verified::class, function (Verified $event) {
             Mail::to($event->user->email)->send(new WelcomeExclusiveUser($event->user));
         });
+
+        Event::listen(Login::class, MergeCartOnLogin::class);
     }
 }
