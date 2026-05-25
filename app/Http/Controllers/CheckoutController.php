@@ -126,6 +126,7 @@ class CheckoutController extends Controller
             $shipping = $subtotalConDescuento >= 30 ? 0 : 4.99;
             $total = $subtotalConDescuento + $shipping;
 
+            // Cobro mediante Stripe
             $charge = \Stripe\Charge::create([
                 'amount' => round($total * 100),
                 'currency' => 'eur',
@@ -141,63 +142,96 @@ class CheckoutController extends Controller
 
             $user->increment('points', floor($total));
 
-            $discountPercentage = session()->has('coupon') ? session('coupon')['discount'] : 0;
-            $totalBooks = count($cartItems);
-            $shippingPerItem = $totalBooks > 0 ? ($shipping / $totalBooks) : 0;
-
+            // 1. GENERAR NÚMERO DE PEDIDO ÚNICO
             do {
                 $randomNumber = str_pad(random_int(0, 99999999), 8, '0', STR_PAD_LEFT);
                 $orderNumber = 'LCT-' . $randomNumber;
-                $exists = \Illuminate\Support\Facades\DB::table('library')->where('order_number', $orderNumber)->exists();
+                // 🚀 CAMBIO: Ahora buscamos en 'orders' en lugar de 'library'
+                $exists = \Illuminate\Support\Facades\DB::table('orders')->where('trackingNumber', $orderNumber)->exists();
             } while ($exists);
 
-            // 🚀 1. EL DETECTOR DE FORMATOS DE LAURITA
-            // 1. Empezamos asumiendo que es digital
+            // 2. EL DETECTOR DE FORMATOS
             $hasPhysicalBook = false;
-
             foreach ($cartItems as $item) {
-                // Pasamos a minúsculas y quitamos espacios para comparar sin errores
                 $formato = strtolower(trim($item['format'] ?? ''));
-
-                // Si el formato NO es digital (es decir, es físico o tapa dura)
                 if (str_contains($formato, 'tapa dura') || str_contains($formato, 'físico')) {
                     $hasPhysicalBook = true;
                     break;
                 }
             }
-
-// 2. Si detectamos algo físico, marcamos como preparando, si no, entregado
             $initialStatus = $hasPhysicalBook ? 'preparando' : 'entregado';
 
-            $booksToSync = [];
-            foreach($cartItems as $item) {
-                $id = $item['id'] ?? $item['book_id'] ?? ($item['book']['id'] ?? null);
-                $itemPrice = $item['price'] ?? 0;
-                $itemDiscount = $itemPrice * ($discountPercentage / 100);
-
-                if($id) {
-                    $booksToSync[$id] = [
-                        'format' => $item['format'] ?? 'Físico',
-                        'quantity' => $item['quantity'] ?? 1,
-                        'progress' => 0,
-                        'is_favorite' => false,
-                        'address' => $request->address,
-                        'city' => $request->city,
-                        'price' => $itemPrice,
-                        'discount' => $itemDiscount,
-                        'shipping' => $shippingPerItem,
-                        'order_number' => $orderNumber,
-                        'status' => $initialStatus // 🚀 3. GUARDAMOS EL ESTADO INTELIGENTE
-                    ];
+            // 3. RECUPERAR ID DEL CUPÓN (Si se ha usado)
+            $couponId = null;
+            if (session()->has('coupon')) {
+                // Usamos DB facade para evitar errores con nombres de Primary Keys
+                $couponRecord = \Illuminate\Support\Facades\DB::table('coupons')
+                    ->where('code', session('coupon')['code'])
+                    ->first();
+                if ($couponRecord) {
+                    $couponId = $couponRecord->couponId ?? $couponRecord->id ?? null;
                 }
             }
 
-            if(!empty($booksToSync)) {
-                $user->books()->syncWithoutDetaching($booksToSync);
+            // 4. CREAR LA FACTURA PRINCIPAL (Tabla orders)
+            $userId = clone clone Auth::id(); // Asegurar ID del usuario
+            $orderId = \Illuminate\Support\Facades\DB::table('orders')->insertGetId([
+                'userId' => clone Auth::user()->userId ?? Auth::id(), // Soporta tanto "id" como "userId"
+                'couponId' => $couponId,
+                'totalPrice' => $total,
+                'status' => $initialStatus,
+                'trackingNumber' => $orderNumber,
+                'created_at' => now(),
+            ]);
+
+            // 5. SEPARAR LÍNEAS DE FACTURA Y ACCESO A LA BIBLIOTECA
+            foreach ($cartItems as $cartKey => $item) {
+                $itemPrice = $item['price'] ?? 0;
+                $quantity = $item['quantity'] ?? 1;
+
+                // Extraemos el formatId de la clave del carrito (que es "bookId-formatId")
+                $parts = explode('-', $cartKey);
+                $formatId = $parts[1] ?? null;
+
+                // Prevención de fallos si la clave no tiene el formato
+                if (!$formatId) {
+                    $bookId = $item['book_id'] ?? $item['id'];
+                    $f = \Illuminate\Support\Facades\DB::table('formats')
+                        ->where('bookId', $bookId)->orWhere('book_id', $bookId)
+                        ->where('type', $item['format'])
+                        ->first();
+                    $formatId = $f ? ($f->formatId ?? $f->id ?? 1) : 1;
+                }
+
+                // 5.1 Crear la línea de producto vendido (Tabla order_items)
+                \Illuminate\Support\Facades\DB::table('order_items')->insert([
+                    'orderId' => $orderId,
+                    'formatId' => $formatId,
+                    'quantity' => $quantity,
+                    'priceAtPurchase' => $itemPrice,
+                ]);
+
+                // 5.2 Dar acceso en la biblioteca personal (Tabla user_library)
+                // Evitamos duplicados si el usuario compra dos veces lo mismo
+                $hasBook = \Illuminate\Support\Facades\DB::table('user_library')
+                    ->where('userId', Auth::user()->userId ?? Auth::id())
+                    ->where('formatId', $formatId)
+                    ->exists();
+
+                if (!$hasBook) {
+                    \Illuminate\Support\Facades\DB::table('user_library')->insert([
+                        'userId' => Auth::user()->userId ?? Auth::id(),
+                        'formatId' => $formatId,
+                        'is_favorite' => false,
+                        'acquired_at' => now(),
+                    ]);
+                }
             }
 
+            // Enviamos el correo con la factura
             \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\OrderInvoice($orderNumber, $cartItems, $subtotal, $discountAmount, $shipping, $total));
 
+            // Limpiamos sesión
             session()->forget(['cart', 'coupon']);
 
             return redirect()->route('library.index')->with('success', '¡Pago confirmado! Has ganado ' . floor($total) . ' Puntos Lectio.');

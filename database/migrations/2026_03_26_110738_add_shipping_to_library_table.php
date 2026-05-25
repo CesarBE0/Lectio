@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('library', function (Blueprint $table) {
+        Schema::table('user_library', function (Blueprint $table) {
             $table->decimal('shipping', 8, 2)->default(0)->after('discount');
         });
     }
 
     public function down(): void
     {
-        Schema::table('library', function (Blueprint $table) {
+        Schema::table('user_library', function (Blueprint $table) {
             $table->dropColumn('shipping');
         });
     }

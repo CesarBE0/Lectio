@@ -47,7 +47,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function books()
     {
-        return $this->belongsToMany(Book::class, 'library')
+        return $this->belongsToMany(Book::class, 'user_library')
             ->withPivot('is_favorite', 'format', 'quantity', 'price', 'address', 'city', 'order_number', 'discount', 'shipping', 'status')
             ->withTimestamps();
     }

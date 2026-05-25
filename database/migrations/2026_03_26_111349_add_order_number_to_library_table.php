@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('library', function (Blueprint $table) {
+        Schema::table('user_library', function (Blueprint $table) {
             $table->string('order_number')->nullable()->after('shipping');
         });
     }
 
     public function down(): void
     {
-        Schema::table('library', function (Blueprint $table) {
+        Schema::table('user_library', function (Blueprint $table) {
             $table->dropColumn('order_number');
         });
     }

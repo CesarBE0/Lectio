@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('library', function (Blueprint $table) {
+        Schema::table('user_library', function (Blueprint $table) {
             $table->integer('quantity')->default(1)->after('format');
         });
     }
 
     public function down()
     {
-        Schema::table('library', function (Blueprint $table) {
+        Schema::table('user_library', function (Blueprint $table) {
             $table->dropColumn('quantity');
         });
     }

@@ -20,7 +20,6 @@ class FormatFactory extends Factory
             'book_id' => \App\Models\Book::factory(),
             'type' => 'Tapa dura',
             'price' => 20.00,
-            'stock' => 10,
         ];
     }
 }

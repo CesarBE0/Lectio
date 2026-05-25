@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('library', function (Blueprint $table) {
+        Schema::table('user_library', function (Blueprint $table) {
             $table->string('status')->default('pending')->after('order_number');
             $table->string('trackingNumber')->nullable()->after('status');
         });
@@ -19,7 +19,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('library', function (Blueprint $table) {
+        Schema::table('user_library', function (Blueprint $table) {
             $table->dropColumn(['status', 'trackingNumber']);
         });
     }

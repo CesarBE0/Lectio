@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('library', function (Blueprint $table) {
+        Schema::table('user_library', function (Blueprint $table) {
             $table->string('format')->nullable()->after('book_id');
         });
     }
@@ -21,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('library', function (Blueprint $table) {
+        Schema::table('user_library', function (Blueprint $table) {
             //
         });
     }

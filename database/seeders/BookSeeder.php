@@ -175,9 +175,9 @@ class BookSeeder extends Seeder
             ], $data));
 
             $book->formats()->createMany([
-                ['type' => 'Tapa dura', 'price' => $basePrice, 'stock' => 0],
-                ['type' => 'E-book', 'price' => round($basePrice * 0.6, 2), 'stock' => 0],
-                ['type' => 'Audiolibro', 'price' => round($basePrice * 0.8, 2), 'stock' => 0],
+                ['type' => 'Tapa dura', 'price' => $basePrice],
+                ['type' => 'E-book', 'price' => round($basePrice * 0.6, 2)],
+                ['type' => 'Audiolibro', 'price' => round($basePrice * 0.8, 2)],
             ]);
         }
     }
