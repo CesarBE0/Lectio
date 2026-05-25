@@ -218,14 +218,14 @@ class CheckoutController extends Controller
                 // 5.2 Dar acceso en la biblioteca personal (Tabla user_library)
                 // Evitamos duplicados si el usuario compra dos veces lo mismo
                 $hasBook = \Illuminate\Support\Facades\DB::table('user_library')
-                    ->where('user_Id', Auth::user()->userId ?? Auth::id())
-                    ->where('formatId', $formatId)
+                    ->where('user_id', Auth::user()->userId ?? Auth::id())
+                    ->where('format_id', $formatId)
                     ->exists();
 
                 if (!$hasBook) {
                     \Illuminate\Support\Facades\DB::table('user_library')->insert([
                         'user_Id' => Auth::user()->userId ?? Auth::id(),
-                        'formatId' => $formatId,
+                        'format_id' => $formatId,
                         'is_favorite' => false,
                         'acquired_at' => now(),
                     ]);
