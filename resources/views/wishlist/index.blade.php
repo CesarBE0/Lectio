@@ -89,6 +89,11 @@
                 form.addEventListener('submit', function(e) {
                     e.preventDefault();
 
+                    // 1. Bloqueo al instante para evitar el doble clic fantasma
+                    const btn = this.querySelector('button');
+                    if (btn.disabled) return;
+                    btn.disabled = true;
+
                     const url = this.action;
                     const token = this.querySelector('input[name="_token"]').value;
                     const card = this.closest('.group');
@@ -100,32 +105,31 @@
                             'X-Requested-With': 'XMLHttpRequest',
                             'X-CSRF-TOKEN': token
                         },
-                        body: JSON.stringify({})
+                        body: JSON.stringify({
+                            action: 'remove_only' // 2. Le mandamos el chivato al servidor
+                        })
                     })
                         .then(response => response.json())
                         .then(data => {
                             if(data.success) {
-                                // 🚀 AHORA COMPROBAMOS QUÉ HA HECHO EL SERVIDOR REALMENTE
-                                if (data.is_wished === false) {
-                                    card.style.transition = "all 0.3s ease";
-                                    card.style.opacity = "0";
-                                    card.style.transform = "scale(0.95)";
+                                card.style.transition = "all 0.3s ease";
+                                card.style.opacity = "0";
+                                card.style.transform = "scale(0.95)";
 
-                                    setTimeout(() => {
-                                        card.remove();
+                                setTimeout(() => {
+                                    card.remove();
 
-                                        // Si la lista se queda vacía, recargamos para mostrar el mensaje de "Tu lista está vacía"
-                                        if(document.querySelectorAll('.group').length === 0) {
-                                            window.location.reload();
-                                        }
-                                    }, 300);
-                                } else {
-                                    // Si por algún motivo lo añadió (estado de desincronización), recargamos
-                                    window.location.reload();
-                                }
+                                    // Solo recargamos si la lista se ha quedado completamente vacía
+                                    if(document.querySelectorAll('.group').length === 0) {
+                                        window.location.reload();
+                                    }
+                                }, 300);
                             }
                         })
-                        .catch(error => console.error('Error:', error));
+                        .catch(error => {
+                            console.error('Error:', error);
+                            btn.disabled = false; // Reactivamos por si hay error de conexión
+                        });
                 });
             });
         });

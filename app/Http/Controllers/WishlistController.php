@@ -19,29 +19,33 @@ class WishlistController extends Controller
     {
         $userId = Auth::id();
 
-        // 🚀 Borramos todos los posibles duplicados de golpe usando Query Builder
-        $deletedRows = DB::table('wishlists')
-            ->where('user_id', $userId)
+        $deletedRows = Wishlist::where('user_id', $userId)
             ->where('book_id', $bookId)
             ->delete();
 
+        // 🚀 EL BLINDAJE: Si la orden viene de la página de Wishlist,
+        // prohibimos terminantemente que el libro se vuelva a crear.
+        if ($request->input('action') === 'remove_only') {
+            return response()->json([
+                'success' => true,
+                'is_wished' => false,
+                'message' => 'Libro eliminado definitivamente.'
+            ]);
+        }
+
+        // Lógica normal para el Catálogo (donde sí queremos que sea un interruptor)
         if ($deletedRows > 0) {
-            // Si borró al menos 1 fila, confirmamos que se ha quitado
             $isWished = false;
             $message = 'Libro eliminado de tu lista de deseos.';
         } else {
-            // Si no borró nada, significa que no existía, así que lo creamos
-            DB::table('wishlists')->insert([
+            Wishlist::create([
                 'user_id' => $userId,
-                'book_id' => $bookId,
-                'created_at' => now(),
-                'updated_at' => now()
+                'book_id' => $bookId
             ]);
             $isWished = true;
             $message = '¡Libro guardado en tu lista de deseos!';
         }
 
-        // Respuesta para AJAX
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
@@ -50,7 +54,6 @@ class WishlistController extends Controller
             ]);
         }
 
-        // Respuesta tradicional (por si falla Javascript)
         return back()->with('success', $message);
     }
 }
