@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::table('user_library', function (Blueprint $table) {
             $table->string('status')->default('pending')->after('order_number');
-            $table->string('trackingNumber')->nullable()->after('status');
+            $table->string('tracking_number')->nullable()->after('status');
         });
     }
 
     public function down(): void
     {
         Schema::table('user_library', function (Blueprint $table) {
-            $table->dropColumn(['status', 'trackingNumber']);
+            $table->dropColumn(['status', 'tracking_number']);
         });
     }
 };
