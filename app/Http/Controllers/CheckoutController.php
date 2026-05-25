@@ -176,8 +176,8 @@ class CheckoutController extends Controller
             // 4. CREAR LA FACTURA PRINCIPAL (Tabla orders)
             $userId = Auth::id(); // Asegurar ID del usuario
             $orderId = \Illuminate\Support\Facades\DB::table('orders')->insertGetId([
-                'user_Id' => $userId,
-                'couponId' => $couponId,
+                'user_id' => $userId,
+                'coupon_id' => $couponId,
                 'totalPrice' => $total,
                 'status' => $initialStatus,
                 'trackingNumber' => $orderNumber,
