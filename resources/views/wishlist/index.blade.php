@@ -89,46 +89,55 @@
                 form.addEventListener('submit', function(e) {
                     e.preventDefault();
 
-                    // 1. Bloqueo al instante para evitar el doble clic fantasma
-                    const btn = this.querySelector('button');
-                    if (btn.disabled) return;
-                    btn.disabled = true;
+                    // 🔒 CERROJO DE JAVASCRIPT: Evita que el mismo formulario lance 2 peticiones a la vez
+                    if (this.dataset.submitting === 'true') return;
+                    this.dataset.submitting = 'true';
 
-                    const url = this.action;
+                    const btn = this.querySelector('button');
+                    btn.disabled = true;
+                    btn.classList.add('opacity-50'); // Efecto visual para que sepas que has hecho clic
+
+                    // 🚀 TRUCO INFALIBLE: Pasamos la orden directamente pegada a la URL
+                    const url = this.action + '?action=remove_only';
                     const token = this.querySelector('input[name="_token"]').value;
                     const card = this.closest('.group');
 
                     fetch(url, {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
                             'X-Requested-With': 'XMLHttpRequest',
                             'X-CSRF-TOKEN': token
-                        },
-                        body: JSON.stringify({
-                            action: 'remove_only' // 2. Le mandamos el chivato al servidor
-                        })
+                        }
+                        // Ya no necesitamos enviar el body en JSON, va en la URL
                     })
                         .then(response => response.json())
                         .then(data => {
                             if(data.success) {
-                                card.style.transition = "all 0.3s ease";
-                                card.style.opacity = "0";
-                                card.style.transform = "scale(0.95)";
+                                if (data.is_wished === false) {
+                                    card.style.transition = "all 0.3s ease";
+                                    card.style.opacity = "0";
+                                    card.style.transform = "scale(0.95)";
 
-                                setTimeout(() => {
-                                    card.remove();
-
-                                    // Solo recargamos si la lista se ha quedado completamente vacía
-                                    if(document.querySelectorAll('.group').length === 0) {
-                                        window.location.reload();
-                                    }
-                                }, 300);
+                                    setTimeout(() => {
+                                        card.remove();
+                                        if(document.querySelectorAll('.group').length === 0) {
+                                            window.location.reload();
+                                        }
+                                    }, 300);
+                                } else {
+                                    window.location.reload();
+                                }
                             }
                         })
                         .catch(error => {
                             console.error('Error:', error);
-                            btn.disabled = false; // Reactivamos por si hay error de conexión
+                        })
+                        .finally(() => {
+                            // Si falla, liberamos el botón para que puedas volver a intentarlo
+                            this.dataset.submitting = 'false';
+                            btn.disabled = false;
+                            btn.classList.remove('opacity-50');
                         });
                 });
             });

@@ -19,31 +19,35 @@ class WishlistController extends Controller
     {
         $userId = Auth::id();
 
-        $deletedRows = Wishlist::where('user_id', $userId)
+        // 🚀 Leemos la orden directamente desde la URL
+        $isRemoveOnly = $request->query('action') === 'remove_only';
+
+        // Hacemos el borrado fulminante usando el Query Builder puro
+        $deletedRows = \Illuminate\Support\Facades\DB::table('wishlists')
+            ->where('user_id', $userId)
             ->where('book_id', $bookId)
             ->delete();
 
-        // 🚀 EL BLINDAJE: Si la orden viene de la página de Wishlist,
-        // prohibimos terminantemente que el libro se vuelva a crear.
-        if ($request->input('action') === 'remove_only') {
-            return response()->json([
-                'success' => true,
-                'is_wished' => false,
-                'message' => 'Libro eliminado definitivamente.'
-            ]);
-        }
-
-        // Lógica normal para el Catálogo (donde sí queremos que sea un interruptor)
-        if ($deletedRows > 0) {
+        if ($isRemoveOnly) {
+            // 🔒 CERROJO DEL CONTROLADOR: Si viene de la Lista de Deseos,
+            // PROHIBIMOS crear el libro de nuevo, pase lo que pase.
             $isWished = false;
-            $message = 'Libro eliminado de tu lista de deseos.';
+            $message = 'Libro eliminado definitivamente.';
         } else {
-            Wishlist::create([
-                'user_id' => $userId,
-                'book_id' => $bookId
-            ]);
-            $isWished = true;
-            $message = '¡Libro guardado en tu lista de deseos!';
+            // Lógica normal para el botón de corazón del Catálogo
+            if ($deletedRows > 0) {
+                $isWished = false;
+                $message = 'Libro eliminado de tu lista de deseos.';
+            } else {
+                \Illuminate\Support\Facades\DB::table('wishlists')->insert([
+                    'user_id' => $userId,
+                    'book_id' => $bookId,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+                $isWished = true;
+                $message = '¡Libro guardado en tu lista de deseos!';
+            }
         }
 
         if ($request->wantsJson() || $request->ajax()) {
