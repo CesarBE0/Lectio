@@ -192,62 +192,66 @@ class CheckoutController extends Controller
                 $itemPrice = $item['price'] ?? 0;
                 $quantity = $item['quantity'] ?? 1;
 
-                // Extraemos el formatId de la clave del carrito (que es "bookId-formatId")
-                $parts = explode('-', $cartKey);
-                $formatId = $parts[1] ?? null;
+                // 🚀 LA SOLUCIÓN DEFINITIVA: Buscar el ID real del libro
+                $bookId = null;
 
-                // Prevención de fallos si la clave no tiene el formato
-                if (!$formatId) {
-                    $bookId = $item['book_id'] ?? $item['id'];
-                    $f = \Illuminate\Support\Facades\DB::table('formats')
-                        ->where('bookId', $bookId)->orWhere('book_id', $bookId)
-                        ->where('type', $item['format'])
+                // 1. Sabemos que el carrito guarda el ID del formato (Ej: 13)
+                // Vamos a la tabla 'formats' a descubrir a qué libro pertenece.
+                $formatIdToSearch = $item['id'] ?? $cartKey;
+
+                $formatRecord = \Illuminate\Support\Facades\DB::table('formats')
+                    ->where('id', $formatIdToSearch)
+                    ->first();
+
+                if ($formatRecord) {
+                    // ¡Bingo! Si el formato es 13, esto nos dará el book_id 5
+                    $bookId = $formatRecord->book_id;
+                } elseif (isset($item['title'])) {
+                    // Plan B de rescate: Buscar el libro por su título exacto
+                    $bookRecord = \Illuminate\Support\Facades\DB::table('books')
+                        ->where('title', $item['title'])
                         ->first();
-                    $formatId = $f ? ($f->formatId ?? $f->id ?? 1) : 1;
+                    if ($bookRecord) {
+                        $bookId = $bookRecord->id;
+                    }
+                }
+
+                // Prevención de fallos extremos
+                if (!$bookId) {
+                    $bookId = $item['book_id'] ?? 1;
                 }
 
                 // 5.1 Crear la línea de producto vendido (Tabla order_items)
-                // 5.1 Crear la línea de producto vendido (Tabla order_items)
                 \Illuminate\Support\Facades\DB::table('order_items')->insert([
-                    'order_id'        => $orderId,          // Ajustado a la columna real
-                    'book_id'         => $formatId,         // Ajustado a la columna real (antes era formatId)
-                    'format_type'     => $item['format'],   // Añadido para que coincida con tu tabla
-                    'price'           => $itemPrice,        // Ajustado a la columna real (antes era priceAtPurchase)
+                    'order_id'        => $orderId,
+                    'book_id'         => $bookId,         // ✅ Guardamos el ID real (5)
+                    'format_type'     => $item['format'],
+                    'price'           => $itemPrice,
                     'quantity'        => $quantity,
-                    'created_at'      => now(),             // Buena práctica añadir el timestamp
+                    'created_at'      => now(),
                     'updated_at'      => now(),
                 ]);
 
                 // 5.2 Dar acceso en la biblioteca personal (Tabla user_library)
                 $yaExiste = \Illuminate\Support\Facades\DB::table('user_library')
                     ->where('user_id', Auth::id())
-                    ->where('book_id', $formatId)
+                    ->where('book_id', $bookId)           // ✅ Comprobamos con el ID real
                     ->where('format', $item['format'])
                     ->exists();
 
-                \Log::info("DEBUG - Intentando insertar libro ID: $formatId para usuario: " . Auth::id());
-                \Log::info("DEBUG - ¿El libro ya existe en la librería?: " . ($yaExiste ? 'SÍ' : 'NO'));
-
                 if (!$yaExiste) {
-                    try {
-                        \Illuminate\Support\Facades\DB::table('user_library')->insert([
-                            'user_id'         => Auth::id(),
-                            'book_id'         => $formatId,
-                            'format'          => $item['format'],
-                            'quantity'        => $quantity,
-                            'address'         => $direccionCompleta,
-                            'order_number'    => $orderNumber,
-                            'tracking_number' => $orderNumber,
-                            'price'           => $itemPrice,
-                            'created_at'      => now(),
-                            'updated_at'      => now(),
-                        ]);
-                        \Log::info("DEBUG - Inserción en user_library EXITOSA.");
-                    } catch (\Exception $e) {
-                        \Log::error("DEBUG - ERROR en INSERT de user_library: " . $e->getMessage());
-                    }
-                } else {
-                    \Log::info("DEBUG - Se saltó la inserción porque el libro ya existía.");
+                    \Illuminate\Support\Facades\DB::table('user_library')->insert([
+                        'user_id'         => Auth::id(),
+                        'book_id'         => $bookId,     // ✅ Guardamos el ID real (5)
+                        'format'          => $item['format'],
+                        'quantity'        => $quantity,
+                        'address'         => $direccionCompleta,
+                        'order_number'    => $orderNumber,
+                        'tracking_number' => $orderNumber,
+                        'price'           => $itemPrice,
+                        'created_at'      => now(),
+                        'updated_at'      => now(),
+                    ]);
                 }
             }
 
