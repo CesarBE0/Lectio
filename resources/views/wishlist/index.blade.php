@@ -117,7 +117,7 @@
                                     card.remove();
 
                                     // 🚀 AQUÍ ESTÁ LA MAGIA: Comprobamos si quedan libros
-                                    onst remainingBooks = document.querySelectorAll('#wishlist-container .group');
+                                    const remainingBooks = document.querySelectorAll('#wishlist-container .group');
 
                                     if(remainingBooks.length === 0) {
                                         // 1. Ocultamos la cuadrícula (para que no ocupe espacio)
