@@ -147,7 +147,7 @@ class CheckoutController extends Controller
                 $randomNumber = str_pad(random_int(0, 99999999), 8, '0', STR_PAD_LEFT);
                 $orderNumber = 'LCT-' . $randomNumber;
                 // 🚀 CAMBIO: Ahora buscamos en 'orders' en lugar de 'library'
-                $exists = \Illuminate\Support\Facades\DB::table('orders')->where('trackingNumber', $orderNumber)->exists();
+                $exists = \Illuminate\Support\Facades\DB::table('orders')->where('tracking_number', $orderNumber)->exists();
             } while ($exists);
 
             // 2. EL DETECTOR DE FORMATOS
@@ -175,12 +175,17 @@ class CheckoutController extends Controller
 
             // 4. CREAR LA FACTURA PRINCIPAL (Tabla orders)
             $userId = Auth::id(); // Asegurar ID del usuario
+            $direccionCompleta = $request->input('address') . ', ' .
+                $request->input('city') . ', CP: ' .
+                $request->input('zip');
+
             $orderId = \Illuminate\Support\Facades\DB::table('orders')->insertGetId([
                 'user_id' => $userId,
                 'coupon_id' => $couponId,
                 'totalPrice' => $total,
                 'status' => $initialStatus,
                 'trackingNumber' => $orderNumber,
+                'address'        => $direccionCompleta,
                 'created_at' => now(),
             ]);
 
