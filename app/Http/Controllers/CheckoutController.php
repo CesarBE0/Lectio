@@ -219,29 +219,35 @@ class CheckoutController extends Controller
                 ]);
 
                 // 5.2 Dar acceso en la biblioteca personal (Tabla user_library)
-                // Evitamos duplicados si el usuario compra dos veces lo mismo
-                $hasBook = \Illuminate\Support\Facades\DB::table('user_library')
+                $yaExiste = \Illuminate\Support\Facades\DB::table('user_library')
                     ->where('user_id', Auth::id())
                     ->where('book_id', $formatId)
                     ->where('format', $item['format'])
                     ->exists();
 
-                if (!$hasBook) {
-                    \Illuminate\Support\Facades\DB::table('user_library')->insert([
-                        'user_id' => Auth::id(),
-                        'book_id' => $formatId,
-                        'format' => $item['format'],
-                        'quantity' => $quantity,
+                \Log::info("DEBUG - Intentando insertar libro ID: $formatId para usuario: " . Auth::id());
+                \Log::info("DEBUG - ¿El libro ya existe en la librería?: " . ($yaExiste ? 'SÍ' : 'NO'));
 
-                        // --- AÑADE ESTO (Asegúrate de que los nombres coinciden con DBeaver) ---
-                        'address' => $direccionCompleta, // La variable que unificamos antes
-                        'order_number' => $orderNumber,       // El número de pedido generado
-                        'tracking_number' => $orderNumber,       // O la columna que tengas para el tracking
-                        'price' => $itemPrice,         // El precio del artículo
-
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
+                if (!$yaExiste) {
+                    try {
+                        \Illuminate\Support\Facades\DB::table('user_library')->insert([
+                            'user_id'         => Auth::id(),
+                            'book_id'         => $formatId,
+                            'format'          => $item['format'],
+                            'quantity'        => $quantity,
+                            'address'         => $direccionCompleta,
+                            'order_number'    => $orderNumber,
+                            'tracking_number' => $orderNumber,
+                            'price'           => $itemPrice,
+                            'created_at'      => now(),
+                            'updated_at'      => now(),
+                        ]);
+                        \Log::info("DEBUG - Inserción en user_library EXITOSA.");
+                    } catch (\Exception $e) {
+                        \Log::error("DEBUG - ERROR en INSERT de user_library: " . $e->getMessage());
+                    }
+                } else {
+                    \Log::info("DEBUG - Se saltó la inserción porque el libro ya existía.");
                 }
             }
 
