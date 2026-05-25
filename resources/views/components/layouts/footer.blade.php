@@ -23,7 +23,6 @@
                 <ul class="space-y-3 text-sm">
                     <li><a href="{{ route('catalogo') }}" class="hover:text-[#D4AF37] transition-colors flex items-center gap-2"><span class="w-1.5 h-1.5 bg-[#D4AF37] rounded-full"></span> Catálogo Completo</a></li>
                     <li><a href="{{ route('library.index') }}" class="hover:text-[#D4AF37] transition-colors flex items-center gap-2"><span class="w-1.5 h-1.5 bg-[#D4AF37] rounded-full"></span> Mi Biblioteca</a></li>
-                    <li><a href="#" class="hover:text-[#D4AF37] transition-colors flex items-center gap-2"><span class="w-1.5 h-1.5 bg-[#D4AF37] rounded-full"></span> Novedades</a></li>
                 </ul>
             </div>
 
