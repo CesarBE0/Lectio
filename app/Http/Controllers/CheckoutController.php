@@ -184,7 +184,7 @@ class CheckoutController extends Controller
                 'coupon_id' => $couponId,
                 'totalPrice' => $total,
                 'status' => $initialStatus,
-                'trackingNumber' => $orderNumber,
+                'tracking_number' => $orderNumber,
                 'address'        => $direccionCompleta,
                 'created_at' => now(),
             ]);
