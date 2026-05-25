@@ -35,8 +35,8 @@ class LibraryController extends Controller
     {
         $user = Auth::user();
 
-        // 1. Buscamos directamente en la tabla pivote 'library' para asegurar el valor real
-        $pivot = \Illuminate\Support\Facades\DB::table('library')
+        // 1. Buscamos directamente en la tabla pivote 'user_library' para asegurar el valor real
+        $pivot = \Illuminate\Support\Facades\DB::table('user_library')
             ->where('user_id', $user->id)
             ->where('book_id', $id)
             ->first();

@@ -10,11 +10,11 @@ test('RF6: Alternar favoritos con el icono de la estrella', function () {
 
     // Encender estrella
     $this->actingAs($user)->postJson("/biblioteca/favorito/{$book->id}");
-    $this->assertDatabaseHas('library', ['book_id' => $book->id, 'is_favorite' => true]);
+    $this->assertDatabaseHas('user_library', ['book_id' => $book->id, 'is_favorite' => true]);
 
     // Apagar estrella
     $this->actingAs($user)->postJson("/biblioteca/favorito/{$book->id}");
-    $this->assertDatabaseHas('library', ['book_id' => $book->id, 'is_favorite' => false]);
+    $this->assertDatabaseHas('user_library', ['book_id' => $book->id, 'is_favorite' => false]);
 });
 
 test('RF10: Vista de Biblioteca muestra stats correctas', function () {
