@@ -176,7 +176,7 @@ class CheckoutController extends Controller
             // 4. CREAR LA FACTURA PRINCIPAL (Tabla orders)
             $userId = Auth::id(); // Asegurar ID del usuario
             $orderId = \Illuminate\Support\Facades\DB::table('orders')->insertGetId([
-                'userId' => $userId,
+                'user_Id' => $userId,
                 'couponId' => $couponId,
                 'totalPrice' => $total,
                 'status' => $initialStatus,
@@ -214,13 +214,13 @@ class CheckoutController extends Controller
                 // 5.2 Dar acceso en la biblioteca personal (Tabla user_library)
                 // Evitamos duplicados si el usuario compra dos veces lo mismo
                 $hasBook = \Illuminate\Support\Facades\DB::table('user_library')
-                    ->where('userId', Auth::user()->userId ?? Auth::id())
+                    ->where('user_Id', Auth::user()->userId ?? Auth::id())
                     ->where('formatId', $formatId)
                     ->exists();
 
                 if (!$hasBook) {
                     \Illuminate\Support\Facades\DB::table('user_library')->insert([
-                        'userId' => Auth::user()->userId ?? Auth::id(),
+                        'user_Id' => Auth::user()->userId ?? Auth::id(),
                         'formatId' => $formatId,
                         'is_favorite' => false,
                         'acquired_at' => now(),
