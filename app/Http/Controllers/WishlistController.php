@@ -20,28 +20,25 @@ class WishlistController extends Controller
         $userId = Auth::id();
         $isRemoveOnly = $request->query('action') === 'remove_only';
 
-        // 🚀 Ejecutamos el borrado directo en la tabla 'wishlists'
-        $deletedRows = \Illuminate\Support\Facades\DB::table('wishlists')
+        // 🚀 Usamos el Query del propio Modelo.
+        // Esto garantiza que ataquemos a la tabla EXACTA que usas para pintar la pantalla.
+        $deletedRows = Wishlist::query()
             ->where('user_id', $userId)
             ->where('book_id', $bookId)
             ->delete();
 
-        // 🔍 SI INTENTABAS BORRAR PERO LA BASE DE DATOS DICE QUE BORRÓ 0 FILAS:
         if ($deletedRows === 0 && $isRemoveOnly) {
-            // Sácame todo lo que este usuario tiene guardado realmente en la tabla
-            $registrosReales = \Illuminate\Support\Facades\DB::table('wishlists')
-                ->where('user_id', $userId)
-                ->get();
+            // Si falla, le pedimos al Modelo que nos enseñe qué hay realmente guardado
+            $registrosReales = Wishlist::query()->where('user_id', $userId)->get();
 
             return response()->json([
                 'success' => false,
-                'message' => "Error: El libro ID {$bookId} no se ha podido borrar porque no existe en la tabla con tu user_id.",
+                'message' => "Error: El botón envía el ID {$bookId}, pero no coincide con tu base de datos.",
                 'debug_info' => [
-                    'buscando_book_id' => $bookId,
-                    'user_id_actual' => $userId,
-                    'tus_filas_reales_en_db' => $registrosReales
+                    'intentando_borrar_book_id' => $bookId,
+                    'tus_filas_reales_segun_el_modelo' => $registrosReales
                 ]
-            ], 422); // Enviamos un código de error para que Javascript lo detecte
+            ], 422);
         }
 
         if ($isRemoveOnly) {
@@ -52,16 +49,14 @@ class WishlistController extends Controller
             ]);
         }
 
-        // Lógica normal para el interruptor del Catálogo (Toggle)
+        // Lógica normal para el catálogo
         if ($deletedRows > 0) {
             $isWished = false;
             $message = 'Libro eliminado de tu lista de deseos.';
         } else {
-            \Illuminate\Support\Facades\DB::table('wishlists')->insert([
+            Wishlist::create([
                 'user_id' => $userId,
-                'book_id' => $bookId,
-                'created_at' => now(),
-                'updated_at' => now()
+                'book_id' => $bookId
             ]);
             $isWished = true;
             $message = '¡Libro guardado en tu lista de deseos!';
