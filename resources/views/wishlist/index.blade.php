@@ -9,11 +9,15 @@
         @if($wishlist->isEmpty())
             <div class="bg-gray-50 rounded-2xl p-12 text-center border border-gray-100">
                 <div class="w-20 h-20 mx-auto bg-white rounded-full flex items-center justify-center shadow-sm mb-4">
-                    <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                    <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                    </svg>
                 </div>
                 <h2 class="text-xl font-bold text-gray-900 mb-2">{{__("Tu lista está vacía")}}</h2>
                 <p class="text-gray-500 mb-8">{{__("Aún no has guardado ningún libro para más tarde. Navega por nuestro catálogo y añade los que más te gusten.")}}</p>
-                <a href="{{ route('catalogo') }}" class="inline-block bg-black text-[#D4AF37] font-bold text-xs uppercase tracking-widest py-3 px-8 rounded-lg hover:bg-gray-900 transition-transform active:scale-95 shadow-md">
+                <a href="{{ route('catalogo') }}"
+                   class="inline-block bg-black text-[#D4AF37] font-bold text-xs uppercase tracking-widest py-3 px-8 rounded-lg hover:bg-gray-900 transition-transform active:scale-95 shadow-md">
                     {{__("Explorar Catálogo")}}
                 </a>
             </div>
@@ -27,17 +31,26 @@
                         $defaultFormatId = $firstFormat ? $firstFormat->id : '';
                     @endphp
 
-                    <div class="group relative flex flex-col h-full bg-white rounded-xl border border-gray-100 p-3 shadow-sm hover:shadow-md transition">
+                    <div
+                        class="group relative flex flex-col h-full bg-white rounded-xl border border-gray-100 p-3 shadow-sm hover:shadow-md transition">
 
-                        <form action="{{ route('wishlist.toggle', $book->id) }}" method="POST" class="wishlist-form absolute top-5 right-5 z-20">
+                        <form action="{{ route('wishlist.toggle', $book->id) }}" method="POST"
+                              class="wishlist-form absolute top-5 right-5 z-20">
                             @csrf
-                            <button type="submit" class="bg-white/90 backdrop-blur p-2 rounded-full shadow hover:scale-110 transition text-red-500 hover:text-gray-400" title="Quitar de la lista">
-                                <svg class="w-5 h-5 fill-current transition-colors duration-300" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                            <button type="submit"
+                                    class="bg-white/90 backdrop-blur p-2 rounded-full shadow hover:scale-110 transition text-red-500 hover:text-gray-400"
+                                    title="Quitar de la lista">
+                                <svg class="w-5 h-5 fill-current transition-colors duration-300" viewBox="0 0 24 24">
+                                    <path
+                                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
                             </button>
                         </form>
 
-                        <a href="{{ route('books.show', $book->id) }}" class="block relative aspect-[2/3] rounded-lg overflow-hidden mb-3 bg-gray-50 flex items-center justify-center p-2 z-10">
-                            <img src="{{ asset($book->image_url) }}" alt="{{ $book->title }}" class="max-w-full max-h-full object-contain group-hover:scale-105 transition duration-500">
+                        <a href="{{ route('books.show', $book->id) }}"
+                           class="block relative aspect-[2/3] rounded-lg overflow-hidden mb-3 bg-gray-50 flex items-center justify-center p-2 z-10">
+                            <img src="{{ asset($book->image_url) }}" alt="{{ $book->title }}"
+                                 class="max-w-full max-h-full object-contain group-hover:scale-105 transition duration-500">
                         </a>
 
                         <div class="flex flex-col flex-grow z-10">
@@ -50,14 +63,17 @@
 
                                 <div class="flex justify-between items-center w-full">
                                     <span class="font-black text-sm">{{ number_format($price, 2) }}€</span>
-                                    <a href="{{ route('books.show', $book->id) }}" class="text-[9px] font-bold text-gray-400 hover:text-[#D4AF37] uppercase tracking-widest transition">{{__("Detalles")}}</a>
+                                    <a href="{{ route('books.show', $book->id) }}"
+                                       class="text-[9px] font-bold text-gray-400 hover:text-[#D4AF37] uppercase tracking-widest transition">{{__("Detalles")}}</a>
                                 </div>
 
                                 <div class="grid grid-cols-2 gap-2 w-full">
-                                    <form action="{{ route('cart.add', $book->id) }}" method="POST" class="ajax-cart-form w-full">
+                                    <form action="{{ route('cart.add', $book->id) }}" method="POST"
+                                          class="ajax-cart-form w-full">
                                         @csrf
                                         <input type="hidden" name="format_id" value="{{ $defaultFormatId }}">
-                                        <button type="submit" class="w-full border border-black text-black text-[10px] font-black uppercase py-2 rounded-lg hover:bg-black hover:text-[#D4AF37] transition-all">
+                                        <button type="submit"
+                                                class="w-full border border-black text-black text-[10px] font-black uppercase py-2 rounded-lg hover:bg-black hover:text-[#D4AF37] transition-all">
                                             {{__("Añadir")}}
                                         </button>
                                     </form>
@@ -66,7 +82,8 @@
                                         @csrf
                                         <input type="hidden" name="action" value="buy_now">
                                         <input type="hidden" name="format_id" value="{{ $defaultFormatId }}">
-                                        <button type="submit" class="w-full bg-gray-900 text-white text-[10px] font-black uppercase py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                                        <button type="submit"
+                                                class="w-full bg-gray-900 text-white text-[10px] font-black uppercase py-2 rounded-lg hover:bg-gray-700 transition-colors">
                                             {{__("Comprar")}}
                                         </button>
                                     </form>
@@ -82,11 +99,11 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const wishForms = document.querySelectorAll('.wishlist-form');
 
             wishForms.forEach(form => {
-                form.addEventListener('submit', function(e) {
+                form.addEventListener('submit', function (e) {
                     e.preventDefault();
 
                     // 🔒 CERROJO DE JAVASCRIPT: Evita que el mismo formulario lance 2 peticiones a la vez
@@ -109,35 +126,38 @@
                             'X-Requested-With': 'XMLHttpRequest',
                             'X-CSRF-TOKEN': token
                         }
-                        // Ya no necesitamos enviar el body en JSON, va en la URL
                     })
                         .then(response => response.json())
                         .then(data => {
-                            if(data.success) {
-                                if (data.is_wished === false) {
-                                    card.style.transition = "all 0.3s ease";
-                                    card.style.opacity = "0";
-                                    card.style.transform = "scale(0.95)";
+                            if (data.success) {
+                                // Si el borrado fue real en la DB, hacemos la animación
+                                card.style.transition = "all 0.3s ease";
+                                card.style.opacity = "0";
+                                card.style.transform = "scale(0.95)";
 
-                                    setTimeout(() => {
-                                        card.remove();
-                                        if(document.querySelectorAll('.group').length === 0) {
-                                            window.location.reload();
-                                        }
-                                    }, 300);
-                                } else {
-                                    window.location.reload();
-                                }
+                                setTimeout(() => {
+                                    card.remove();
+                                    if (document.querySelectorAll('.group').length === 0) {
+                                        window.location.reload();
+                                    }
+                                }, 300);
+                            } else {
+                                // 🚨 ¡ALERTA DE DIAGNÓSTICO!
+                                // Si la DB no borró nada, te saltará este aviso con la explicación
+                                alert(data.message + "\n\nPor favor, abre la consola del navegador (F12) para ver el objeto 'DEBUG WISHLIST'.");
+                                console.error("DEBUG WISHLIST:", data.debug_info);
+
+                                // Reactivamos el botón para que no se quede colgado
+                                btn.disabled = false;
+                                btn.classList.remove('opacity-50');
+                                this.dataset.submitting = 'false';
                             }
                         })
                         .catch(error => {
                             console.error('Error:', error);
-                        })
-                        .finally(() => {
-                            // Si falla, liberamos el botón para que puedas volver a intentarlo
-                            this.dataset.submitting = 'false';
                             btn.disabled = false;
                             btn.classList.remove('opacity-50');
+                            this.dataset.submitting = 'false';
                         });
                 });
             });

@@ -18,46 +18,59 @@ class WishlistController extends Controller
     public function toggle(Request $request, $bookId)
     {
         $userId = Auth::id();
-
-        // 🚀 Leemos la orden directamente desde la URL
         $isRemoveOnly = $request->query('action') === 'remove_only';
 
-        // Hacemos el borrado fulminante usando el Query Builder puro
+        // 🚀 Ejecutamos el borrado directo en la tabla 'wishlists'
         $deletedRows = \Illuminate\Support\Facades\DB::table('wishlists')
             ->where('user_id', $userId)
             ->where('book_id', $bookId)
             ->delete();
 
-        if ($isRemoveOnly) {
-            // 🔒 CERROJO DEL CONTROLADOR: Si viene de la Lista de Deseos,
-            // PROHIBIMOS crear el libro de nuevo, pase lo que pase.
-            $isWished = false;
-            $message = 'Libro eliminado definitivamente.';
-        } else {
-            // Lógica normal para el botón de corazón del Catálogo
-            if ($deletedRows > 0) {
-                $isWished = false;
-                $message = 'Libro eliminado de tu lista de deseos.';
-            } else {
-                \Illuminate\Support\Facades\DB::table('wishlists')->insert([
-                    'user_id' => $userId,
-                    'book_id' => $bookId,
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ]);
-                $isWished = true;
-                $message = '¡Libro guardado en tu lista de deseos!';
-            }
+        // 🔍 SI INTENTABAS BORRAR PERO LA BASE DE DATOS DICE QUE BORRÓ 0 FILAS:
+        if ($deletedRows === 0 && $isRemoveOnly) {
+            // Sácame todo lo que este usuario tiene guardado realmente en la tabla
+            $registrosReales = \Illuminate\Support\Facades\DB::table('wishlists')
+                ->where('user_id', $userId)
+                ->get();
+
+            return response()->json([
+                'success' => false,
+                'message' => "Error: El libro ID {$bookId} no se ha podido borrar porque no existe en la tabla con tu user_id.",
+                'debug_info' => [
+                    'buscando_book_id' => $bookId,
+                    'user_id_actual' => $userId,
+                    'tus_filas_reales_en_db' => $registrosReales
+                ]
+            ], 422); // Enviamos un código de error para que Javascript lo detecte
         }
 
-        if ($request->wantsJson() || $request->ajax()) {
+        if ($isRemoveOnly) {
             return response()->json([
                 'success' => true,
-                'is_wished' => $isWished,
-                'message' => $message
+                'is_wished' => false,
+                'message' => 'Libro eliminado definitivamente.'
             ]);
         }
 
-        return back()->with('success', $message);
+        // Lógica normal para el interruptor del Catálogo (Toggle)
+        if ($deletedRows > 0) {
+            $isWished = false;
+            $message = 'Libro eliminado de tu lista de deseos.';
+        } else {
+            \Illuminate\Support\Facades\DB::table('wishlists')->insert([
+                'user_id' => $userId,
+                'book_id' => $bookId,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+            $isWished = true;
+            $message = '¡Libro guardado en tu lista de deseos!';
+        }
+
+        return response()->json([
+            'success' => true,
+            'is_wished' => $isWished,
+            'message' => $message
+        ]);
     }
 }
