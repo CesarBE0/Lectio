@@ -95,7 +95,7 @@
                     const btn = this.querySelector('button');
                     btn.disabled = true;
 
-                    const url = this.action;
+                    const url = this.getAttribute('action');
                     const formData = new FormData(this);
 
                     fetch(url, {
