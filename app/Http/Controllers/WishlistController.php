@@ -18,32 +18,35 @@ class WishlistController extends Controller
     public function toggle(Request $request, $bookId)
     {
         $userId = Auth::id();
-        $isRemoveOnly = $request->query('action') === 'remove_only';
 
-        // 🚀 BORRADO DIRECTO Y ABSOLUTO: Atacamos directamente a la tabla por sus dos columnas clave
-        // Esto ignora cualquier problema de configuración del Modelo y limpia la fila en la base de datos siempre
-        $deletedRows = DB::table('wishlists')
+        // 🚀 Leemos la acción desde el Body JSON (input) que es 100% seguro contra redirecciones
+        $isRemoveOnly = $request->input('action') === 'remove_only' || $request->query('action') === 'remove_only';
+
+        // 🔒 GUILLOTINA ABSOLUTA: Si viene de la Lista de Deseos, borra y CORTA la ejecución
+        if ($isRemoveOnly) {
+            \Illuminate\Support\Facades\DB::table('wishlists')
+                ->where('user_id', $userId)
+                ->where('book_id', $bookId)
+                ->delete();
+
+            return response()->json([
+                'success' => true,
+                'is_wished' => false,
+                'message' => 'Libro eliminado definitivamente.'
+            ]);
+        }
+
+        // --- Lógica de Interruptor (Solo para el Catálogo) ---
+        $deletedRows = \Illuminate\Support\Facades\DB::table('wishlists')
             ->where('user_id', $userId)
             ->where('book_id', $bookId)
             ->delete();
 
-        // Si la petición viene de la vista de la Lista de Deseos (Remove Only)
-        if ($isRemoveOnly) {
-            // 🔒 Al retornar aquí inmediatamente, garantizamos que el libro JAMÁS
-            // se vuelva a duplicar o recrear por culpa de un doble clic de JavaScript
-            return response()->json([
-                'success' => true,
-                'is_wished' => false,
-                'message' => 'Libro eliminado definitivamente de la base de datos.'
-            ]);
-        }
-
-        // Lógica normal para el botón de corazón del Catálogo (Toggle tradicional)
         if ($deletedRows > 0) {
             $isWished = false;
             $message = 'Libro eliminado de tu lista de deseos.';
         } else {
-            DB::table('wishlists')->insert([
+            \Illuminate\Support\Facades\DB::table('wishlists')->insert([
                 'user_id'    => $userId,
                 'book_id'    => $bookId,
                 'created_at' => now(),
@@ -53,7 +56,6 @@ class WishlistController extends Controller
             $message = '¡Libro guardado en tu lista de deseos!';
         }
 
-        // Respuesta para la asincronía de Fetch API
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
