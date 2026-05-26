@@ -19,25 +19,28 @@ class WishlistController extends Controller
     {
         $userId = Auth::id();
 
-        // 🚀 Leemos la acción desde el Body JSON (input) que es 100% seguro contra redirecciones
+        // 🚀 Detectamos la orden estricta de borrado
         $isRemoveOnly = $request->input('action') === 'remove_only' || $request->query('action') === 'remove_only';
 
-        // 🔒 GUILLOTINA ABSOLUTA: Si viene de la Lista de Deseos, borra y CORTA la ejecución
         if ($isRemoveOnly) {
-            \Illuminate\Support\Facades\DB::table('wishlists')
+            // 🔒 GUILLOTINA ABSOLUTA: Borra el registro y CORTA el código inmediatamente.
+            DB::table('wishlists')
                 ->where('user_id', $userId)
                 ->where('book_id', $bookId)
                 ->delete();
 
-            return response()->json([
-                'success' => true,
-                'is_wished' => false,
-                'message' => 'Libro eliminado definitivamente.'
-            ]);
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'is_wished' => false,
+                    'message' => 'Libro eliminado definitivamente.'
+                ]);
+            }
+            return back()->with('success', 'Libro eliminado.');
         }
 
-        // --- Lógica de Interruptor (Solo para el Catálogo) ---
-        $deletedRows = \Illuminate\Support\Facades\DB::table('wishlists')
+        // --- Lógica normal de Interruptor (Solo para los corazones del Catálogo) ---
+        $deletedRows = DB::table('wishlists')
             ->where('user_id', $userId)
             ->where('book_id', $bookId)
             ->delete();
@@ -46,7 +49,7 @@ class WishlistController extends Controller
             $isWished = false;
             $message = 'Libro eliminado de tu lista de deseos.';
         } else {
-            \Illuminate\Support\Facades\DB::table('wishlists')->insert([
+            DB::table('wishlists')->insert([
                 'user_id'    => $userId,
                 'book_id'    => $bookId,
                 'created_at' => now(),

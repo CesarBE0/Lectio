@@ -28,8 +28,9 @@
 
                 <div class="group relative flex flex-col h-full bg-white rounded-xl border border-gray-100 p-3 shadow-sm hover:shadow-md transition">
 
-                    <form action="{{ route('wishlist.toggle', $book->id) }}" method="POST" class="wishlist-form absolute top-5 right-5 z-20">
+                    <form action="{{ route('wishlist.toggle', $book->id) }}" method="POST" class="wishlist-remove-form absolute top-5 right-5 z-20">
                         @csrf
+                        <input type="hidden" name="action" value="remove_only">
                         <button type="submit" class="bg-white/90 backdrop-blur p-2 rounded-full shadow hover:scale-110 transition text-red-500 hover:text-gray-400" title="Quitar de la lista">
                             <svg class="w-5 h-5 fill-current transition-colors duration-300" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
                         </button>
@@ -78,7 +79,8 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const wishForms = document.querySelectorAll('.wishlist-form');
+            // 🚀 Solo atrapamos el botón de borrar de esta pantalla
+            const wishForms = document.querySelectorAll('.wishlist-remove-form');
 
             wishForms.forEach(form => {
                 if (form.dataset.initialized) return;
@@ -93,25 +95,21 @@
                     const btn = this.querySelector('button');
                     btn.disabled = true;
 
-                    // 🚀 Dejamos la URL limpia
                     const url = this.action;
-                    const token = this.querySelector('input[name="_token"]').value;
-                    const card = this.closest('.group');
+                    const formData = new FormData(this);
 
                     fetch(url, {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json', // 🔒 VITAL para enviar el Body
                             'Accept': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'X-CSRF-TOKEN': token
+                            'X-Requested-With': 'XMLHttpRequest'
                         },
-                        // 🚀 Metemos la instrucción en la caja fuerte de JSON
-                        body: JSON.stringify({ action: 'remove_only' })
+                        body: formData
                     })
                         .then(response => response.json())
                         .then(data => {
                             if(data.success && data.is_wished === false) {
+                                const card = this.closest('.group');
                                 card.style.transition = "all 0.3s ease";
                                 card.style.opacity = "0";
                                 card.style.transform = "scale(0.95)";
