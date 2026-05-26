@@ -20,29 +20,17 @@ class WishlistController extends Controller
         $userId = Auth::id();
         $isRemoveOnly = $request->query('action') === 'remove_only';
 
-        // 1. Buscamos el registro exacto usando Eloquent
-        $wishlistItem = Wishlist::where('user_id', $userId)
+        // 🚀 BORRADO DIRECTO Y ABSOLUTO: Atacamos directamente a la tabla por sus dos columnas clave
+        // Esto ignora cualquier problema de configuración del Modelo y limpia la fila en DBeaver siempre
+        $deletedRows = DB::table('wishlists')
+            ->where('user_id', $userId)
             ->where('book_id', $bookId)
-            ->first();
-
-        $deletedRows = 0;
-
-        if ($wishlistItem) {
-            // 🚀 LA CLAVE: Si lo encuentra, lo borramos usando su 'id' único de la tabla.
-            // ¡Esto es 100% infalible en DBeaver!
-            $deletedRows = \Illuminate\Support\Facades\DB::table('wishlists')
-                ->where('id', $wishlistItem->id)
-                ->delete();
-        } else {
-            // Plan B de rescate: Por si acaso intentamos el borrado tradicional por columnas
-            $deletedRows = \Illuminate\Support\Facades\DB::table('wishlists')
-                ->where('user_id', $userId)
-                ->where('book_id', $bookId)
-                ->delete();
-        }
+            ->delete();
 
         // Si la petición viene de la vista de la Lista de Deseos (Remove Only)
         if ($isRemoveOnly) {
+            // 🔒 Al retornar aquí inmediatamente, garantizamos que el libro JAMÁS
+            // se vuelva a duplicar o recrear por culpa de un doble clic de JavaScript
             return response()->json([
                 'success' => true,
                 'is_wished' => false,
@@ -50,14 +38,14 @@ class WishlistController extends Controller
             ]);
         }
 
-        // Lógica normal para el botón de corazón del Catálogo (Toggle)
-        if ($deletedRows > 0 || $wishlistItem) {
+        // Lógica normal para el botón de corazón del Catálogo (Toggle tradicional)
+        if ($deletedRows > 0) {
             $isWished = false;
             $message = 'Libro eliminado de tu lista de deseos.';
         } else {
-            \Illuminate\Support\Facades\DB::table('wishlists')->insert([
-                'user_id' => $userId,
-                'book_id' => $bookId,
+            DB::table('wishlists')->insert([
+                'user_id'    => $userId,
+                'book_id'    => $bookId,
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
