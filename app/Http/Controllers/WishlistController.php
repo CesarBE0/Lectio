@@ -21,7 +21,7 @@ class WishlistController extends Controller
         $isRemoveOnly = $request->query('action') === 'remove_only';
 
         // 🚀 BORRADO DIRECTO Y ABSOLUTO: Atacamos directamente a la tabla por sus dos columnas clave
-        // Esto ignora cualquier problema de configuración del Modelo y limpia la fila en DBeaver siempre
+        // Esto ignora cualquier problema de configuración del Modelo y limpia la fila en la base de datos siempre
         $deletedRows = DB::table('wishlists')
             ->where('user_id', $userId)
             ->where('book_id', $bookId)
@@ -53,6 +53,7 @@ class WishlistController extends Controller
             $message = '¡Libro guardado en tu lista de deseos!';
         }
 
+        // Respuesta para la asincronía de Fetch API
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,

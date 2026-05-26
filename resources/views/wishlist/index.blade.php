@@ -81,18 +81,21 @@
             const wishForms = document.querySelectorAll('.wishlist-form');
 
             wishForms.forEach(form => {
+                // 🔒 Cerrojo anti-duplicación de eventos
                 if (form.dataset.initialized) return;
                 form.dataset.initialized = 'true';
 
                 form.addEventListener('submit', function(e) {
                     e.preventDefault();
 
+                    // 🔒 Cerrojo anti doble-clic
                     if (this.dataset.submitting === 'true') return;
                     this.dataset.submitting = 'true';
 
                     const btn = this.querySelector('button');
                     btn.disabled = true;
 
+                    // 🚀 Pasamos la orden restrictiva por URL para activar la guillotina del controlador
                     const url = this.action + '?action=remove_only';
                     const token = this.querySelector('input[name="_token"]').value;
                     const card = this.closest('.group');
@@ -116,11 +119,11 @@
                                 setTimeout(() => {
                                     card.remove();
 
-                                    // 🚀 AQUÍ ESTÁ LA MAGIA: Comprobamos si quedan libros
+                                    // 🚀 Comprobamos si quedan libros SOLO dentro de la cuadrícula
                                     const remainingBooks = document.querySelectorAll('#wishlist-container .group');
 
                                     if(remainingBooks.length === 0) {
-                                        // 1. Ocultamos la cuadrícula (para que no ocupe espacio)
+                                        // 1. Ocultamos la cuadrícula
                                         const container = document.getElementById('wishlist-container');
                                         if(container) {
                                             container.classList.remove('grid');
@@ -132,8 +135,6 @@
                                         if(emptyState) {
                                             emptyState.classList.remove('hidden');
                                             emptyState.classList.add('block');
-
-                                            // Pequeño truco visual para que aparezca difuminándose
                                             emptyState.style.opacity = '0';
                                             setTimeout(() => emptyState.style.opacity = '1', 50);
                                         }
@@ -143,6 +144,7 @@
                         })
                         .catch(error => console.error('Error:', error))
                         .finally(() => {
+                            // Liberamos el botón al terminar
                             this.dataset.submitting = 'false';
                             btn.disabled = false;
                         });
