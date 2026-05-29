@@ -249,6 +249,7 @@ class CheckoutController extends Controller
                         'order_number'    => $orderNumber,
                         'tracking_number' => $orderNumber,
                         'price'           => $itemPrice,
+                        'status'          => $initialStatus,
                         'created_at'      => now(),
                         'updated_at'      => now(),
                     ]);
