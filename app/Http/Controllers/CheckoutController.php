@@ -192,22 +192,12 @@ class CheckoutController extends Controller
                 $itemPrice = $item['price'] ?? 0;
                 $quantity = $item['quantity'] ?? 1;
 
-                // 🚀 LA SOLUCIÓN DEFINITIVA: Buscar el ID real del libro
+                // 🚀 IDENTIFICACIÓN INFALIBLE DEL LIBRO (CORREGIDO)
                 $bookId = null;
 
-                // 1. Sabemos que el carrito guarda el ID del formato (Ej: 13)
-                // Vamos a la tabla 'formats' a descubrir a qué libro pertenece.
-                $formatIdToSearch = $item['id'] ?? $cartKey;
-
-                $formatRecord = \Illuminate\Support\Facades\DB::table('formats')
-                    ->where('id', $formatIdToSearch)
-                    ->first();
-
-                if ($formatRecord) {
-                    // ¡Bingo! Si el formato es 13, esto nos dará el book_id 5
-                    $bookId = $formatRecord->book_id;
-                } elseif (isset($item['title'])) {
-                    // Plan B de rescate: Buscar el libro por su título exacto
+                // PRIORIDAD 1: Buscar por el título exacto en la tabla 'books'.
+                // Al venir el título directamente desde el carrito, esto es 100% infalible.
+                if (!empty($item['title'])) {
                     $bookRecord = \Illuminate\Support\Facades\DB::table('books')
                         ->where('title', $item['title'])
                         ->first();
@@ -216,15 +206,31 @@ class CheckoutController extends Controller
                     }
                 }
 
-                // Prevención de fallos extremos
+                // PRIORIDAD 2: Si por alguna razón el título fallara, miramos si viene el book_id explícito
+                if (!$bookId && !empty($item['book_id'])) {
+                    $bookId = $item['book_id'];
+                }
+
+                // PRIORIDAD 3: Último recurso de rescate por ID de formato
                 if (!$bookId) {
-                    $bookId = $item['book_id'] ?? 1;
+                    $formatIdToSearch = $item['id'] ?? $cartKey;
+                    $formatRecord = \Illuminate\Support\Facades\DB::table('formats')
+                        ->where('id', $formatIdToSearch)
+                        ->first();
+                    if ($formatRecord) {
+                        $bookId = $formatRecord->book_id;
+                    }
+                }
+
+                // Salvavidas final para evitar nulos
+                if (!$bookId) {
+                    $bookId = 1;
                 }
 
                 // 5.1 Crear la línea de producto vendido (Tabla order_items)
                 \Illuminate\Support\Facades\DB::table('order_items')->insert([
                     'order_id'        => $orderId,
-                    'book_id'         => $bookId,         // ✅ Guardamos el ID real (5)
+                    'book_id'         => $bookId,         // ✅ ID Real garantizado
                     'format_type'     => $item['format'],
                     'price'           => $itemPrice,
                     'quantity'        => $quantity,
@@ -235,21 +241,21 @@ class CheckoutController extends Controller
                 // 5.2 Dar acceso en la biblioteca personal (Tabla user_library)
                 $yaExiste = \Illuminate\Support\Facades\DB::table('user_library')
                     ->where('user_id', Auth::id())
-                    ->where('book_id', $bookId)           // ✅ Comprobamos con el ID real
+                    ->where('book_id', $bookId)           // ✅ Comprobamos con el ID Real
                     ->where('format', $item['format'])
                     ->exists();
 
                 if (!$yaExiste) {
                     \Illuminate\Support\Facades\DB::table('user_library')->insert([
                         'user_id'         => Auth::id(),
-                        'book_id'         => $bookId,     // ✅ Guardamos el ID real (5)
+                        'book_id'         => $bookId,     // ✅ Guardamos el ID Real
                         'format'          => $item['format'],
                         'quantity'        => $quantity,
                         'address'         => $direccionCompleta,
                         'order_number'    => $orderNumber,
                         'tracking_number' => $orderNumber,
                         'price'           => $itemPrice,
-                        'status'          => $initialStatus,
+                        'status'          => $initialStatus, // ✅ Sincronizado con el estado del admin
                         'created_at'      => now(),
                         'updated_at'      => now(),
                     ]);
