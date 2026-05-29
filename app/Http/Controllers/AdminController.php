@@ -35,7 +35,7 @@ class AdminController extends Controller {
         $chartVentasData = [];
         for ($i = 1; $i <= 12; $i++) { $chartVentasData[] = $ventasMensuales[$i] ?? 0; }
 
-        $formatStats = DB::table('library')
+        $formatStats = DB::table('user_library')
             ->select('format as type', DB::raw('count(*) as total'))
             ->groupBy('type')->get();
 
@@ -60,18 +60,18 @@ class AdminController extends Controller {
         $statusFilter = $request->input('status', 'todos');
 
         // Subquery: Agrupamos por pedido y traemos el estado real (status)
-        $subquery = DB::table('library')
-            ->join('users', 'library.user_id', '=', 'users.id')
+        $subquery = DB::table('user_library')
+            ->join('users', 'user_library.user_id', '=', 'users.id')
             ->select(
-                'library.order_number',
+                'user_library.order_number',
                 'users.name as user_name',
-                DB::raw('MAX(library.created_at) as created_at'),
-                DB::raw('SUM(library.price - library.discount + library.shipping) as totalPrice'),
+                DB::raw('MAX(user_library.created_at) as created_at'),
+                DB::raw('SUM(user_library.price - user_library.discount + user_library.shipping) as totalPrice'),
                 // Seleccionamos el estado real (cogemos el MAX por si hay ligeras variaciones, aunque todos deberían ser iguales por pedido)
-                DB::raw('MAX(library.status) as status')
+                DB::raw('MAX(user_library.status) as status')
             )
-            ->whereNotNull('library.order_number')
-            ->groupBy('library.order_number', 'users.name');
+            ->whereNotNull('user_library.order_number')
+            ->groupBy('user_library.order_number', 'users.name');
 
         // Construimos la query principal sobre la subquery
         $query = DB::table(DB::raw("({$subquery->toSql()}) as sub"))
@@ -90,11 +90,11 @@ class AdminController extends Controller {
 
     public function getOrderDetails($orderNumber)
     {
-        $items = DB::table('library')
-            ->join('books', 'library.book_id', '=', 'books.id')
-            ->join('users', 'library.user_id', '=', 'users.id')
-            ->where('library.order_number', $orderNumber)
-            ->select('books.title', 'library.format as format_type', 'library.price', 'library.discount', 'library.shipping', 'users.name as user_name', 'library.created_at', 'library.address', 'library.city', 'library.status')
+        $items = DB::table('user_library')
+            ->join('books', 'user_library.book_id', '=', 'books.id')
+            ->join('users', 'user_library.user_id', '=', 'users.id')
+            ->where('user_library.order_number', $orderNumber)
+            ->select('books.title', 'user_library.format as format_type', 'user_library.price', 'user_library.discount', 'user_library.shipping', 'users.name as user_name', 'user_library.created_at', 'user_library.address', 'user_library.city', 'user_library.status')
             ->get();
 
         if ($items->isEmpty()) return response()->json(['error' => 'No encontrado'], 404);
@@ -119,7 +119,7 @@ class AdminController extends Controller {
 
     public function destroyOrder($orderNumber)
     {
-        DB::table('library')->where('order_number', $orderNumber)->delete();
+        DB::table('user_library')->where('order_number', $orderNumber)->delete();
         return back()->with('success', 'Pedido eliminado del historial.');
     }
 
@@ -261,7 +261,7 @@ class AdminController extends Controller {
     public function updateStatus(\Illuminate\Http\Request $request, $orderNumber)
     {
         // Usamos update() directamente sobre la tabla library
-        $affected = \Illuminate\Support\Facades\DB::table('library')
+        $affected = \Illuminate\Support\Facades\DB::table('user_library')
             ->where('order_number', $orderNumber)
             ->update(['status' => $request->input('status')]);
 
