@@ -15,7 +15,7 @@ class AdminController extends Controller {
     {
         $periodo = $request->get('periodo', 'todos');
 
-        $queryBase = DB::table('library')->whereNotNull('order_number');
+        $queryBase = DB::table('user_library')->whereNotNull('order_number');
 
         if ($periodo == '7_dias') { $queryBase->where('created_at', '>=', now()->subDays(7)); }
         if ($periodo == '30_dias') { $queryBase->where('created_at', '>=', now()->subDays(30)); }
@@ -27,7 +27,7 @@ class AdminController extends Controller {
             'clients_count' => User::where('role', 'user')->count(),
         ];
 
-        $ventasMensuales = DB::table('library')
+        $ventasMensuales = DB::table('user_library')
             ->selectRaw('MONTH(created_at) as mes, SUM(price - discount + shipping) as total')
             ->groupBy('mes')->orderBy('mes')
             ->pluck('total', 'mes')->all();
