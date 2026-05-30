@@ -265,8 +265,10 @@ class CheckoutController extends Controller
             // Enviamos el correo con la factura
             \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\OrderInvoice($orderNumber, $cartItems, $subtotal, $discountAmount, $shipping, $total));
 
-            // Limpiamos sesión
+            // 🚀 EL EXORCISMO DEL CARRITO: Vaciamos, olvidamos y forzamos el guardado
+            session()->put('cart', []);
             session()->forget(['cart', 'coupon']);
+            session()->save(); // Esto obliga a Laravel a sobreescribir la tabla 'sessions' AL INSTANTE.
 
             return redirect()->route('library.index')->with('success', '¡Pago confirmado! Has ganado ' . floor($total) . ' Puntos Lectio.');
 
