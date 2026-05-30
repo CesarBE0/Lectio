@@ -270,6 +270,8 @@ class CheckoutController extends Controller
             session()->forget(['cart', 'coupon']);
             session()->save(); // Esto obliga a Laravel a sobreescribir la tabla 'sessions' AL INSTANTE.
 
+            $user->forceFill(['cart_data' => null])->save();
+
             return redirect()->route('library.index')->with('success', '¡Pago confirmado! Has ganado ' . floor($total) . ' Puntos Lectio.');
 
         } catch (\Exception $e) {
