@@ -79,6 +79,7 @@
 
                 <div id="carrusel-ofertas" class="flex flex-nowrap overflow-x-auto gap-6 pb-8 snap-x snap-mandatory scroll-smooth hide-scrollbar relative z-20">
                     @foreach($descuentos as $libro)
+                        <div class="flex-none w-[85%] sm:w-[45%] md:w-[30%] lg:w-[23%] snap-start">
                         <div
                             class="card bg-white shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 h-full group flex flex-col relative rounded-2xl overflow-hidden">
 
@@ -140,8 +141,10 @@
                                 </div>
                             </div>
                         </div>
+                        </div>
                     @endforeach
                 </div>
+
                     <button onclick="document.getElementById('carrusel-ofertas').scrollBy({ left: 350, behavior: 'smooth' })"
                             class="absolute right-0 top-[40%] -translate-y-1/2 -mr-5 z-30 bg-white p-3 rounded-full shadow-lg border border-gray-100 text-gray-400 hover:text-[#D4AF37] hover:border-[#D4AF37] transition-all hidden md:flex items-center justify-center opacity-0 group-hover:opacity-100">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
