@@ -70,68 +70,82 @@
                 <h2 class="text-3xl text-red-600 font-serif font-bold mb-8 flex items-center gap-2">
                     <span>🔥</span>{{__("Ofertas del Mes")}}
                 </h2>
+                <div class="relative w-full group">
 
-                <div class="relative w-full">
-                    <div class="flex flex-nowrap overflow-x-auto gap-6 pb-8 snap-x snap-mandatory scroll-smooth hide-scrollbar">
-                        @foreach($descuentos as $libro)
+                <button onclick="document.getElementById('carrusel-ofertas').scrollBy({ left: -350, behavior: 'smooth' })"
+                        class="absolute left-0 top-[40%] -translate-y-1/2 -ml-5 z-30 bg-white p-3 rounded-full shadow-lg border border-gray-100 text-gray-400 hover:text-[#D4AF37] hover:border-[#D4AF37] transition-all hidden md:flex items-center justify-center opacity-0 group-hover:opacity-100">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                </button>
 
-                            <div class="flex-none w-[85%] sm:w-[45%] md:w-[30%] lg:w-[23%] snap-start">
-                                <div class="card bg-white shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 h-full group flex flex-col relative rounded-2xl overflow-hidden">
+                <div id="carrusel-ofertas" class="flex flex-nowrap overflow-x-auto gap-6 pb-8 snap-x snap-mandatory scroll-smooth hide-scrollbar relative z-20">
+                    @foreach($descuentos as $libro)
+                        <div
+                            class="card bg-white shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 h-full group flex flex-col relative rounded-2xl overflow-hidden">
 
-                                    @if($libro->discount_percent)
-                                        <div class="absolute top-3 left-3 z-20 bg-red-600 text-white text-[10px] font-black px-2 py-1 rounded shadow-md animate-pulse">
-                                            {{ $libro->discount_percent }}
-                                        </div>
-                                    @endif
+                            @if($libro->discount_percent)
+                                <div
+                                    class="absolute top-3 left-3 z-20 bg-red-600 text-white text-[10px] font-black px-2 py-1 rounded shadow-md animate-pulse">
+                                    {{ $libro->discount_percent }}
+                                </div>
+                            @endif
 
-                                    @auth
-                                        @php $isWished = in_array($libro->id, $userWishlistIds); @endphp
-                                        <form action="{{ route('wishlist.toggle', $libro->id) }}" method="POST" class="wishlist-form absolute top-3 right-3 z-20">
-                                            @csrf
-                                            <button type="submit" class="bg-white/90 backdrop-blur p-2 rounded-full shadow-sm hover:scale-110 transition duration-200">
-                                                <svg class="w-5 h-5 transition-colors duration-300 {{ $isWished ? 'text-red-500 fill-current' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                                                </svg>
-                                            </button>
+                            @auth
+                                @php $isWished = in_array($libro->id, $userWishlistIds); @endphp
+                                <form action="{{ route('wishlist.toggle', $libro->id) }}" method="POST"
+                                      class="wishlist-form absolute top-3 right-3 z-20">
+                                    @csrf
+                                    <button type="submit"
+                                            class="bg-white/90 backdrop-blur p-2 rounded-full shadow-sm hover:scale-110 transition duration-200">
+                                        <svg
+                                            class="w-5 h-5 transition-colors duration-300 {{ $isWished ? 'text-red-500 fill-current' : 'text-gray-400' }}"
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                        </svg>
+                                    </button>
+                                </form>
+                            @endauth
+
+                            <figure class="px-4 pt-4 h-72 bg-gray-50/50">
+                                <a href="{{ route('books.show', $libro->id) }}"
+                                   class="w-full h-full flex justify-center items-center">
+                                    <img src="{{ asset($libro->image_url) }}" alt="{{ $libro->title }}"
+                                         class="h-full object-contain drop-shadow-xl transform group-hover:scale-105 transition duration-500"/>
+                                </a>
+                            </figure>
+                            <div class="card-body p-6 text-center flex-grow flex flex-col items-center">
+                                <a href="{{ route('books.show', $libro->id) }}" class="hover:text-red-600 transition">
+                                    <h2 class="text-base font-bold line-clamp-2 text-gray-900 leading-tight mb-1">{{ $libro->title }}</h2>
+                                </a>
+                                <p class="text-[11px] text-gray-400 uppercase font-bold tracking-tighter mb-4">{{ $libro->author }}</p>
+                                <div class="mt-auto w-full">
+                                    <div class="flex items-center justify-center gap-3 mb-4">
+                                        <span class="text-xl font-black text-black">{{ number_format($libro->hardcover_price ?? 0, 2) }}€</span>
+                                        @if($libro->old_price)
+                                            <span class="text-xs text-gray-400 line-through font-medium">{{ number_format($libro->old_price, 2) }}€</span>
+                                        @endif
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <form action="{{ route('cart.add', $libro->id) }}" method="POST"
+                                              class="ajax-cart-form w-full">@csrf
+                                            <button type="submit"
+                                                    class="w-full border border-gray-200 text-gray-700 text-[10px] font-black uppercase py-2.5 rounded-lg hover:bg-gray-50 transition-colors">{{__("Añadir")}}</button>
                                         </form>
-                                    @endauth
-
-                                    <figure class="px-4 pt-4 h-72 bg-gray-50/50">
-                                        <a href="{{ route('books.show', $libro->id) }}" class="w-full h-full flex justify-center items-center">
-                                            <img src="{{ asset($libro->image_url) }}" alt="{{ $libro->title }}" class="h-full object-contain drop-shadow-xl transform group-hover:scale-105 transition duration-500"/>
-                                        </a>
-                                    </figure>
-
-                                    <div class="card-body p-6 text-center flex-grow flex flex-col items-center">
-                                        <a href="{{ route('books.show', $libro->id) }}" class="hover:text-red-600 transition w-full">
-                                            <h2 class="text-base font-bold line-clamp-2 text-gray-900 leading-tight mb-1">{{ $libro->title }}</h2>
-                                        </a>
-                                        <p class="text-[11px] text-gray-400 uppercase font-bold tracking-tighter mb-4">{{ $libro->author }}</p>
-
-                                        <div class="mt-auto w-full">
-                                            <div class="flex items-center justify-center gap-3 mb-4">
-                                                <span class="text-xl font-black text-black">{{ number_format($libro->hardcover_price ?? 0, 2) }}€</span>
-                                                @if($libro->old_price)
-                                                    <span class="text-xs text-gray-400 line-through font-medium">{{ number_format($libro->old_price, 2) }}€</span>
-                                                @endif
-                                            </div>
-                                            <div class="grid grid-cols-2 gap-2">
-                                                <form action="{{ route('cart.add', $libro->id) }}" method="POST" class="ajax-cart-form w-full">
-                                                    @csrf
-                                                    <button type="submit" class="w-full border border-gray-200 text-gray-700 text-[10px] font-black uppercase py-2.5 rounded-lg hover:bg-gray-50 transition-colors">{{__("Añadir")}}</button>
-                                                </form>
-                                                <form action="{{ route('cart.add', $libro->id) }}" method="POST" class="w-full">
-                                                    @csrf
-                                                    <input type="hidden" name="action" value="buy_now">
-                                                    <button type="submit" class="w-full bg-black text-[#D4AF37] text-[10px] font-black uppercase py-2.5 rounded-lg hover:bg-gray-900 transition-colors">{{__("Comprar")}}</button>
-                                                </form>
-                                            </div>
-                                        </div>
+                                        <form action="{{ route('cart.add', $libro->id) }}" method="POST"
+                                              class="w-full">@csrf<input type="hidden" name="action" value="buy_now">
+                                            <button type="submit"
+                                                    class="w-full bg-black text-[#D4AF37] text-[10px] font-black uppercase py-2.5 rounded-lg hover:bg-gray-900 transition-colors">{{__("Comprar")}}</button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
-                        @endforeach
-                    </div>
+                        </div>
+                    @endforeach
+                </div>
+                    <button onclick="document.getElementById('carrusel-ofertas').scrollBy({ left: 350, behavior: 'smooth' })"
+                            class="absolute right-0 top-[40%] -translate-y-1/2 -mr-5 z-30 bg-white p-3 rounded-full shadow-lg border border-gray-100 text-gray-400 hover:text-[#D4AF37] hover:border-[#D4AF37] transition-all hidden md:flex items-center justify-center opacity-0 group-hover:opacity-100">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </button>
                 </div>
             </section>
         @endif
