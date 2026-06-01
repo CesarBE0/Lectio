@@ -83,7 +83,6 @@
                                            class="w-full bg-black border border-gray-700 rounded-lg p-2 text-sm font-bold text-white focus:border-[#D4AF37] outline-none">
                                     <span class="text-gray-600 font-bold">€</span>
                                 </div>
-                                <input type="hidden" name="formats[{{ $tipo }}][stock]" value="{{ $f->stock ?? 0 }}">
                             </div>
                         @endforeach
                     </div>

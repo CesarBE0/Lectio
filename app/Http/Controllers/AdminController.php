@@ -249,7 +249,6 @@ class AdminController extends Controller {
                 ['type' => $type],
                 [
                     'price' => round($finalPrice, 2),
-                    'stock' => $data['stock'] ?? 0,
                 ]
             );
         }
