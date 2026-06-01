@@ -26,7 +26,7 @@ class BookController extends Controller
             if($userIds->count() > 0) {
                 return Book::with('formats')
                     ->select('books.*')
-                    ->join('user_library', 'books.id', '=', 'library.book_id')
+                    ->join('user_library', 'books.id', '=', 'user_library.book_id')
                     ->whereIn('user_library.user_id', $userIds)
                     ->where('books.id', '!=', $id)
                     ->selectRaw('COUNT(user_library.book_id) as total_buys')
