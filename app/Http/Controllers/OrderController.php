@@ -19,7 +19,7 @@ class OrderController extends Controller
     public function downloadInvoice($id)
     {
         $user = Auth::user();
-        $book = $user->books()->where('book_id', $id)->firstOrFail();
+        $book = $user->books()->wherePivot('order_number', $id)->firstOrFail();
 
         $fechaCompra = $book->pivot->created_at ?? now();
         $orderNumber = $book->pivot->order_number ?? 'LCT-00000000';
