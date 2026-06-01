@@ -207,7 +207,6 @@ class AdminController extends Controller {
             $book->formats()->create([
                 'type' => $type,
                 'price' => $data['price'],
-                'stock' => 999, // Para productos digitales el stock es siempre infinito
             ]);
         }
 
